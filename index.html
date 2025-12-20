@@ -918,7 +918,7 @@ grid: { color: '#333' }
         document.getElementById('top5-put-oi').innerHTML = putsOI.map(r => {
             const strike = parseFloat(r.strike) + forwardCorrection;
             return `<div class="top5-item put-item">
-                <span class="top5-strike">${Number.isInteger(strike) ? strike.toFixed(1)}</span>
+                <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
                 <span class="top5-value">${r.put?.oi || 0}</span>
             </div>`;
         }).join('');
@@ -994,3 +994,4 @@ grid: { color: '#333' }
 </script>
 </body>
 </html>
+
