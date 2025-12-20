@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <meta name="description" content="Опционные уровни Gold (CME). Данные с задержкой 5 мин. Heatmap, PCR, Forward.">
+    <meta name="description" content="Опционные уровни Gold (CME). Max Pain, Gamma Walls, Unusual Activity.">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
 
-    <title>Gold Options - Pro Data</title>
+    <title>Gold Options - Pro Analytics</title>
     
     <style>
         :root {
@@ -56,7 +56,42 @@
         .pcr-item div:first-child { font-weight: bold; color: #fff; }
         .pcr-item div:last-child { font-size: 0.7em; color: #888; }
 
-        /* 🔥 ПАНЕЛЬ УПРАВЛЕНИЯ 🔥 */
+        /* 🔥 АНАЛИТИЧЕСКИЕ БЛОКИ 🔥 */
+        .analytics-grid {
+            max-width: 1200px; margin: 0 auto 20px auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;
+        }
+        .analytics-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 1px solid #444; border-radius: 10px;
+            padding: 20px; position: relative; overflow: hidden;
+        }
+        .analytics-card::before {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: 4px; height: 100%; background: var(--accent-gold);
+        }
+        .analytics-title {
+            font-size: 1.1em; font-weight: bold; color: var(--accent-gold);
+            margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
+        }
+        .analytics-value {
+            font-size: 2em; font-weight: bold; color: #fff;
+            text-align: center; margin: 10px 0;
+        }
+        .analytics-label {
+            color: #888; font-size: 0.85em; text-align: center;
+        }
+        .level-item {
+            background: #222; padding: 8px 12px; border-radius: 6px;
+            margin: 5px 0; display: flex; justify-content: space-between;
+            align-items: center; border-left: 3px solid transparent;
+        }
+        .level-item.support { border-left-color: var(--call-color); }
+        .level-item.resistance { border-left-color: var(--put-color); }
+        .level-strike { font-weight: bold; color: #fff; }
+        .level-value { color: var(--accent-gold); font-weight: bold; }
+
+        /* ПАНЕЛЬ УПРАВЛЕНИЯ */
         .control-panel {
             max-width: 1000px; margin: 0 auto 20px auto; 
             background: #1a1a1a; border: 1px solid #444;
@@ -75,7 +110,6 @@
             font-size: 1.2em; text-align: center; font-weight: bold; 
         }
 
-        /* Фильтр страйков */
         .strike-filter {
             display: flex; align-items: center; justify-content: center; gap: 10px;
             flex-wrap: wrap;
@@ -95,7 +129,7 @@
             font-weight: bold;
         }
 
-        /* 🔥 ТОП-5 БЛОК 🔥 */
+        /* ТОП-5 */
         .top5-container {
             max-width: 1000px; margin: 0 auto 20px auto;
             display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
@@ -126,10 +160,6 @@
         .top5-value { 
             color: var(--accent-gold); font-weight: bold; 
             font-size: 1em;
-        }
-        .top5-label { 
-            color: #888; font-size: 0.8em; 
-            margin-left: auto; padding-left: 10px;
         }
 
         /* ТАБЛИЦА */
@@ -173,15 +203,15 @@
             text-decoration: underline; 
         }
 
-        /* 🔥 ГРАДАЦИЯ ЦВЕТОВ (OI И VOL) 🔥 */
-        .val-0 { color: #333; }                      /* 0 */
-        .val-1 { color: #666; }                      /* 1-49 */
-        .val-2 { color: #999; }                      /* 50-99 */
-        .val-3 { color: #ccc; font-weight: 500; }    /* 100-499 */
-        .val-4 { color: #fff; font-weight: bold; }   /* 500-999 */
-        .val-5 { color: #4fc3f7; font-weight: bold; font-size: 1.05em; } /* 1000-1999 */
-        .val-6 { color: #FFD700; font-weight: bold; font-size: 1.1em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); } /* 2000-4999 */
-        .val-7 { background: #b71c1c; color: #fff; font-weight: bold; padding: 4px; border-radius: 4px; } /* 5000+ */
+        /* ГРАДАЦИЯ ЦВЕТОВ */
+        .val-0 { color: #333; }
+        .val-1 { color: #666; }
+        .val-2 { color: #999; }
+        .val-3 { color: #ccc; font-weight: 500; }
+        .val-4 { color: #fff; font-weight: bold; }
+        .val-5 { color: #4fc3f7; font-weight: bold; font-size: 1.05em; }
+        .val-6 { color: #FFD700; font-weight: bold; font-size: 1.1em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+        .val-7 { background: #b71c1c; color: #fff; font-weight: bold; padding: 4px; border-radius: 4px; }
 
         .download { padding: 40px 20px; text-align: center; }
         .download-card { 
@@ -204,7 +234,7 @@
         @media (max-width: 768px) {
             .menu { display: none; }
             .calculator-panel, .strike-filter { flex-direction: column; }
-            .top5-container { grid-template-columns: 1fr; }
+            .top5-container, .analytics-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -213,6 +243,7 @@
     <header>
         <div class="logo"><span>📊</span> Gold Options</div>
         <ul class="menu">
+            <li><a href="#analytics">Аналитика</a></li>
             <li><a href="#top5">ТОП-5</a></li>
             <li><a href="#download">APK</a></li>
         </ul>
@@ -220,7 +251,7 @@
 
     <section class="hero">
         <h1>Gold Analytics Pro</h1>
-        <p class="subtitle">Heatmap OI • PCR Volume • Forward</p>
+        <p class="subtitle">Max Pain • Gamma Walls • Unusual Activity</p>
         <a href="#download" class="btn-primary">Скачать Android APK</a>
     </section>
 
@@ -263,7 +294,40 @@
             </div>
         </div>
 
-        <!-- 🔥 ПАНЕЛЬ УПРАВЛЕНИЯ 🔥 -->
+        <!-- 🔥 АНАЛИТИЧЕСКИЕ БЛОКИ 🔥 -->
+        <div id="analytics" class="analytics-grid">
+            <!-- MAX PAIN -->
+            <div class="analytics-card">
+                <div class="analytics-title">🎯 Max Pain</div>
+                <div class="analytics-value" id="max-pain-value">-</div>
+                <div class="analytics-label">Точка максимальной боли</div>
+            </div>
+
+            <!-- GAMMA LEVELS -->
+            <div class="analytics-card">
+                <div class="analytics-title">⚡ Gamma Walls</div>
+                <div id="gamma-levels" style="margin-top: 10px;">
+                    <div class="analytics-label">Загрузка...</div>
+                </div>
+            </div>
+
+            <!-- UNUSUAL ACTIVITY -->
+            <div class="analytics-card">
+                <div class="analytics-title">🔥 Unusual Activity</div>
+                <div id="unusual-activity" style="margin-top: 10px;">
+                    <div class="analytics-label">Загрузка...</div>
+                </div>
+            </div>
+
+            <!-- KEY LEVELS -->
+            <div class="analytics-card">
+                <div class="analytics-title">📍 Key Levels (OI)</div>
+                <div id="key-levels" style="margin-top: 10px;">
+                    <div class="analytics-label">Загрузка...</div>
+                </div>
+            </div>
+        </div>
+
         <div class="control-panel">
             <div class="calculator-panel">
                 <label style="color:#fff; font-weight:bold;">Forward (Форвард):</label>
@@ -280,9 +344,7 @@
             </div>
         </div>
 
-        <!-- 🔥 ТОП-5 СТРАЙКОВ 🔥 -->
         <div id="top5" class="top5-container">
-            <!-- CALLS -->
             <div class="top5-box">
                 <div class="top5-title">🟢 CALLS - ТОП-5</div>
                 <div class="top5-grid">
@@ -299,7 +361,6 @@
                 </div>
             </div>
 
-            <!-- PUTS -->
             <div class="top5-box">
                 <div class="top5-title">🔴 PUTS - ТОП-5</div>
                 <div class="top5-grid">
@@ -320,7 +381,7 @@
         <div class="levels-container">
             <div class="table-header-info">
                 <span>INTRADAY <span class="dte-tag">0DTE</span></span>
-                <span style="color:#888;">OI + Volume Heatmap Active</span>
+                <span style="color:#888;">Full Analytics Active</span>
             </div>
             
             <div class="table-wrapper">
@@ -355,7 +416,7 @@
     </section>
 
     <footer>
-        <p>&copy; 2025 Gold Options.</p>
+        <p>&copy; 2025 Gold Options Pro Analytics.</p>
     </footer>
 
     <script>
@@ -366,7 +427,6 @@
         let forwardCorrection = 0;
         let displayStrikeCount = 75;
 
-        // 🔥 ГРАДАЦИЯ ЦВЕТОВ 🔥
         function getValueClass(value) {
             if (value === 0) return 'val-0';
             if (value < 50) return 'val-1';
@@ -378,206 +438,321 @@
             return 'val-7';
         }
 
-        // Forward Input
-        document.getElementById('forward-input').addEventListener('input', function(e) {
-            const val = parseFloat(e.target.value);
-            forwardCorrection = isNaN(val) ? 0 : val;
-            if (cachedTableData.length > 0) {
-                renderTable(cachedTableData);
-                updateTop5(cachedTableData);
+        // 🔥 MAX PAIN 🔥
+        function calculateMaxPain(data) {
+            const maxPainValues = {};
+            
+            data.forEach(strikeData => {
+                const testStrike = parseFloat(strikeData.strike);
+                let totalLoss = 0;
+                
+                data.forEach(s => {
+                    const strike = parseFloat(s.strike);
+                    const callOI = s.call?.oi || 0;
+                    const putOI = s.put?.oi || 0;
+                    
+                    if (testStrike > strike) {
+                        totalLoss += (testStrike - strike) * callOI * 100;
+                    }
+                    if (testStrike < strike) {
+                        totalLoss += (strike - testStrike) * putOI * 100;
+                    }
+                });
+                
+                maxPainValues[testStrike] = totalLoss;
+            });
+            
+            const maxPain = Object.keys(maxPainValues).reduce((a, b) => 
+                maxPainValues[a] < maxPainValues[b] ? a : b
+            );
+            
+            document.getElementById('max-pain-value').innerText = '$' + maxPain;
+        }
+
+        // 🔥 GAMMA LEVELS 🔥
+        function calculateGammaLevels(data) {
+const gammaLevels = data.map(row => {
+const strike = parseFloat(row.strike);
+const callOI = row.call?.oi || 0;
+const putOI = row.put?.oi || 0;
+            const gammaExposure = (callOI - putOI) * strike;
+            
+            return {
+                strike: strike,
+                gamma: gammaExposure,
+                type: gammaExposure > 0 ? 'support' : 'resistance'
+            };
+        });
+        
+        gammaLevels.sort((a, b) => Math.abs(b.gamma) - Math.abs(a.gamma));
+        
+        const html = gammaLevels.slice(0, 3).map(level => `
+            <div class="level-item ${level.type}">
+                <span class="level-strike">$${level.strike}</span>
+                <span class="level-value">${level.type === 'support' ? '🟢' : '🔴'} ${Math.abs(level.gamma).toFixed(0)}</span>
+            </div>
+        `).join('');
+        
+        document.getElementById('gamma-levels').innerHTML = html;
+    }
+
+    // 🔥 UNUSUAL ACTIVITY 🔥
+    function findUnusualActivity(data) {
+        const avgCallVol = data.reduce((sum, r) => sum + (r.call?.vol || 0), 0) / data.length;
+        const avgPutVol = data.reduce((sum, r) => sum + (r.put?.vol || 0), 0) / data.length;
+        
+        const unusual = [];
+        
+        data.forEach(row => {
+            const strike = row.strike;
+            const callVol = row.call?.vol || 0;
+            const putVol = row.put?.vol || 0;
+            const callOI = row.call?.oi || 0;
+            const putOI = row.put?.oi || 0;
+            
+            if (callVol > avgCallVol * 2.5 && callOI > 50) {
+                unusual.push({
+                    strike: strike,
+                    type: 'CALL',
+                    volume: callVol,
+                    oi: callOI
+                });
+            }
+            
+            if (putVol > avgPutVol * 2.5 && putOI > 50) {
+                unusual.push({
+                    strike: strike,
+                    type: 'PUT',
+                    volume: putVol,
+                    oi: putOI
+                });
             }
         });
+        
+        unusual.sort((a, b) => b.volume - a.volume);
+        
+        const html = unusual.slice(0, 3).map(item => `
+            <div class="level-item ${item.type === 'CALL' ? 'support' : 'resistance'}">
+                <span class="level-strike">$${item.strike} ${item.type === 'CALL' ? '🟢' : '🔴'}</span>
+                <span class="level-value">Vol: ${item.volume}</span>
+            </div>
+        `).join('');
+        
+        document.getElementById('unusual-activity').innerHTML = html || '<div class="analytics-label">Нет необычной активности</div>';
+    }
 
-        // Strike Filter Buttons
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                displayStrikeCount = parseInt(this.dataset.count);
+    // 🔥 KEY LEVELS 🔥
+    function calculateKeyLevels(data) {
+        const levels = data.map(row => ({
+            strike: parseFloat(row.strike),
+            totalOI: (row.call?.oi || 0) + (row.put?.oi || 0),
+            callOI: row.call?.oi || 0,
+            putOI: row.put?.oi || 0
+        }));
+        
+        levels.sort((a, b) => b.totalOI - a.totalOI);
+        
+        const html = levels.slice(0, 3).map(level => `
+            <div class="level-item">
+                <span class="level-strike">$${level.strike}</span>
+                <span class="level-value">${level.totalOI}</span>
+            </div>
+        `).join('');
+        
+        document.getElementById('key-levels').innerHTML = html;
+    }
+
+    document.getElementById('forward-input').addEventListener('input', function(e) {
+        const val = parseFloat(e.target.value);
+        forwardCorrection = isNaN(val) ? 0 : val;
+        if (cachedTableData.length > 0) {
+            renderTable(cachedTableData);
+            updateTop5(cachedTableData);
+        }
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            displayStrikeCount = parseInt(this.dataset.count);
+            if (cachedTableData.length > 0) renderTable(cachedTableData);
+        });
+    });
+
+    async function fetchFastPrice() {
+        try {
+            const res = await fetch(`${DB_ROOT}/gold_fast.json`);
+            const data = await res.json();
+            if (data && data.price) {
+                currentFuturesPrice = data.price;
+                document.getElementById('futures-price').innerText = '$' + data.price.toFixed(1);
                 if (cachedTableData.length > 0) renderTable(cachedTableData);
-            });
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    async function fetchHeavyData() {
+        try {
+            const res = await fetch(`${DB_ROOT}/gold_heavy.json`);
+            const data = await res.json();
+            
+            if (!data) return;
+
+            document.getElementById('balance-price').innerText = '$' + data.balance_price;
+            document.getElementById('updated-time').innerText = data.updated_at_utc;
+            
+            cachedTableData = data.data || [];
+            
+            calculatePCR(cachedTableData);
+            calculateMaxPain(cachedTableData);
+            calculateGammaLevels(cachedTableData);
+            findUnusualActivity(cachedTableData);
+            calculateKeyLevels(cachedTableData);
+            renderTable(cachedTableData);
+            updateTop5(cachedTableData);
+
+        } catch (e) { console.error("Ошибка:", e); }
+    }
+
+    function calculatePCR(rows) {
+        let totalPutOI = 0, totalCallOI = 0;
+        let totalPutVol = 0, totalCallVol = 0;
+
+        rows.forEach(r => {
+            if(r.put) {
+                totalPutOI += (r.put.oi || 0);
+                totalPutVol += (r.put.vol || 0);
+            }
+            if(r.call) {
+                totalCallOI += (r.call.oi || 0);
+                totalCallVol += (r.call.vol || 0);
+            }
+        });
+        
+        let pcrOI = totalCallOI > 0 ? (totalPutOI / totalCallOI).toFixed(2) : "0.00";
+        let pcrVol = totalCallVol > 0 ? (totalPutVol / totalCallVol).toFixed(2) : "0.00";
+        
+        document.getElementById('pcr-oi').innerText = pcrOI;
+        document.getElementById('pcr-vol').innerText = pcrVol;
+        
+        colorPCR('pcr-oi', parseFloat(pcrOI));
+        colorPCR('pcr-vol', parseFloat(pcrVol));
+    }
+
+    function colorPCR(elementId, value) {
+        const el = document.getElementById(elementId);
+        if(value > 1.0) el.style.color = "#f44336";
+        else if(value < 0.7) el.style.color = "#4caf50";
+        else el.style.color = "#fff";
+    }
+
+    function updateTop5(rows) {
+        const callsVol = [...rows].sort((a, b) => (b.call?.vol || 0) - (a.call?.vol || 0)).slice(0, 5);
+        const callsOI = [...rows].sort((a, b) => (b.call?.oi || 0) - (a.call?.oi || 0)).slice(0, 5);
+        const putsVol = [...rows].sort((a, b) => (b.put?.vol || 0) - (a.put?.vol || 0)).slice(0, 5);
+        const putsOI = [...rows].sort((a, b) => (b.put?.oi || 0) - (a.put?.oi || 0)).slice(0, 5);
+
+        document.getElementById('top5-call-vol').innerHTML = callsVol.map(r => {
+            const strike = parseFloat(r.strike) + forwardCorrection;
+            return `<div class="top5-item call-item">
+                <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
+                <span class="top5-value">${r.call?.vol || 0}</span>
+            </div>`;
+        }).join('');
+
+        document.getElementById('top5-call-oi').innerHTML = callsOI.map(r => {
+            const strike = parseFloat(r.strike) + forwardCorrection;
+            return `<div class="top5-item call-item">
+                <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
+                <span class="top5-value">${r.call?.oi || 0}</span>
+            </div>`;
+        }).join('');
+
+        document.getElementById('top5-put-vol').innerHTML = putsVol.map(r => {
+            const strike = parseFloat(r.strike) + forwardCorrection;
+            return `<div class="top5-item put-item">
+                <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
+                <span class="top5-value">${r.put?.vol || 0}</span>
+            </div>`;
+        }).join('');
+
+        document.getElementById('top5-put-oi').innerHTML = putsOI.map(r => {
+            const strike = parseFloat(r.strike) + forwardCorrection;
+            return `<div class="top5-item put-item">
+                <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
+                <span class="top5-value">${r.put?.oi || 0}</span>
+            </div>`;
+        }).join('');
+    }
+
+    function renderTable(rows) {
+        const tbody = document.getElementById('option-body');
+        tbody.innerHTML = '';
+        
+        if (!rows || rows.length === 0) return;
+
+        let closestIndex = 0;
+        let minDiff = Infinity;
+
+        rows.forEach((row, idx) => {
+            const displayStrike = parseFloat(row.strike) + forwardCorrection;
+            const diff = Math.abs(displayStrike - currentFuturesPrice);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestIndex = idx;
+            }
         });
 
-        async function fetchFastPrice() {
-            try {
-                const res = await fetch(`${DB_ROOT}/gold_fast.json`);
-                const data = await res.json();
-                if (data && data.price) {
-                    currentFuturesPrice = data.price;
-                    document.getElementById('futures-price').innerText = '$' + data.price.toFixed(1);
-                    if (cachedTableData.length > 0) renderTable(cachedTableData);
-                }
-            } catch (e) { console.error(e); }
+        const halfRange = Math.floor(displayStrikeCount / 2);
+        let startIdx = Math.max(0, closestIndex - halfRange);
+        let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
+
+        if (endIdx - startIdx < displayStrikeCount) {
+            startIdx = Math.max(0, endIdx - displayStrikeCount);
         }
 
-        async function fetchHeavyData() {
-            try {
-                const res = await fetch(`${DB_ROOT}/gold_heavy.json`);
-                const data = await res.json();
-                
-                if (!data) return;
+        const displayRows = rows.slice(startIdx, endIdx);
 
-                document.getElementById('balance-price').innerText = '$' + data.balance_price;
-                document.getElementById('updated-time').innerText = data.updated_at_utc;
-                
-                cachedTableData = data.data || [];
-                calculatePCR(cachedTableData);
-                renderTable(cachedTableData);
-                updateTop5(cachedTableData);
-
-            } catch (e) { console.error("Ошибка таблицы:", e); }
-        }
-
-        function calculatePCR(rows) {
-            let totalPutOI = 0, totalCallOI = 0;
-            let totalPutVol = 0, totalCallVol = 0;
-
-            rows.forEach(r => {
-                if(r.put) {
-                    totalPutOI += (r.put.oi || 0);
-                    totalPutVol += (r.put.vol || 0);
-                }
-                if(r.call) {
-                    totalCallOI += (r.call.oi || 0);
-                    totalCallVol += (r.call.vol || 0);
-                }
-            });
+        displayRows.forEach((row, idx) => {
+            const tr = document.createElement('tr');
             
-            let pcrOI = totalCallOI > 0 ? (totalPutOI / totalCallOI).toFixed(2) : "0.00";
-            let pcrVol = totalCallVol > 0 ? (totalPutVol / totalCallVol).toFixed(2) : "0.00";
-            
-            document.getElementById('pcr-oi').innerText = pcrOI;
-            document.getElementById('pcr-vol').innerText = pcrVol;
-            
-            colorPCR('pcr-oi', parseFloat(pcrOI));
-            colorPCR('pcr-vol', parseFloat(pcrVol));
-        }
+            const displayStrike = parseFloat(row.strike) + forwardCorrection;
+            const isATM = (startIdx + idx) === closestIndex;
 
-        function colorPCR(elementId, value) {
-            const el = document.getElementById(elementId);
-            if(value > 1.0) el.style.color = "#f44336";
-            else if(value < 0.7) el.style.color = "#4caf50";
-            else el.style.color = "#fff";
-        }
+            const c_oi = row.call?.oi || 0;
+            const c_vol = row.call?.vol || 0;
+            const c_prem = row.call?.premium || 0;
+            const p_oi = row.put?.oi || 0;
+            const p_vol = row.put?.vol || 0;
+            const p_prem = row.put?.premium || 0;
 
-        // 🔥 ТОП-5 ОБНОВЛЕНИЕ 🔥
-        function updateTop5(rows) {
-            const callsVol = [...rows].sort((a, b) => (b.call?.vol || 0) - (a.call?.vol || 0)).slice(0, 5);
-            const callsOI = [...rows].sort((a, b) => (b.call?.oi || 0) - (a.call?.oi || 0)).slice(0, 5);
-            const putsVol = [...rows].sort((a, b) => (b.put?.vol || 0) - (a.put?.vol || 0)).slice(0, 5);
-            const putsOI = [...rows].sort((a, b) => (b.put?.oi || 0) - (a.put?.oi || 0)).slice(0, 5);
+            const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
 
-            document.getElementById('top5-call-vol').innerHTML = callsVol.map(r => {
-                const strike = parseFloat(r.strike) + forwardCorrection;
-                return `<div class="top5-item call-item">
-                    <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
-                    <span class="top5-value">${r.call?.vol || 0}</span>
-                </div>`;
-            }).join('');
-
-            document.getElementById('top5-call-oi').innerHTML = callsOI.map(r => {
-                const strike = parseFloat(r.strike) + forwardCorrection;
-                return `<div class="top5-item call-item">
-                    <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
-                    <span class="top5-value">${r.call?.oi || 0}</span>
-                </div>`;
-            }).join('');
-
-            document.getElementById('top5-put-vol').innerHTML = putsVol.map(r => {
-                const strike = parseFloat(r.strike) + forwardCorrection;
-                return `<div class="top5-item put-item">
-                    <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
-                    <span class="top5-value">${r.put?.vol || 0}</span>
-                </div>`;
-            }).join('');
-
-            document.getElementById('top5-put-oi').innerHTML = putsOI.map(r => {
-                const strike = parseFloat(r.strike) + forwardCorrection;
-                return `<div class="top5-item put-item">
-                    <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
-                    <span class="top5-value">${r.put?.oi || 0}</span>
-                </div>`;
-            }).join('');
-        }
-
-        function renderTable(rows) {
-            const tbody = document.getElementById('option-body');
-            tbody.innerHTML = '';
-            
-            if (!rows || rows.length === 0) return;
-
-            let closestRow = null;
-            let minDiff = Infinity;
-            let closestIndex = -1;
-
-            // Найти ATM
-            rows.forEach((row, idx) => {
-                const originalStrike = parseFloat(row.strike);
-                const displayStrike = originalStrike + forwardCorrection;
-                const diff = Math.abs(displayStrike - currentFuturesPrice);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    closestIndex = idx;
-                }
-            });
-
-            // Вычислить диапазон
-            const halfRange = Math.floor(displayStrikeCount / 2);
-            let startIdx = Math.max(0, closestIndex - halfRange);
-            let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
-
-            if (endIdx - startIdx < displayStrikeCount) {
-                startIdx = Math.max(0, endIdx - displayStrikeCount);
-            }
-
-            const displayRows = rows.slice(startIdx, endIdx);
-
-            displayRows.forEach((row, idx) => {
-                const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="${getValueClass(c_oi)}">${c_oi}</td>
+                <td class="${getValueClass(c_vol)}">${c_vol}</td>
+                <td style="color:#aaa;">${c_prem}</td>
                 
-                const originalStrike = parseFloat(row.strike);
-                const displayStrike = originalStrike + forwardCorrection;
-
-                const isATM = (startIdx + idx) === closestIndex;
-
-                const c_oi = row.call?.oi || 0;
-                const c_vol = row.call?.vol || 0;
-                const c_prem = row.call?.premium || 0;
-                const p_oi = row.put?.oi || 0;
-                const p_vol = row.put?.vol || 0;
-                const p_prem = row.put?.premium || 0;
-
-                const classCOI = getValueClass(c_oi);
-                const classCVol = getValueClass(c_vol);
-                const classPOI = getValueClass(p_oi);
-                const classPVol = getValueClass(p_vol);
-
-                const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
-
-                tr.innerHTML = `
-                    <td class="${classCOI}">${c_oi}</td>
-                    <td class="${classCVol}">${c_vol}</td>
-                    <td style="color:#aaa;">${c_prem}</td>
-                    
-                    <td class="${strikeClass}">
-                        ${Number.isInteger(displayStrike) ? displayStrike : displayStrike.toFixed(1)}
-                    </td>
-                    
-                    <td style="color:#aaa;">${p_prem}</td>
-                    <td class="${classPVol}">${p_vol}</td>
-                    <td class="${classPOI}">${p_oi}</td>
-                `;
-
-                if (isATM) tr.classList.add('row-atm');
+                <td class="${strikeClass}">
+                    ${Number.isInteger(displayStrike) ? displayStrike : displayStrike.toFixed(1)}
+                </td>
                 
-                tbody.appendChild(tr);
-            });
-        }
+                <td style="color:#aaa;">${p_prem}</td>
+                <td class="${getValueClass(p_vol)}">${p_vol}</td>
+                <td class="${getValueClass(p_oi)}">${p_oi}</td>
+            `;
 
-        fetchFastPrice();
-        fetchHeavyData();
-        setInterval(fetchFastPrice, 2000);   
-        setInterval(fetchHeavyData, 300000); 
-    </script>
+            if (isATM) tr.classList.add('row-atm');
+            
+            tbody.appendChild(tr);
+        });
+    }
+
+    fetchFastPrice();
+    fetchHeavyData();
+    setInterval(fetchFastPrice, 2000);   
+    setInterval(fetchHeavyData, 300000); 
+</script>
 </body>
 </html>
