@@ -113,6 +113,104 @@
     </footer>
 
     <script src="js/script.js"></script>
+    <!-- Секция с ЖИВЫМИ данными -->
+<section class="live-data">
+    <h2>🔴 Данные в реальном времени</h2>
+    <div class="data-container">
+        <div class="data-card">
+            <h3>💰 Текущая цена</h3>
+            <p class="big-number" id="futures-price">Загрузка...</p>
+            <p class="small-text">Фьючерс Gold CME</p>
+        </div>
+        
+        <div class="data-card">
+            <h3>⚖️ Баланс</h3>
+            <p class="big-number" id="balance-price">Загрузка...</p>
+            <p class="small-text">Balance Price</p>
+        </div>
+        
+        <div class="data-card">
+            <h3>📊 Всего страйков</h3>
+            <p class="big-number" id="strikes-count">Загрузка...</p>
+            <p class="small-text">Активных уровней</p>
+        </div>
+        
+        <div class="data-card">
+            <h3>🕐 Обновлено</h3>
+            <p class="big-number" id="updated-time">Загрузка...</p>
+            <p class="small-text">UTC время</p>
+        </div>
+    </div>
+    
+    <div class="levels-container">
+        <div class="levels-block">
+            <h3>🟢 Уровни поддержки (PUT)</h3>
+            <table id="support-table">
+                <thead>
+                    <tr>
+                        <th>Страйк</th>
+                        <th>OI</th>
+                        <th>Премия</th>
+                    </tr>
+                </thead>
+                <tbody id="support-tbody">
+                    <!-- Данные загрузятся -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="levels-block">
+            <h3>🔴 Уровни сопротивления (CALL)</h3>
+            <table id="resistance-table">
+                <thead>
+                    <tr>
+                        <th>Страйк</th>
+                        <th>OI</th>
+                        <th>Премия</th>
+                    </tr>
+                </thead>
+                <tbody id="resistance-tbody">
+                    <!-- Данные загрузятся -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script src="js/data.js"></script>
+<script>
+// Отображение данных на странице
+document.addEventListener('DOMContentLoaded', function() {
+    // Основные показатели
+    document.getElementById('futures-price').textContent = '$' + goldData.futures_price;
+    document.getElementById('balance-price').textContent = '$' + goldData.balance_price;
+    document.getElementById('strikes-count').textContent = goldData.strikes_count;
+    document.getElementById('updated-time').textContent = goldData.updated_at;
+    
+    // Уровни поддержки
+    const supportTbody = document.getElementById('support-tbody');
+    goldData.support_levels.forEach(level => {
+        const row = `<tr>
+            <td><strong>${level.strike}</strong></td>
+            <td>${level.oi}</td>
+            <td>$${level.premium}</td>
+        </tr>`;
+        supportTbody.innerHTML += row;
+    });
+    
+    // Уровни сопротивления
+    const resistanceTbody = document.getElementById('resistance-tbody');
+    goldData.resistance_levels.forEach(level => {
+        const row = `<tr>
+            <td><strong>${level.strike}</strong></td>
+            <td>${level.oi}</td>
+            <td>$${level.premium}</td>
+        </tr>`;
+        resistanceTbody.innerHTML += row;
+    });
+});
+</script>
 </body>
 
 </html>
+
