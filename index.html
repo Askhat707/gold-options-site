@@ -58,7 +58,7 @@
         .big-number { font-size: 1.3em; font-weight: bold; color: var(--accent-gold); margin: 5px 0; }
         .small-text { color: #888; font-size: 0.75em; }
 
-        /* 🔥 КАЛЬКУЛЯТОР ФОРВАРДА (НОВЫЙ БЛОК) 🔥 */
+        /* 🔥 КАЛЬКУЛЯТОР ФОРВАРДА 🔥 */
         .calculator-panel {
             max-width: 600px;
             margin: 0 auto 15px auto;
@@ -161,7 +161,7 @@
             </div>
             <div class="data-card">
                 <div class="small-text">Put/Call Ratio</div>
-                <div class="big-number" id="pcr-value">...</div> <!-- НОВОЕ -->
+                <div class="big-number" id="pcr-value">...</div>
             </div>
             <div class="data-card">
                 <div class="small-text">Обновлено UTC</div>
@@ -222,15 +222,14 @@
         const DB_ROOT = "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app";
         
         let currentFuturesPrice = 0;
-        let cachedTableData = []; // Храним данные здесь, чтобы пересчитывать без запроса к базе
-        let forwardCorrection = 0; // Значение форварда
+        let cachedTableData = []; 
+        let forwardCorrection = 0; 
 
         // --- 1. СЛУШАТЕЛЬ КАЛЬКУЛЯТОРА ---
         document.getElementById('forward-input').addEventListener('input', function(e) {
             const val = parseFloat(e.target.value);
             forwardCorrection = isNaN(val) ? 0 : val;
             
-            // Если данные уже есть, перерисовываем таблицу моментально
             if (cachedTableData.length > 0) {
                 renderTable(cachedTableData);
             }
@@ -244,7 +243,7 @@
                 if (data && data.price) {
                     currentFuturesPrice = data.price;
                     document.getElementById('futures-price').innerText = '$' + data.price.toFixed(1);
-                    // Если таблица уже есть, обновляем подсветку ATM при смене цены
+                    // Обновляем только если таблица уже есть
                     if (cachedTableData.length > 0) renderTable(cachedTableData);
                 }
             } catch (e) { console.error(e); }
@@ -261,19 +260,14 @@
                 document.getElementById('balance-price').innerText = '$' + data.balance_price;
                 document.getElementById('updated-time').innerText = data.updated_at_utc;
                 
-                // Сохраняем в кэш
                 cachedTableData = data.data || [];
-                
-                // Считаем PCR (Put Call Ratio)
                 calculatePCR(cachedTableData);
-
-                // Рисуем
                 renderTable(cachedTableData);
 
             } catch (e) { console.error("Ошибка таблицы:", e); }
         }
 
-        // --- 3. ПОДСЧЕТ PCR (НОВАЯ ФИШКА) ---
+        // --- 3. ПОДСЧЕТ PCR ---
         function calculatePCR(rows) {
             let totalPutOI = 0;
             let totalCallOI = 0;
@@ -293,7 +287,7 @@
             else { sentimentEl.innerText = "Neutral"; sentimentEl.style.color = "#ccc"; }
         }
 
-        // --- 4. ОТРИСОВКА ТАБЛИЦЫ С УЧЕТОМ ФОРВАРДА ---
+        // --- 4. ОТРИСОВКА ---
         function renderTable(rows) {
             const tbody = document.getElementById('option-body');
             tbody.innerHTML = '';
@@ -306,11 +300,9 @@
             rows.forEach(row => {
                 const tr = document.createElement('tr');
                 
-                // 🔥 ГЛАВНАЯ МАГИЯ: СТРАЙК + ФОРВАРД
                 const originalStrike = parseFloat(row.strike);
                 const displayStrike = originalStrike + forwardCorrection;
 
-                // Ищем ATM по НОВОМУ страйку относительно цены
                 const diff = Math.abs(displayStrike - currentFuturesPrice);
                 if (diff < minDiff) {
                     minDiff = diff;
@@ -327,7 +319,6 @@
                 const boldC = c_oi > 500 ? 'vol-high' : '';
                 const boldP = p_oi > 500 ? 'vol-high' : '';
                 
-                // Подсвечиваем страйк, если форвард активен
                 const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
 
                 tr.innerHTML = `
@@ -348,11 +339,8 @@
 
             if (closestRow) {
                 closestRow.classList.add('row-atm');
-                // Скроллим только если это не ручной ввод форварда (чтобы не прыгало при вводе)
-                // Но при первой загрузке скроллим
-                if(document.activeElement.id !== 'forward-input') {
-                     setTimeout(() => closestRow.scrollIntoView({block: "center", behavior: "auto"}), 100);
-                }
+                // ❌ Я УДАЛИЛ СТРОКУ scrollIntoView
+                // Теперь таблица просто отрисовывается, страница никуда не скачет.
             }
         }
 
