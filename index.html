@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO -->
-    <meta name="description" content="Опционные уровни Gold (CME) с калькулятором форварда. PCR, Volume, OI. Скачать APK.">
-    <meta name="keywords" content="Gold CME, Forward Calculator, PCR, опционы, золото, 0DTE">
+    <meta name="description" content="Опционные уровни Gold (CME). Heatmap OI, PCR Volume/OI, Forward Calc.">
+    <meta name="keywords" content="Gold CME, Forward Calculator, PCR Volume, Heatmap">
     
-    <!-- ИКОНКА -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
 
-    <title>Gold Options - Forward Calculator</title>
+    <title>Gold Options - Pro Analytics</title>
     
     <style>
-        /* --- ОСНОВНОЙ ДИЗАЙН (ТЕМНЫЙ) --- */
+        /* --- ОСНОВНОЙ ДИЗАЙН --- */
         :root {
             --bg-color: #121212;
             --card-bg: #1e1e1e;
@@ -23,79 +22,46 @@
             --call-color: #2e7d32;
             --put-color: #c62828;
             --strike-bg: #2c2c2c;
-            --input-bg: #333;
         }
         
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
         a { text-decoration: none; color: inherit; }
         
-        /* ШАПКА */
         header { background: #333; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .logo { font-size: 1.5em; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 10px; }
         .menu { list-style: none; display: flex; gap: 20px; padding: 0; margin: 0; }
         .menu a:hover { color: var(--accent-gold); }
 
-        /* HERO */
-        .hero { background: linear-gradient(135deg, #1f4037 0%, #99f2c8 100%); padding: 40px 20px; text-align: center; color: #121212; }
-        .hero h1 { margin: 0 0 5px 0; font-size: 2em; color: #000; font-weight: 800; }
-        .subtitle { font-size: 1.1em; margin-bottom: 20px; color: #333; font-weight: 600; }
-        .btn-primary { background: #121212; color: #fff; padding: 12px 30px; border-radius: 25px; font-weight: bold; transition: 0.3s; }
-        .btn-primary:hover { background: #333; }
+        .hero { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); padding: 40px 20px; text-align: center; color: #fff; }
+        .hero h1 { margin: 0 0 5px 0; font-size: 2em; font-weight: 800; }
+        .subtitle { font-size: 1.1em; margin-bottom: 20px; opacity: 0.8; }
+        .btn-primary { background: var(--accent-gold); color: #000; padding: 12px 30px; border-radius: 25px; font-weight: bold; transition: 0.3s; }
+        .btn-primary:hover { background: #fff; }
 
-        /* LIVE DATA SECTION */
         .live-data { padding: 20px; background: #000; }
         
-        /* ПРЕДУПРЕЖДЕНИЕ */
-        .warning-block {
-            text-align: center; margin-bottom: 20px; border: 1px solid #444; background: #111; padding: 10px; border-radius: 8px;
-        }
-        .warning-title { color: #FFD700; font-size: 0.9em; font-weight: bold; text-transform: uppercase; }
-        .warning-text { color: #ccc; font-size: 0.8em; margin: 0; }
-        
-        /* КАРТОЧКИ ДАННЫХ */
+        /* КАРТОЧКИ */
         .data-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .data-card { background: #222; padding: 10px; border-radius: 8px; min-width: 120px; text-align: center; border: 1px solid #333; }
+        .data-card { background: #222; padding: 10px; border-radius: 8px; min-width: 140px; text-align: center; border: 1px solid #333; }
         .big-number { font-size: 1.3em; font-weight: bold; color: var(--accent-gold); margin: 5px 0; }
         .small-text { color: #888; font-size: 0.75em; }
+        
+        /* Блок для двух значений PCR */
+        .pcr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .pcr-item div:first-child { font-weight: bold; color: #fff; }
+        .pcr-item div:last-child { font-size: 0.7em; color: #888; }
 
-        /* 🔥 КАЛЬКУЛЯТОР ФОРВАРДА 🔥 */
+        /* КАЛЬКУЛЯТОР */
         .calculator-panel {
-            max-width: 600px;
-            margin: 0 auto 15px auto;
-            background: #2a2a2a;
-            border: 1px solid var(--accent-gold);
-            padding: 15px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+            max-width: 600px; margin: 0 auto 15px auto; background: #2a2a2a; border: 1px solid var(--accent-gold);
+            padding: 15px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 15px;
         }
-        .calc-label { font-weight: bold; color: #fff; }
-        .calc-input {
-            background: #111;
-            border: 1px solid #555;
-            color: var(--accent-gold);
-            padding: 10px;
-            border-radius: 5px;
-            width: 100px;
-            font-size: 1.2em;
-            text-align: center;
-            font-weight: bold;
-        }
-        .calc-input:focus { outline: none; border-color: var(--accent-gold); }
+        .calc-input { background: #111; border: 1px solid #555; color: var(--accent-gold); padding: 10px; border-radius: 5px; width: 100px; font-size: 1.2em; text-align: center; font-weight: bold; }
 
         /* ТАБЛИЦА */
-        .levels-container { 
-            max-width: 1000px; margin: 0 auto; background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333;
-        }
-        .table-header-info {
-            background: #2c2c2c; padding: 8px; text-align: center; font-weight: bold; color: #fff; font-size: 0.9em; border-bottom: 1px solid #444;
-            display: flex; justify-content: space-between; padding: 8px 20px;
-        }
+        .levels-container { max-width: 1000px; margin: 0 auto; background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
+        .table-header-info { background: #2c2c2c; padding: 8px; text-align: center; color: #fff; font-size: 0.9em; border-bottom: 1px solid #444; display: flex; justify-content: space-between; padding: 8px 20px; }
         .dte-tag { background: #d32f2f; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; }
-        .pcr-tag { color: #4fc3f7; }
 
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85em; }
@@ -103,17 +69,31 @@
         th { padding: 8px 4px; font-weight: 600; white-space: nowrap; }
         td { padding: 4px 2px; border-bottom: 1px solid #2a2a2a; } 
         
-        .col-call { color: var(--call-color); }
-        .col-put { color: var(--put-color); }
-        .col-strike { background: #252525; color: #fff; font-weight: bold; font-size: 1.1em; border-left: 1px solid #333; border-right: 1px solid #333; width: 80px; transition: color 0.3s;}
-        
+        .col-strike { background: #252525; color: #fff; font-weight: bold; font-size: 1.1em; border-left: 1px solid #333; border-right: 1px solid #333; width: 80px; }
         .row-atm td { background: rgba(255, 215, 0, 0.1); border-top: 1px solid var(--accent-gold); border-bottom: 1px solid var(--accent-gold); }
-        .vol-high { font-weight: bold; color: #fff; background: rgba(255,255,255,0.05); }
-
-        /* Адаптив форварда */
         .forward-active { color: var(--accent-gold) !important; text-decoration: underline; }
 
-        /* ФУТЕР И ПРОЧЕЕ */
+        /* 🔥 ГРАДАЦИЯ ЦВЕТОВ (ТЕПЛОВАЯ КАРТА) 🔥 */
+        
+        /* Уровень 0: Меньше 50 (Серый) */
+        .lvl-0 { color: #555; } 
+        
+        /* Уровень 1: Больше 50 (Белый) */
+        .lvl-1 { color: #ccc; } 
+        
+        /* Уровень 2: Больше 100 (Ярко белый + жирный) */
+        .lvl-2 { color: #fff; font-weight: bold; } 
+        
+        /* Уровень 3: Больше 500 (Голубой) */
+        .lvl-3 { color: #4fc3f7; font-weight: bold; font-size: 1.05em; } 
+        
+        /* Уровень 4: Больше 1000 (Золотой) */
+        .lvl-4 { color: #FFD700; font-weight: bold; font-size: 1.1em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+        
+        /* Уровень 5: Больше 2000 (Красный фон - Аномалия) */
+        .lvl-5 { background: #b71c1c; color: #fff; font-weight: bold; }
+
+        /* Для футера */
         .features, .download { padding: 40px 20px; text-align: center; }
         .download-card { background: #222; padding: 30px; display:inline-block; border-radius:10px; border:1px solid #333; }
         .btn-download { background: var(--call-color); color: white; padding: 15px 30px; border-radius: 5px; display: inline-block; margin: 10px 0; font-weight: bold; }
@@ -121,8 +101,7 @@
 
         @media (max-width: 600px) {
             .menu { display: none; }
-            .calc-label { font-size: 0.9em; }
-            .calculator-panel { flex-direction: column; gap: 5px; }
+            .calculator-panel { flex-direction: column; }
         }
     </style>
 </head>
@@ -137,49 +116,52 @@
     </header>
 
     <section class="hero">
-        <h1>Gold Options & Forward</h1>
-        <p class="subtitle">Анализ рынка + Калькулятор коррекции</p>
+        <h1>Gold Analytics Pro</h1>
+        <p class="subtitle">Heatmap OI • PCR Volume • Forward</p>
         <a href="#download" class="btn-primary">Скачать Android APK</a>
     </section>
 
-    <!-- СЕКЦИЯ ДАННЫХ -->
     <section class="live-data">
-        
-        <div class="warning-block">
-            <div class="warning-title">⚠ СТАТУС ДАННЫХ</div>
-            <p class="warning-text">Таблица обновляется раз в 5 мин. Цена — раз в 5 сек.</p>
-        </div>
         
         <div class="data-container">
             <div class="data-card">
-                <div class="small-text">Цена Futures</div>
+                <div class="small-text">Цена (5 sec)</div>
                 <div class="big-number" id="futures-price">...</div>
             </div>
+            
+            <!-- КАРТОЧКА PCR (РАЗДЕЛИЛ НА ДВА) -->
+            <div class="data-card" style="min-width: 180px;">
+                <div class="pcr-grid">
+                    <div class="pcr-item">
+                        <div id="pcr-oi">...</div>
+                        <div>PCR (OI)</div>
+                    </div>
+                    <div class="pcr-item">
+                        <div id="pcr-vol">...</div>
+                        <div>PCR (Vol)</div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="data-card">
                 <div class="small-text">Баланс</div>
                 <div class="big-number" id="balance-price">...</div>
             </div>
             <div class="data-card">
-                <div class="small-text">Put/Call Ratio</div>
-                <div class="big-number" id="pcr-value">...</div>
-            </div>
-            <div class="data-card">
-                <div class="small-text">Обновлено UTC</div>
+                <div class="small-text">Updated UTC</div>
                 <div class="big-number" id="updated-time">--:--</div>
             </div>
         </div>
 
-        <!-- 🔥 КАЛЬКУЛЯТОР ФОРВАРДА 🔥 -->
         <div class="calculator-panel">
-            <label class="calc-label">Forward Correction (Форвард):</label>
+            <label style="color:#fff; font-weight:bold;">Forward (Форвард):</label>
             <input type="number" id="forward-input" class="calc-input" placeholder="0" step="0.5" value="0">
-            <span style="font-size: 0.8em; color: #888;">(Добавляет значение к страйкам)</span>
         </div>
         
         <div class="levels-container">
             <div class="table-header-info">
                 <span>INTRADAY <span class="dte-tag">0DTE</span></span>
-                <span class="pcr-tag">PCR Sentiment: <span id="pcr-sentiment">Neutral</span></span>
+                <span style="color:#888;">OI Heatmap Active</span>
             </div>
             
             <div class="table-wrapper">
@@ -214,10 +196,9 @@
     </section>
 
     <footer>
-        <p>&copy; 2025 Gold Options. Trade responsibly.</p>
+        <p>&copy; 2025 Gold Options.</p>
     </footer>
 
-    <!-- JS LOGIC -->
     <script>
         const DB_ROOT = "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app";
         
@@ -225,17 +206,23 @@
         let cachedTableData = []; 
         let forwardCorrection = 0; 
 
-        // --- 1. СЛУШАТЕЛЬ КАЛЬКУЛЯТОРА ---
+        // --- 1. ЛОГИКА ЦВЕТОВ (HEATMAP) ---
+        // Если хочешь поменять цифры, меняй их ТУТ
+        function getHeatClass(value) {
+            if (value >= 2000) return 'lvl-5'; // Красный фон
+            if (value >= 1000) return 'lvl-4'; // Золотой
+            if (value >= 500)  return 'lvl-3'; // Голубой
+            if (value >= 100)  return 'lvl-2'; // Белый жирный
+            if (value >= 50)   return 'lvl-1'; // Белый обычный
+            return 'lvl-0';                    // Серый (меньше 50)
+        }
+
         document.getElementById('forward-input').addEventListener('input', function(e) {
             const val = parseFloat(e.target.value);
             forwardCorrection = isNaN(val) ? 0 : val;
-            
-            if (cachedTableData.length > 0) {
-                renderTable(cachedTableData);
-            }
+            if (cachedTableData.length > 0) renderTable(cachedTableData);
         });
 
-        // --- 2. ПОЛУЧЕНИЕ ДАННЫХ ---
         async function fetchFastPrice() {
             try {
                 const res = await fetch(`${DB_ROOT}/gold_fast.json`);
@@ -243,14 +230,12 @@
                 if (data && data.price) {
                     currentFuturesPrice = data.price;
                     document.getElementById('futures-price').innerText = '$' + data.price.toFixed(1);
-                    // Обновляем только если таблица уже есть
                     if (cachedTableData.length > 0) renderTable(cachedTableData);
                 }
             } catch (e) { console.error(e); }
         }
 
         async function fetchHeavyData() {
-            console.log("⏳ Запрос таблицы...");
             try {
                 const res = await fetch(`${DB_ROOT}/gold_heavy.json`);
                 const data = await res.json();
@@ -267,27 +252,46 @@
             } catch (e) { console.error("Ошибка таблицы:", e); }
         }
 
-        // --- 3. ПОДСЧЕТ PCR ---
+        // --- 2. НОВЫЙ РАСЧЕТ PCR (Volume + OI) ---
         function calculatePCR(rows) {
-            let totalPutOI = 0;
-            let totalCallOI = 0;
+            let totalPutOI = 0; let totalCallOI = 0;
+            let totalPutVol = 0; let totalCallVol = 0;
+
             rows.forEach(r => {
-                if(r.put) totalPutOI += r.put.oi;
-                if(r.call) totalCallOI += r.call.oi;
+                if(r.put) {
+                    totalPutOI += (r.put.oi || 0);
+                    totalPutVol += (r.put.vol || 0);
+                }
+                if(r.call) {
+                    totalCallOI += (r.call.oi || 0);
+                    totalCallVol += (r.call.vol || 0);
+                }
             });
             
-            if(totalCallOI === 0) return;
-            const pcr = (totalPutOI / totalCallOI).toFixed(2);
+            // Расчет PCR OI
+            let pcrOI = "0.00";
+            if(totalCallOI > 0) pcrOI = (totalPutOI / totalCallOI).toFixed(2);
             
-            document.getElementById('pcr-value').innerText = pcr;
+            // Расчет PCR Volume
+            let pcrVol = "0.00";
+            if(totalCallVol > 0) pcrVol = (totalPutVol / totalCallVol).toFixed(2);
             
-            const sentimentEl = document.getElementById('pcr-sentiment');
-            if(pcr > 1.0) { sentimentEl.innerText = "Bearish (Put Heavy)"; sentimentEl.style.color = "#f44336"; }
-            else if(pcr < 0.7) { sentimentEl.innerText = "Bullish (Call Heavy)"; sentimentEl.style.color = "#4caf50"; }
-            else { sentimentEl.innerText = "Neutral"; sentimentEl.style.color = "#ccc"; }
+            // Вывод на экран
+            document.getElementById('pcr-oi').innerText = pcrOI;
+            document.getElementById('pcr-vol').innerText = pcrVol;
+            
+            // Красим PCR
+            colorPCR('pcr-oi', pcrOI);
+            colorPCR('pcr-vol', pcrVol);
         }
 
-        // --- 4. ОТРИСОВКА ---
+        function colorPCR(elementId, value) {
+            const el = document.getElementById(elementId);
+            if(value > 1.0) el.style.color = "#f44336"; // Bearish (Красный)
+            else if(value < 0.7) el.style.color = "#4caf50"; // Bullish (Зеленый)
+            else el.style.color = "#fff";
+        }
+
         function renderTable(rows) {
             const tbody = document.getElementById('option-body');
             tbody.innerHTML = '';
@@ -316,35 +320,36 @@
                 const p_vol = row.put?.vol || 0;
                 const p_prem = row.put?.premium || 0;
 
-                const boldC = c_oi > 500 ? 'vol-high' : '';
-                const boldP = p_oi > 500 ? 'vol-high' : '';
+                // 🔥 ПРИМЕНЯЕМ ГРАДАЦИЮ ЦВЕТОВ 🔥
+                const classCOI = getHeatClass(c_oi);
+                const classPOI = getHeatClass(p_oi);
                 
+                // Классы для объема (можно сделать такие же, пока просто белые если > 0)
+                const classVol = (val) => val > 100 ? 'lvl-2' : 'lvl-0';
+
                 const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
 
                 tr.innerHTML = `
-                    <td class="col-call ${boldC}">${c_oi}</td>
-                    <td class="col-call">${c_vol}</td>
-                    <td class="col-call">${c_prem}</td>
+                    <td class="${classCOI}">${c_oi}</td>
+                    <td class="${classVol(c_vol)}">${c_vol}</td>
+                    <td style="color:#aaa;">${c_prem}</td>
                     
                     <td class="${strikeClass}">
                         ${Number.isInteger(displayStrike) ? displayStrike : displayStrike.toFixed(1)}
                     </td>
                     
-                    <td class="col-put">${p_prem}</td>
-                    <td class="col-put">${p_vol}</td>
-                    <td class="col-put ${boldP}">${p_oi}</td>
+                    <td style="color:#aaa;">${p_prem}</td>
+                    <td class="${classVol(p_vol)}">${p_vol}</td>
+                    <td class="${classPOI}">${p_oi}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
             if (closestRow) {
                 closestRow.classList.add('row-atm');
-                // ❌ Я УДАЛИЛ СТРОКУ scrollIntoView
-                // Теперь таблица просто отрисовывается, страница никуда не скачет.
             }
         }
 
-        // ЗАПУСК
         fetchFastPrice();
         fetchHeavyData();
         setInterval(fetchFastPrice, 2000);   
