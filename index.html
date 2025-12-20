@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO -->
-    <meta name="description" content="Опционные уровни Gold (CME). Heatmap OI, PCR Volume/OI, Forward Calc.">
-    <meta name="keywords" content="Gold CME, Forward Calculator, PCR Volume, Heatmap">
+    <meta name="description" content="Опционные уровни Gold (CME). Данные с задержкой 5 мин. Heatmap, PCR, Forward.">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
 
-    <title>Gold Options - Pro Analytics</title>
+    <title>Gold Options - Pro Data</title>
     
     <style>
         /* --- ОСНОВНОЙ ДИЗАЙН --- */
@@ -32,13 +31,23 @@
         .menu { list-style: none; display: flex; gap: 20px; padding: 0; margin: 0; }
         .menu a:hover { color: var(--accent-gold); }
 
-        .hero { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); padding: 40px 20px; text-align: center; color: #fff; }
-        .hero h1 { margin: 0 0 5px 0; font-size: 2em; font-weight: 800; }
+        .hero { background: linear-gradient(135deg, #000000 0%, #434343 100%); padding: 40px 20px; text-align: center; color: #fff; }
+        .hero h1 { margin: 0 0 5px 0; font-size: 2em; font-weight: 800; color: var(--accent-gold); }
         .subtitle { font-size: 1.1em; margin-bottom: 20px; opacity: 0.8; }
         .btn-primary { background: var(--accent-gold); color: #000; padding: 12px 30px; border-radius: 25px; font-weight: bold; transition: 0.3s; }
         .btn-primary:hover { background: #fff; }
 
         .live-data { padding: 20px; background: #000; }
+
+        /* 🔥 БЛОК ПРЕДУПРЕЖДЕНИЯ (ВЕРНУЛ!) 🔥 */
+        .warning-block {
+            text-align: center; margin-bottom: 20px; 
+            border: 1px solid #b71c1c; 
+            background: rgba(183, 28, 28, 0.1); 
+            padding: 15px; border-radius: 8px;
+        }
+        .warning-title { color: #e57373; font-size: 1em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .warning-text { color: #ccc; font-size: 0.9em; margin: 0; }
         
         /* КАРТОЧКИ */
         .data-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
@@ -46,7 +55,6 @@
         .big-number { font-size: 1.3em; font-weight: bold; color: var(--accent-gold); margin: 5px 0; }
         .small-text { color: #888; font-size: 0.75em; }
         
-        /* Блок для двух значений PCR */
         .pcr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
         .pcr-item div:first-child { font-weight: bold; color: #fff; }
         .pcr-item div:last-child { font-size: 0.7em; color: #888; }
@@ -73,27 +81,14 @@
         .row-atm td { background: rgba(255, 215, 0, 0.1); border-top: 1px solid var(--accent-gold); border-bottom: 1px solid var(--accent-gold); }
         .forward-active { color: var(--accent-gold) !important; text-decoration: underline; }
 
-        /* 🔥 ГРАДАЦИЯ ЦВЕТОВ (ТЕПЛОВАЯ КАРТА) 🔥 */
-        
-        /* Уровень 0: Меньше 50 (Серый) */
-        .lvl-0 { color: #555; } 
-        
-        /* Уровень 1: Больше 50 (Белый) */
-        .lvl-1 { color: #ccc; } 
-        
-        /* Уровень 2: Больше 100 (Ярко белый + жирный) */
-        .lvl-2 { color: #fff; font-weight: bold; } 
-        
-        /* Уровень 3: Больше 500 (Голубой) */
-        .lvl-3 { color: #4fc3f7; font-weight: bold; font-size: 1.05em; } 
-        
-        /* Уровень 4: Больше 1000 (Золотой) */
-        .lvl-4 { color: #FFD700; font-weight: bold; font-size: 1.1em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
-        
-        /* Уровень 5: Больше 2000 (Красный фон - Аномалия) */
-        .lvl-5 { background: #b71c1c; color: #fff; font-weight: bold; }
+        /* 🔥 ЦВЕТА (HEATMAP) 🔥 */
+        .lvl-0 { color: #555; }                     /* < 50 */
+        .lvl-1 { color: #ccc; }                     /* > 50 */
+        .lvl-2 { color: #fff; font-weight: bold; }  /* > 100 */
+        .lvl-3 { color: #4fc3f7; font-weight: bold; font-size: 1.05em; } /* > 500 */
+        .lvl-4 { color: #FFD700; font-weight: bold; font-size: 1.1em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); } /* > 1000 */
+        .lvl-5 { background: #b71c1c; color: #fff; font-weight: bold; }   /* > 2000 */
 
-        /* Для футера */
         .features, .download { padding: 40px 20px; text-align: center; }
         .download-card { background: #222; padding: 30px; display:inline-block; border-radius:10px; border:1px solid #333; }
         .btn-download { background: var(--call-color); color: white; padding: 15px 30px; border-radius: 5px; display: inline-block; margin: 10px 0; font-weight: bold; }
@@ -123,13 +118,22 @@
 
     <section class="live-data">
         
+        <!-- 🔥 БЛОК ПРЕДУПРЕЖДЕНИЯ 🔥 -->
+        <div class="warning-block">
+            <div class="warning-title">⚠ СТАТУС ДАННЫХ</div>
+            <p class="warning-text">
+                Опционные уровни обновляются с задержкой 5 минут.<br>
+                Цена фьючерса обновляется с задержкой до 5 секунд.
+            </p>
+        </div>
+        
         <div class="data-container">
             <div class="data-card">
-                <div class="small-text">Цена (5 sec)</div>
+                <div class="small-text">Цена (Live)</div>
                 <div class="big-number" id="futures-price">...</div>
             </div>
             
-            <!-- КАРТОЧКА PCR (РАЗДЕЛИЛ НА ДВА) -->
+            <!-- PCR (Volume & OI) -->
             <div class="data-card" style="min-width: 180px;">
                 <div class="pcr-grid">
                     <div class="pcr-item">
@@ -206,15 +210,14 @@
         let cachedTableData = []; 
         let forwardCorrection = 0; 
 
-        // --- 1. ЛОГИКА ЦВЕТОВ (HEATMAP) ---
-        // Если хочешь поменять цифры, меняй их ТУТ
+        // --- ЛОГИКА ЦВЕТОВ (HEATMAP) ---
         function getHeatClass(value) {
             if (value >= 2000) return 'lvl-5'; // Красный фон
             if (value >= 1000) return 'lvl-4'; // Золотой
             if (value >= 500)  return 'lvl-3'; // Голубой
             if (value >= 100)  return 'lvl-2'; // Белый жирный
             if (value >= 50)   return 'lvl-1'; // Белый обычный
-            return 'lvl-0';                    // Серый (меньше 50)
+            return 'lvl-0';                    // Серый
         }
 
         document.getElementById('forward-input').addEventListener('input', function(e) {
@@ -252,7 +255,7 @@
             } catch (e) { console.error("Ошибка таблицы:", e); }
         }
 
-        // --- 2. НОВЫЙ РАСЧЕТ PCR (Volume + OI) ---
+        // --- РАСЧЕТ PCR (Volume + OI) ---
         function calculatePCR(rows) {
             let totalPutOI = 0; let totalCallOI = 0;
             let totalPutVol = 0; let totalCallVol = 0;
@@ -268,27 +271,26 @@
                 }
             });
             
-            // Расчет PCR OI
+            // Расчет
             let pcrOI = "0.00";
             if(totalCallOI > 0) pcrOI = (totalPutOI / totalCallOI).toFixed(2);
             
-            // Расчет PCR Volume
             let pcrVol = "0.00";
             if(totalCallVol > 0) pcrVol = (totalPutVol / totalCallVol).toFixed(2);
             
-            // Вывод на экран
+            // Вывод
             document.getElementById('pcr-oi').innerText = pcrOI;
             document.getElementById('pcr-vol').innerText = pcrVol;
             
-            // Красим PCR
+            // Цвет
             colorPCR('pcr-oi', pcrOI);
             colorPCR('pcr-vol', pcrVol);
         }
 
         function colorPCR(elementId, value) {
             const el = document.getElementById(elementId);
-            if(value > 1.0) el.style.color = "#f44336"; // Bearish (Красный)
-            else if(value < 0.7) el.style.color = "#4caf50"; // Bullish (Зеленый)
+            if(value > 1.0) el.style.color = "#f44336";
+            else if(value < 0.7) el.style.color = "#4caf50";
             else el.style.color = "#fff";
         }
 
@@ -320,12 +322,12 @@
                 const p_vol = row.put?.vol || 0;
                 const p_prem = row.put?.premium || 0;
 
-                // 🔥 ПРИМЕНЯЕМ ГРАДАЦИЮ ЦВЕТОВ 🔥
+                // Цвета OI
                 const classCOI = getHeatClass(c_oi);
                 const classPOI = getHeatClass(p_oi);
                 
-                // Классы для объема (можно сделать такие же, пока просто белые если > 0)
-                const classVol = (val) => val > 100 ? 'lvl-2' : 'lvl-0';
+                // Простая подсветка объема (белый если есть)
+                const classVol = (val) => val > 50 ? 'lvl-2' : 'lvl-0';
 
                 const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
 
@@ -347,6 +349,7 @@
 
             if (closestRow) {
                 closestRow.classList.add('row-atm');
+                // Скролл убран, как ты просил
             }
         }
 
