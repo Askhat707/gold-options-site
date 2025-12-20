@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <meta name="description" content="Опционные уровни Gold (CME). Max Pain, Gamma Walls, Unusual Activity.">
+    <meta name="description" content="Опционные уровни Gold (CME). Max Pain, Gamma Walls, Charts.">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
 
     <title>Gold Options - Pro Analytics</title>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
         :root {
@@ -56,7 +59,7 @@
         .pcr-item div:first-child { font-weight: bold; color: #fff; }
         .pcr-item div:last-child { font-size: 0.7em; color: #888; }
 
-        /* 🔥 АНАЛИТИЧЕСКИЕ БЛОКИ 🔥 */
+        /* АНАЛИТИЧЕСКИЕ БЛОКИ */
         .analytics-grid {
             max-width: 1200px; margin: 0 auto 20px auto;
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;
@@ -90,6 +93,24 @@
         .level-item.resistance { border-left-color: var(--put-color); }
         .level-strike { font-weight: bold; color: #fff; }
         .level-value { color: var(--accent-gold); font-weight: bold; }
+
+        /* 🔥 ГРАФИКИ 🔥 */
+        .charts-container {
+            max-width: 1200px; margin: 0 auto 30px auto;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+        .chart-box {
+            background: #1a1a1a; border: 1px solid #444;
+            padding: 20px; border-radius: 10px;
+            position: relative;
+        }
+        .chart-title {
+            font-size: 1.2em; font-weight: bold; color: var(--accent-gold);
+            margin-bottom: 15px; text-align: center;
+        }
+        .chart-wrapper {
+            position: relative; height: 300px;
+        }
 
         /* ПАНЕЛЬ УПРАВЛЕНИЯ */
         .control-panel {
@@ -234,7 +255,7 @@
         @media (max-width: 768px) {
             .menu { display: none; }
             .calculator-panel, .strike-filter { flex-direction: column; }
-            .top5-container, .analytics-grid { grid-template-columns: 1fr; }
+            .top5-container, .analytics-grid, .charts-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -243,6 +264,7 @@
     <header>
         <div class="logo"><span>📊</span> Gold Options</div>
         <ul class="menu">
+            <li><a href="#charts">Графики</a></li>
             <li><a href="#analytics">Аналитика</a></li>
             <li><a href="#top5">ТОП-5</a></li>
             <li><a href="#download">APK</a></li>
@@ -251,7 +273,7 @@
 
     <section class="hero">
         <h1>Gold Analytics Pro</h1>
-        <p class="subtitle">Max Pain • Gamma Walls • Unusual Activity</p>
+        <p class="subtitle">Max Pain • Gamma Walls • Interactive Charts</p>
         <a href="#download" class="btn-primary">Скачать Android APK</a>
     </section>
 
@@ -294,16 +316,45 @@
             </div>
         </div>
 
-        <!-- 🔥 АНАЛИТИЧЕСКИЕ БЛОКИ 🔥 -->
+        <!-- 🔥 ГРАФИКИ 🔥 -->
+        <div id="charts" class="charts-container">
+            <div class="chart-box">
+                <div class="chart-title">📊 OI Distribution (Call vs Put)</div>
+                <div class="chart-wrapper">
+                    <canvas id="oiChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-box">
+                <div class="chart-title">📈 Volume Heatmap</div>
+                <div class="chart-wrapper">
+                    <canvas id="volumeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-box">
+                <div class="chart-title">⚡ Gamma Exposure</div>
+                <div class="chart-wrapper">
+                    <canvas id="gammaChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-box">
+                <div class="chart-title">🎯 Max Pain Analysis</div>
+                <div class="chart-wrapper">
+                    <canvas id="maxPainChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- АНАЛИТИЧЕСКИЕ БЛОКИ -->
         <div id="analytics" class="analytics-grid">
-            <!-- MAX PAIN -->
             <div class="analytics-card">
                 <div class="analytics-title">🎯 Max Pain</div>
                 <div class="analytics-value" id="max-pain-value">-</div>
                 <div class="analytics-label">Точка максимальной боли</div>
             </div>
 
-            <!-- GAMMA LEVELS -->
             <div class="analytics-card">
                 <div class="analytics-title">⚡ Gamma Walls</div>
                 <div id="gamma-levels" style="margin-top: 10px;">
@@ -311,7 +362,6 @@
                 </div>
             </div>
 
-            <!-- UNUSUAL ACTIVITY -->
             <div class="analytics-card">
                 <div class="analytics-title">🔥 Unusual Activity</div>
                 <div id="unusual-activity" style="margin-top: 10px;">
@@ -319,7 +369,6 @@
                 </div>
             </div>
 
-            <!-- KEY LEVELS -->
             <div class="analytics-card">
                 <div class="analytics-title">📍 Key Levels (OI)</div>
                 <div id="key-levels" style="margin-top: 10px;">
@@ -427,6 +476,9 @@
         let forwardCorrection = 0;
         let displayStrikeCount = 75;
 
+        // 🔥 ГРАФИКИ 🔥
+        let oiChart, volumeChart, gammaChart, maxPainChart;
+
         function getValueClass(value) {
             if (value === 0) return 'val-0';
             if (value < 50) return 'val-1';
@@ -438,14 +490,140 @@
             return 'val-7';
         }
 
-        // 🔥 MAX PAIN 🔥
-        function calculateMaxPain(data) {
-            const maxPainValues = {};
-            
-            data.forEach(strikeData => {
-                const testStrike = parseFloat(strikeData.strike);
+        // 🔥 СОЗДАНИЕ ГРАФИКОВ 🔥
+        function createCharts(data) {
+            const strikes = data.map(r => r.strike);
+            const callOI = data.map(r => r.call?.oi || 0);
+            const putOI = data.map(r => r.put?.oi || 0);
+            const callVol = data.map(r => r.call?.vol || 0);
+            const putVol = data.map(r => r.put?.vol || 0);
+
+            // График OI Distribution
+            if (oiChart) oiChart.destroy();
+            const ctxOI = document.getElementById('oiChart').getContext('2d');
+            oiChart = new Chart(ctxOI, {
+                type: 'bar',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call OI',
+                        data: callOI,
+                        backgroundColor: 'rgba(46, 125, 50, 0.7)',
+                        borderColor: 'rgba(46, 125, 50, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Put OI',
+                        data: putOI.map(v => -v),
+                        backgroundColor: 'rgba(198, 40, 40, 0.7)',
+                        borderColor: 'rgba(198, 40, 40, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#fff' } }
+                    },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#888', maxRotation: 45 },
+                            grid: { color: '#333' }
+                        },
+                        y: { 
+                            ticks: { color: '#888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+
+            // График Volume Heatmap
+            if (volumeChart) volumeChart.destroy();
+            const ctxVol = document.getElementById('volumeChart').getContext('2d');
+            volumeChart = new Chart(ctxVol, {
+                type: 'bar',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call Vol',
+                        data: callVol,
+                        backgroundColor: 'rgba(79, 195, 247, 0.7)',
+                        borderColor: 'rgba(79, 195, 247, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Put Vol',
+                        data: putVol.map(v => -v),
+                        backgroundColor: 'rgba(255, 138, 101, 0.7)',
+                        borderColor: 'rgba(255, 138, 101, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#fff' } }
+                    },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#888', maxRotation: 45 },
+                            grid: { color: '#333' }
+                        },
+                        y: { 
+                            ticks: { color: '#888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+
+            // График Gamma Exposure
+            const gammaData = data.map(r => {
+                const strike = parseFloat(r.strike);
+                const callOI = r.call?.oi || 0;
+                const putOI = r.put?.oi || 0;
+                return (callOI - putOI) * strike / 1000;
+            });
+
+            if (gammaChart) gammaChart.destroy();
+            const ctxGamma = document.getElementById('gammaChart').getContext('2d');
+            gammaChart = new Chart(ctxGamma, {
+                type: 'line',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Gamma Exposure',
+                        data: gammaData,
+                        backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                        borderColor: 'rgba(255, 215, 0, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#fff' } }
+                    },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#888', maxRotation: 45 },
+                            grid: { color: '#333' }
+                        },
+                        y: { 
+                            ticks: { color: '#888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+
+            // График Max Pain
+            const maxPainData = strikes.map(testStrike => {
                 let totalLoss = 0;
-                
                 data.forEach(s => {
                     const strike = parseFloat(s.strike);
                     const callOI = s.call?.oi || 0;
@@ -458,23 +636,82 @@
                         totalLoss += (strike - testStrike) * putOI * 100;
                     }
                 });
+                return totalLoss / 1000000;
+            });
+
+            if (maxPainChart) maxPainChart.destroy();
+            const ctxMaxPain = document.getElementById('maxPainChart').getContext('2d');
+maxPainChart = new Chart(ctxMaxPain, {
+type: 'line',
+data: {
+labels: strikes,
+datasets: [{
+label: 'Total Loss (M)',
+data: maxPainData,
+backgroundColor: 'rgba(183, 28, 28, 0.2)',
+borderColor: 'rgba(183, 28, 28, 1)',
+borderWidth: 2,
+fill: true,
+tension: 0.4
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { labels: { color: '#fff' } }
+},
+scales: {
+x: {
+ticks: { color: '#888', maxRotation: 45 },
+grid: { color: '#333' }
+},
+y: {
+ticks: { color: '#888' },
+grid: { color: '#333' }
+}
+}
+}
+});
+}
+    // MAX PAIN
+    function calculateMaxPain(data) {
+        const maxPainValues = {};
+        
+        data.forEach(strikeData => {
+            const testStrike = parseFloat(strikeData.strike);
+            let totalLoss = 0;
+            
+            data.forEach(s => {
+                const strike = parseFloat(s.strike);
+                const callOI = s.call?.oi || 0;
+                const putOI = s.put?.oi || 0;
                 
-                maxPainValues[testStrike] = totalLoss;
+                if (testStrike > strike) {
+                    totalLoss += (testStrike - strike) * callOI * 100;
+                }
+                if (testStrike < strike) {
+                    totalLoss += (strike - testStrike) * putOI * 100;
+                }
             });
             
-            const maxPain = Object.keys(maxPainValues).reduce((a, b) => 
-                maxPainValues[a] < maxPainValues[b] ? a : b
-            );
-            
-            document.getElementById('max-pain-value').innerText = '$' + maxPain;
-        }
+            maxPainValues[testStrike] = totalLoss;
+        });
+        
+        const maxPain = Object.keys(maxPainValues).reduce((a, b) => 
+            maxPainValues[a] < maxPainValues[b] ? a : b
+        );
+        
+        document.getElementById('max-pain-value').innerText = '$' + maxPain;
+    }
 
-        // 🔥 GAMMA LEVELS 🔥
-        function calculateGammaLevels(data) {
-const gammaLevels = data.map(row => {
-const strike = parseFloat(row.strike);
-const callOI = row.call?.oi || 0;
-const putOI = row.put?.oi || 0;
+    // GAMMA LEVELS
+    function calculateGammaLevels(data) {
+        const gammaLevels = data.map(row => {
+            const strike = parseFloat(row.strike);
+            const callOI = row.call?.oi || 0;
+            const putOI = row.put?.oi || 0;
+            
             const gammaExposure = (callOI - putOI) * strike;
             
             return {
@@ -496,7 +733,7 @@ const putOI = row.put?.oi || 0;
         document.getElementById('gamma-levels').innerHTML = html;
     }
 
-    // 🔥 UNUSUAL ACTIVITY 🔥
+    // UNUSUAL ACTIVITY
     function findUnusualActivity(data) {
         const avgCallVol = data.reduce((sum, r) => sum + (r.call?.vol || 0), 0) / data.length;
         const avgPutVol = data.reduce((sum, r) => sum + (r.put?.vol || 0), 0) / data.length;
@@ -541,7 +778,7 @@ const putOI = row.put?.oi || 0;
         document.getElementById('unusual-activity').innerHTML = html || '<div class="analytics-label">Нет необычной активности</div>';
     }
 
-    // 🔥 KEY LEVELS 🔥
+    // KEY LEVELS
     function calculateKeyLevels(data) {
         const levels = data.map(row => ({
             strike: parseFloat(row.strike),
@@ -609,6 +846,7 @@ const putOI = row.put?.oi || 0;
             calculateGammaLevels(cachedTableData);
             findUnusualActivity(cachedTableData);
             calculateKeyLevels(cachedTableData);
+            createCharts(cachedTableData);
             renderTable(cachedTableData);
             updateTop5(cachedTableData);
 
@@ -680,7 +918,7 @@ const putOI = row.put?.oi || 0;
         document.getElementById('top5-put-oi').innerHTML = putsOI.map(r => {
             const strike = parseFloat(r.strike) + forwardCorrection;
             return `<div class="top5-item put-item">
-                <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
+                <span class="top5-strike">${Number.isInteger(strike) ? strike.toFixed(1)}</span>
                 <span class="top5-value">${r.put?.oi || 0}</span>
             </div>`;
         }).join('');
