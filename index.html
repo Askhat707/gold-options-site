@@ -4,7 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gold Options - Опционные уровни золота CME</title>
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Стили оставляю встроенными, если у тебя нет внешнего CSS, или подключи свой -->
+    <link rel="stylesheet" href="css/style.css"> 
+    <style>
+        /* Дополнительные стили для таблицы, если их нет в style.css */
+        .live-data { padding: 40px 20px; background: #1a1a1a; color: #fff; text-align: center; }
+        .data-container { display: flex; justify-content: space-around; flex-wrap: wrap; margin-bottom: 30px; }
+        .data-card { background: #2c2c2c; padding: 20px; border-radius: 10px; width: 200px; margin: 10px; }
+        .big-number { font-size: 2em; font-weight: bold; color: #FFD700; margin: 10px 0; }
+        .small-text { color: #888; }
+        
+        .levels-container { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: #333; padding: 10px; color: #ccc; }
+        td { padding: 8px; border-bottom: 1px solid #444; }
+        
+        .col-call { color: #4caf50; }
+        .col-put { color: #f44336; }
+        .col-strike { font-weight: bold; background: #222; border-left: 1px solid #444; border-right: 1px solid #444; }
+        
+        /* Подсветка центрального страйка */
+        .row-atm td { background: rgba(255, 215, 0, 0.1); border-top: 1px solid #FFD700; border-bottom: 1px solid #FFD700; }
+    </style>
 </head>
 <body>
     <!-- ШАПКА САЙТА -->
@@ -29,6 +50,63 @@
             <div class="hero-buttons">
                 <a href="#download" class="btn btn-primary">Скачать Android APK</a>
             </div>
+        </div>
+    </section>
+
+    <!-- Секция с ЖИВЫМИ данными (FIREBASE) -->
+    <section class="live-data">
+        <h2>🔴 Данные в реальном времени</h2>
+        
+        <div class="data-container">
+            <div class="data-card">
+                <h3>💰 Цена Gold</h3>
+                <p class="big-number" id="futures-price">Загрузка...</p>
+                <p class="small-text">Фьючерс CME</p>
+            </div>
+            
+            <div class="data-card">
+                <h3>⚖️ Баланс</h3>
+                <p class="big-number" id="balance-price">...</p>
+                <p class="small-text">Balance Price</p>
+            </div>
+            
+            <div class="data-card">
+                <h3>📊 Страйков</h3>
+                <p class="big-number" id="strikes-count">0</p>
+                <p class="small-text">Активных уровней</p>
+            </div>
+            
+            <div class="data-card">
+                <h3>🕐 Обновлено</h3>
+                <p class="big-number" id="updated-time">--:--</p>
+                <p class="small-text">Время UTC</p>
+            </div>
+        </div>
+        
+        <!-- ЕДИНАЯ ТАБЛИЦА (CALL - STRIKE - PUT) -->
+        <div class="levels-container">
+            <h3>Доска Опционов (Option Chain)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="3" style="border-bottom: 2px solid #4caf50;">CALLS (Сопротивление)</th>
+                        <th></th>
+                        <th colspan="3" style="border-bottom: 2px solid #f44336;">PUTS (Поддержка)</th>
+                    </tr>
+                    <tr>
+                        <th>OI</th>
+                        <th>Vol</th>
+                        <th>Prem</th>
+                        <th>STRIKE</th>
+                        <th>Prem</th>
+                        <th>Vol</th>
+                        <th>OI</th>
+                    </tr>
+                </thead>
+                <tbody id="option-body">
+                    <tr><td colspan="7">Ожидание данных (обновление раз в 5 минут)...</td></tr>
+                </tbody>
+            </table>
         </div>
     </section>
 
@@ -112,105 +190,105 @@
         <p>&copy; 2025 Gold Options. Все права защищены.</p>
     </footer>
 
-    <script src="js/script.js"></script>
-    <!-- Секция с ЖИВЫМИ данными -->
-<section class="live-data">
-    <h2>🔴 Данные в реальном времени</h2>
-    <div class="data-container">
-        <div class="data-card">
-            <h3>💰 Текущая цена</h3>
-            <p class="big-number" id="futures-price">Загрузка...</p>
-            <p class="small-text">Фьючерс Gold CME</p>
-        </div>
-        
-        <div class="data-card">
-            <h3>⚖️ Баланс</h3>
-            <p class="big-number" id="balance-price">Загрузка...</p>
-            <p class="small-text">Balance Price</p>
-        </div>
-        
-        <div class="data-card">
-            <h3>📊 Всего страйков</h3>
-            <p class="big-number" id="strikes-count">Загрузка...</p>
-            <p class="small-text">Активных уровней</p>
-        </div>
-        
-        <div class="data-card">
-            <h3>🕐 Обновлено</h3>
-            <p class="big-number" id="updated-time">Загрузка...</p>
-            <p class="small-text">UTC время</p>
-        </div>
-    </div>
-    
-    <div class="levels-container">
-        <div class="levels-block">
-            <h3>🟢 Уровни поддержки (PUT)</h3>
-            <table id="support-table">
-                <thead>
-                    <tr>
-                        <th>Страйк</th>
-                        <th>OI</th>
-                        <th>Премия</th>
-                    </tr>
-                </thead>
-                <tbody id="support-tbody">
-                    <!-- Данные загрузятся -->
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="levels-block">
-            <h3>🔴 Уровни сопротивления (CALL)</h3>
-            <table id="resistance-table">
-                <thead>
-                    <tr>
-                        <th>Страйк</th>
-                        <th>OI</th>
-                        <th>Премия</th>
-                    </tr>
-                </thead>
-                <tbody id="resistance-tbody">
-                    <!-- Данные загрузятся -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</section>
+    <!-- СКРИПТ ЛОГИКИ САЙТА -->
+    <script>
+        const DB_ROOT = "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app";
+        let currentFuturesPrice = 0;
 
-<script src="js/data.js"></script>
-<script>
-// Отображение данных на странице
-document.addEventListener('DOMContentLoaded', function() {
-    // Основные показатели
-    document.getElementById('futures-price').textContent = '$' + goldData.futures_price;
-    document.getElementById('balance-price').textContent = '$' + goldData.balance_price;
-    document.getElementById('strikes-count').textContent = goldData.strikes_count;
-    document.getElementById('updated-time').textContent = goldData.updated_at;
-    
-    // Уровни поддержки
-    const supportTbody = document.getElementById('support-tbody');
-    goldData.support_levels.forEach(level => {
-        const row = `<tr>
-            <td><strong>${level.strike}</strong></td>
-            <td>${level.oi}</td>
-            <td>$${level.premium}</td>
-        </tr>`;
-        supportTbody.innerHTML += row;
-    });
-    
-    // Уровни сопротивления
-    const resistanceTbody = document.getElementById('resistance-tbody');
-    goldData.resistance_levels.forEach(level => {
-        const row = `<tr>
-            <td><strong>${level.strike}</strong></td>
-            <td>${level.oi}</td>
-            <td>$${level.premium}</td>
-        </tr>`;
-        resistanceTbody.innerHTML += row;
-    });
-});
-</script>
+        // 1. БЫСТРАЯ ЦЕНА (Каждые 2 сек)
+        async function fetchFastPrice() {
+            try {
+                const res = await fetch(`${DB_ROOT}/gold_fast.json`);
+                const data = await res.json();
+                if (data && data.price) {
+                    currentFuturesPrice = data.price;
+                    document.getElementById('futures-price').innerText = '$' + data.price.toFixed(1);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        // 2. ТЯЖЕЛАЯ ТАБЛИЦА (Раз в 5 минут = 300 000 мс)
+        async function fetchHeavyData() {
+            console.log("⏳ Запрос тяжелых данных...");
+            try {
+                const res = await fetch(`${DB_ROOT}/gold_heavy.json`);
+                const data = await res.json();
+                
+                if (!data) return;
+
+                document.getElementById('balance-price').innerText = '$' + data.balance_price;
+                document.getElementById('strikes-count').innerText = data.data ? data.data.length : 0;
+                document.getElementById('updated-time').innerText = data.updated_at_utc;
+                
+                // Рендер таблицы
+                renderTable(data.data);
+
+            } catch (e) { console.error("Ошибка таблицы:", e); }
+        }
+
+        function renderTable(rows) {
+            const tbody = document.getElementById('option-body');
+            tbody.innerHTML = '';
+            
+            if (!rows || rows.length === 0) return;
+
+            let closestRow = null;
+            let minDiff = Infinity;
+
+            rows.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                // Ищем строку, ближайшую к цене
+                const diff = Math.abs(row.strike - currentFuturesPrice);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestRow = tr;
+                }
+
+                // Call
+                const c_oi = row.call ? row.call.oi : 0;
+                const c_vol = row.call ? row.call.vol : 0;
+                const c_prem = row.call ? row.call.premium : 0;
+                
+                // Put
+                const p_oi = row.put ? row.put.oi : 0;
+                const p_vol = row.put ? row.put.vol : 0;
+                const p_prem = row.put ? row.put.premium : 0;
+
+                // Подсветка крупных объемов
+                const bold = val => val > 500 ? 'font-weight:bold; color: white;' : '';
+
+                tr.innerHTML = `
+                    <td class="col-call" style="${bold(c_oi)}">${c_oi}</td>
+                    <td class="col-call">${c_vol}</td>
+                    <td class="col-call">${c_prem}</td>
+                    
+                    <td class="col-strike">${row.strike}</td>
+                    
+                    <td class="col-put">${p_prem}</td>
+                    <td class="col-put">${p_vol}</td>
+                    <td class="col-put" style="${bold(p_oi)}">${p_oi}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Авто-скролл к цене
+            if (closestRow) {
+                closestRow.classList.add('row-atm');
+                // Небольшая задержка для корректной работы скролла
+                setTimeout(() => {
+                    closestRow.scrollIntoView({block: "center", behavior: "auto"});
+                }, 100);
+            }
+        }
+
+        // ЗАПУСК
+        fetchFastPrice();
+        fetchHeavyData();
+
+        // Интервалы
+        setInterval(fetchFastPrice, 2000);   // 2 секунды
+        setInterval(fetchHeavyData, 300000); // 300 секунд (5 минут)
+    </script>
 </body>
-
 </html>
-
