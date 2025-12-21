@@ -1077,7 +1077,7 @@
             const premium = type === 'call' ? (r.call?.premium || 0) : (r.put?.premium || 0);
             const value = type === 'call' ? (r.call?.[metric] || 0) : (r.put?.[metric] || 0);
             
-            // Если включена премия, меняем СТРАЙК (Call + Prem, Put - Prem)
+            // Если включена премия, меняем СТРАЙК
             let displayStrike = rawStrike;
             if (premiumEnabled) {
                 displayStrike = type === 'call' ? (rawStrike + premium) : (rawStrike - premium);
@@ -1089,48 +1089,10 @@
             </div>`;
         };
 
-        // Заполняем HTML
         document.getElementById('top5-call-vol').innerHTML = callsVol.map(r => renderItem(r, 'call', 'vol')).join('');
         document.getElementById('top5-call-oi').innerHTML = callsOI.map(r => renderItem(r, 'call', 'oi')).join('');
         document.getElementById('top5-put-vol').innerHTML = putsVol.map(r => renderItem(r, 'put', 'vol')).join('');
         document.getElementById('top5-put-oi').innerHTML = putsOI.map(r => renderItem(r, 'put', 'oi')).join('');
-    }
-
-        document.getElementById('top5-call-vol').innerHTML = callsVol.map(r => {
-            const strike = parseFloat(r.strike) + forwardCorrection;
-            const value = premiumEnabled ? r.call?.premiumVol : r.call?.vol || 0;
-            return `<div class="top5-item call-item">
-                <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
-                <span class="top5-value">${Math.round(value)}</span>
-            </div>`;
-        }).join('');
-
-        document.getElementById('top5-call-oi').innerHTML = callsOI.map(r => {
-            const strike = parseFloat(r.strike) + forwardCorrection;
-            const value = premiumEnabled ? r.call?.premiumOI : r.call?.oi || 0;
-            return `<div class="top5-item call-item">
-                <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
-                <span class="top5-value">${Math.round(value)}</span>
-            </div>`;
-        }).join('');
-
-        document.getElementById('top5-put-vol').innerHTML = putsVol.map(r => {
-            const strike = parseFloat(r.strike) + forwardCorrection;
-            const value = premiumEnabled ? r.put?.premiumVol : r.put?.vol || 0;
-            return `<div class="top5-item put-item">
-                <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
-                <span class="top5-value">${Math.round(value)}</span>
-            </div>`;
-        }).join('');
-
-        document.getElementById('top5-put-oi').innerHTML = putsOI.map(r => {
-            const strike = parseFloat(r.strike) + forwardCorrection;
-            const value = premiumEnabled ? r.put?.premiumOI : r.put?.oi || 0;
-            return `<div class="top5-item put-item">
-                <span class="top5-strike">${Number.isInteger(strike) ? strike : strike.toFixed(1)}</span>
-                <span class="top5-value">${Math.round(value)}</span>
-            </div>`;
-        }).join('');
     }
 
     function renderTable(rows) {
@@ -1223,5 +1185,6 @@
 </script>
 </body>
 </html>
+
 
 
