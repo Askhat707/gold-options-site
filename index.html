@@ -1065,7 +1065,7 @@
     }
 
     function updateTop5(rows) {
-        // Сортируем всегда по чистому Volume или OI (не прибавляем премию к количеству!)
+        // Сортируем всегда по чистому Volume или OI
         const callsVol = [...rows].sort((a, b) => (b.call?.vol || 0) - (a.call?.vol || 0)).slice(0, 5);
         const callsOI = [...rows].sort((a, b) => (b.call?.oi || 0) - (a.call?.oi || 0)).slice(0, 5);
         const putsVol = [...rows].sort((a, b) => (b.put?.vol || 0) - (a.put?.vol || 0)).slice(0, 5);
@@ -1077,9 +1077,7 @@
             const premium = type === 'call' ? (r.call?.premium || 0) : (r.put?.premium || 0);
             const value = type === 'call' ? (r.call?.[metric] || 0) : (r.put?.[metric] || 0);
             
-            // 🔥 ГЛАВНОЕ ИСПРАВЛЕНИЕ: Если включена премия, меняем СТРАЙК
-            // Для Call = Страйк + Премия
-            // Для Put = Страйк - Премия
+            // Если включена премия, меняем СТРАЙК (Call + Prem, Put - Prem)
             let displayStrike = rawStrike;
             if (premiumEnabled) {
                 displayStrike = type === 'call' ? (rawStrike + premium) : (rawStrike - premium);
@@ -1091,6 +1089,7 @@
             </div>`;
         };
 
+        // Заполняем HTML
         document.getElementById('top5-call-vol').innerHTML = callsVol.map(r => renderItem(r, 'call', 'vol')).join('');
         document.getElementById('top5-call-oi').innerHTML = callsOI.map(r => renderItem(r, 'call', 'oi')).join('');
         document.getElementById('top5-put-vol').innerHTML = putsVol.map(r => renderItem(r, 'put', 'vol')).join('');
@@ -1143,7 +1142,6 @@
         let closestIndex = 0;
         let minDiff = Infinity;
 
-        // Поиск ATM (остается как было)
         rows.forEach((row, idx) => {
             const displayStrike = parseFloat(row.strike) + forwardCorrection;
             const diff = Math.abs(displayStrike - currentFuturesPrice);
@@ -1169,7 +1167,6 @@
             const rawStrike = parseFloat(row.strike) + forwardCorrection;
             const isATM = (startIdx + idx) === closestIndex;
 
-            // Просто берем чистые данные, НЕ СКЛАДЫВАЕМ с премией
             let c_oi = row.call?.oi || 0;
             let c_vol = row.call?.vol || 0;
             const c_prem = row.call?.premium || 0;
@@ -1178,16 +1175,15 @@
             let p_vol = row.put?.vol || 0;
             const p_prem = row.put?.premium || 0;
 
-            // 🔥 ЛОГИКА ОТОБРАЖЕНИЯ СТРАЙКА
+            // ЛОГИКА ОТОБРАЖЕНИЯ СТРАЙКА В ТАБЛИЦЕ
             let strikeHtml = '';
             
             if (premiumEnabled) {
-                // Если включена премия, считаем Breakeven
-                const callBE = rawStrike + c_prem; // 4300 + 28.5 = 4328.5
-                const putBE = rawStrike - p_prem;  // 4300 - 28.5 = 4271.5
+                // Если включена премия, считаем Breakeven для обеих сторон
+                const callBE = rawStrike + c_prem; 
+                const putBE = rawStrike - p_prem;
                 
-                // Показываем оба значения, так как это одна строка таблицы
-                // Сверху Call BE (зеленый оттенок), снизу Put BE (красный оттенок)
+                // Показываем оба значения: Call BE сверху, Put BE снизу
                 strikeHtml = `
                     <div style="line-height:1.1;">
                         <span style="color:#a5d6a7">${callBE.toFixed(1)}</span><br>
@@ -1195,7 +1191,6 @@
                     </div>
                 `;
             } else {
-                // Обычный вид
                 strikeHtml = Number.isInteger(rawStrike) ? rawStrike : rawStrike.toFixed(1);
             }
 
@@ -1228,4 +1223,5 @@
 </script>
 </body>
 </html>
+
 
