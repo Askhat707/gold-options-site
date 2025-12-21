@@ -1009,32 +1009,50 @@
 
     async function fetchHeavyData() {
         try {
-            // 🔥 ИСПРАВЛЕНИЕ ЗДЕСЬ:
-            // Было: 'gold_heavy_friday.json'
-            // Стало: 'gold_friday.json' (судя по логам парсера, файл называется так)
             const endpoint = currentExpiry === '0dte' ? 'gold_heavy.json' : 'gold_friday.json';
             
-            console.log(`Загрузка данных из: ${endpoint}`); // Для проверки в консоли браузера (F12)
-
-            const res = await fetch(`${DB_ROOT}/${endpoint}`);
+            // 1. ДОБАВЛЯЕМ "?t=..." ЧТОБЫ БРАУЗЕР НЕ БРАЛ ДАННЫЕ ИЗ КЭША
+            const url = `${DB_ROOT}/${endpoint}?t=${Date.now()}`;
             
-            // Проверка, нашелся ли файл в базе
+            console.log(`📡 Запрос к: ${url}`); 
+
+            const res = await fetch(url);
+            
             if (!res.ok) {
-                console.error(`Ошибка загрузки ${endpoint}: Статус ${res.status}`);
+                console.error("Ошибка сети или файл не найден");
+                document.getElementById('option-body').innerHTML = '<tr><td colspan="7" style="color:red">Ошибка доступа к файлу</td></tr>';
                 return;
             }
 
             const data = await res.json();
             
-            if (!data) return;
+            if (!data) {
+                console.warn("Данные пришли пустые (null)");
+                document.getElementById('option-body').innerHTML = '<tr><td colspan="7">Данные отсутствуют</td></tr>';
+                return;
+            }
 
-            // Обновляем баланс и время только если они есть в ответе
+            // Обновляем шапку
             if (data.balance_price) document.getElementById('balance-price').innerText = '$' + data.balance_price;
             if (data.updated_at_utc) document.getElementById('updated-time').innerText = data.updated_at_utc;
             
-            cachedTableData = data.data || [];
+            // 2. ЗАЩИТА ОТ FIREBASE (Иногда он шлет Объект вместо Массива)
+            let rawData = data.data;
+            if (rawData && !Array.isArray(rawData)) {
+                console.warn("⚠️ Firebase вернул Объект! Конвертируем в Массив...");
+                rawData = Object.values(rawData);
+            }
+
+            cachedTableData = rawData || [];
             
-            // Пересчитываем всю математику
+            console.log(`📊 Получено строк: ${cachedTableData.length}`);
+
+            if (cachedTableData.length === 0) {
+                document.getElementById('option-body').innerHTML = '<tr><td colspan="7">Массив данных пуст (0 строк)</td></tr>';
+                return;
+            }
+            
+            // Запуск всех расчетов
             calculatePCR(cachedTableData);
             calculateMaxPain(cachedTableData);
             calculateGammaLevels(cachedTableData);
@@ -1042,11 +1060,14 @@
             calculateKeyLevels(cachedTableData);
             createCharts(cachedTableData);
             
-            // Рендерим таблицу и топы
+            // Отрисовка
             renderTable(cachedTableData);
             updateTop5(cachedTableData);
 
-        } catch (e) { console.error("Критическая ошибка fetchHeavyData:", e); }
+        } catch (e) { 
+            console.error("Критическая ошибка fetchHeavyData:", e);
+            document.getElementById('option-body').innerHTML = `<tr><td colspan="7" style="color:red">JS Error: ${e.message}</td></tr>`;
+        }
     }
 
     function calculatePCR(rows) {
@@ -1202,6 +1223,7 @@
 </script>
 </body>
 </html>
+
 
 
 
