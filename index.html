@@ -564,11 +564,14 @@
         <!-- 🔥 ГРАФИКИ -->
         <div id="charts" class="charts-container">
             <div class="chart-box">
-                <div class="chart-title">📊 OI Distribution (Call vs Put)</div>
-                <div class="chart-wrapper">
-                    <canvas id="oiChart"></canvas>
-                </div>
-            </div>
+    <div class="chart-title">📊 OI Distribution (Call vs Put)</div>
+    <div class="chart-wrapper">
+        <canvas id="oiChart"></canvas>
+    </div>
+    <div class="chart-annotation">
+        ❓ <strong>Как читать:</strong> Высокий Call OI = поддержка снизу. Высокий Put OI = сопротивление сверху. Если Call > Put на уровне — маркет-мейкеры защищают цену снизу.
+    </div>
+</div>
 
             <div class="chart-box">
                 <div class="chart-title">📈 Volume Heatmap</div>
@@ -1603,3 +1606,4 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
