@@ -10,6 +10,33 @@ body {
     line-height: 1.6;
     color: #333;
 }
+/* 🔥 АННОТАЦИИ ДЛЯ ГРАФИКОВ */
+.chart-annotation {
+    background: rgba(255, 215, 0, 0.05);
+    border-left: 3px solid var(--accent-gold);
+    padding: 10px 15px;
+    margin-top: 10px;
+    font-size: 0.85em;
+    line-height: 1.5;
+    color: #ccc;
+    border-radius: 5px;
+}
+
+.chart-annotation strong {
+    color: var(--accent-gold);
+}
+
+/* 🔥 АННОТАЦИИ ДЛЯ ГРЕКОВ */
+.analytics-annotation {
+    background: rgba(255, 215, 0, 0.05);
+    border-top: 1px solid #444;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 0.8em;
+    line-height: 1.4;
+    color: #aaa;
+    text-align: left;
+}
 
 /* ШАПКА */
 header {
@@ -328,3 +355,4 @@ th {
 tbody tr:hover {
     background: #f8f9fa;
 }
+
