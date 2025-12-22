@@ -574,25 +574,34 @@
 </div>
 
             <div class="chart-box">
-                <div class="chart-title">📈 Volume Heatmap</div>
-                <div class="chart-wrapper">
-                    <canvas id="volumeChart"></canvas>
-                </div>
-            </div>
+    <div class="chart-title">📈 Volume Heatmap</div>
+    <div class="chart-wrapper">
+        <canvas id="volumeChart"></canvas>
+    </div>
+    <div class="chart-annotation">
+        ❓ <strong>Как читать:</strong> Резкие скачки Volume = активная торговля на уровне. Если Volume выше среднего — уровень "горячий". Смотри, где концентрация объема — там ключевые битвы.
+    </div>
+</div>
 
             <div class="chart-box">
-                <div class="chart-title">⚡ Gamma Exposure</div>
-                <div class="chart-wrapper">
-                    <canvas id="gammaChart"></canvas>
-                </div>
-            </div>
+    <div class="chart-title">⚡ Gamma Exposure</div>
+    <div class="chart-wrapper">
+        <canvas id="gammaChart"></canvas>
+    </div>
+    <div class="chart-annotation">
+        ❓ <strong>Как читать:</strong> Положительная Gamma (зеленая) = поддержка, MM покупают при росте. Отрицательная (красная) = сопротивление, MM продают. Большие пики = "Gamma Walls" — магниты цены.
+    </div>
+</div>
 
-            <div class="chart-box">
-                <div class="chart-title">🎯 Max Pain Analysis</div>
-                <div class="chart-wrapper">
-                    <canvas id="maxPainChart"></canvas>
-                </div>
-            </div>
+           <div class="chart-box">
+    <div class="chart-title">🎯 Max Pain Analysis</div>
+    <div class="chart-wrapper">
+        <canvas id="maxPainChart"></canvas>
+    </div>
+    <div class="chart-annotation">
+        ❓ <strong>Как читать:</strong> Минимум на графике = Max Pain (точка, где опционы теряют максимум стоимости). Цена стремится к этой точке к экспирации. Чем дальше от Max Pain, тем сильнее "притяжение".
+    </div>
+</div>
 
             <!-- 🔥 НОВЫЕ ГРАФИКИ -->
             <div class="chart-box">
@@ -1606,5 +1615,6 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
