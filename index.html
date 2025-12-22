@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <meta name="description" content="Опционные уровни Gold (CME). Max Pain, Gamma Walls, Charts.">
+    <meta name="description" content="Опционные уровни Gold (CME). Max Pain, Gamma Walls, Greeks Analytics, Real-time Charts.">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
 
@@ -22,6 +22,9 @@
             --call-color: #2e7d32;
             --put-color: #c62828;
             --strike-bg: #2c2c2c;
+            --bullish: #4caf50;
+            --bearish: #f44336;
+            --neutral: #9e9e9e;
         }
         
         * { box-sizing: border-box; }
@@ -85,6 +88,28 @@
         .pcr-item div:first-child { font-weight: bold; color: #fff; }
         .pcr-item div:last-child { font-size: 0.7em; color: #888; }
 
+        /* 🔥 НОВЫЕ ALERTS */
+        .alerts-container {
+            max-width: 1200px; margin: 0 auto 20px auto;
+            display: flex; gap: 10px; flex-wrap: wrap;
+            justify-content: center;
+        }
+        .alert {
+            padding: 12px 20px; border-radius: 8px;
+            font-weight: bold; font-size: 0.9em;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease;
+        }
+        .alert-warning { background: rgba(255, 152, 0, 0.1); border-color: #ff9800; color: #ffb74d; }
+        .alert-danger { background: rgba(244, 67, 54, 0.1); border-color: #f44336; color: #ef5350; }
+        .alert-info { background: rgba(33, 150, 243, 0.1); border-color: #2196f3; color: #42a5f5; }
+        .alert-success { background: rgba(76, 175, 80, 0.1); border-color: #4caf50; color: #66bb6a; }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         /* АНАЛИТИЧЕСКИЕ БЛОКИ */
         .analytics-grid {
             max-width: 1200px; margin: 0 auto 20px auto;
@@ -119,6 +144,44 @@
         .level-item.resistance { border-left-color: var(--put-color); }
         .level-strike { font-weight: bold; color: #fff; }
         .level-value { color: var(--accent-gold); font-weight: bold; }
+
+        /* 🔥 SENTIMENT BADGE */
+        .sentiment-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+        .sentiment-bullish { background: var(--bullish); color: #fff; }
+        .sentiment-bearish { background: var(--bearish); color: #fff; }
+        .sentiment-neutral { background: var(--neutral); color: #fff; }
+
+        /* 🔥 РИСК ИНДИКАТОР */
+        .risk-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .risk-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .risk-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        .risk-low { background: var(--bullish); }
+        .risk-medium { background: #ff9800; }
+        .risk-high { background: var(--bearish); }
 
         /* 🔥 ГРАФИКИ 🔥 */
         .charts-container {
@@ -331,8 +394,9 @@
     <header>
         <div class="logo"><span>📊</span> Gold Options</div>
         <ul class="menu">
-            <li><a href="#charts">Графики</a></li>
             <li><a href="#analytics">Аналитика</a></li>
+            <li><a href="#charts">Графики</a></li>
+            <li><a href="#greeks">Greeks</a></li>
             <li><a href="#top5">ТОП-5</a></li>
             <li><a href="#download">APK</a></li>
         </ul>
@@ -340,7 +404,7 @@
 
     <section class="hero">
         <h1>Gold Analytics Pro</h1>
-        <p class="subtitle">Max Pain • Gamma Walls • Interactive Charts</p>
+        <p class="subtitle">Max Pain • Gamma Walls • Greeks Analytics • Real-time Data</p>
         <a href="#download" class="btn-primary">Скачать Android APK</a>
     </section>
 
@@ -391,8 +455,14 @@
             <div class="warning-title">⚠ СТАТУС ДАННЫХ</div>
             <p class="warning-text">
                 Опционные уровни обновляются с задержкой 5 минут.<br>
-                Цена фьючерса обновляется с задержкой до 5 секунд.
+                Цена фьючерса обновляется с задержкой до 5 секунд.<br>
+                Интрадей аналитика обновляется каждые 10 секунд.
             </p>
+        </div>
+
+        <!-- 🔥 ALERTS -->
+        <div id="alerts-container" class="alerts-container">
+            <!-- Динамически заполняется -->
         </div>
         
         <div class="data-container">
@@ -424,7 +494,74 @@
             </div>
         </div>
 
-        <!-- 🔥 ГРАФИКИ 🔥 -->
+        <!-- 🔥 ИНТРАДЕЙ АНАЛИТИКА -->
+        <div id="analytics" class="analytics-grid">
+            <!-- Max Pain -->
+            <div class="analytics-card">
+                <div class="analytics-title">🎯 Max Pain</div>
+                <div class="analytics-value" id="max-pain-value">-</div>
+                <div class="analytics-label">Точка максимальной боли</div>
+            </div>
+
+            <!-- Zero Gamma -->
+            <div class="analytics-card">
+                <div class="analytics-title">⚡ Zero Gamma</div>
+                <div class="analytics-value" id="zero-gamma-value">-</div>
+                <div class="analytics-label" id="zero-gamma-label">Загрузка...</div>
+            </div>
+
+            <!-- IV Skew -->
+            <div class="analytics-card">
+                <div class="analytics-title">📈 IV Skew</div>
+                <div class="analytics-value" id="iv-skew-value">-</div>
+                <div class="analytics-label">
+                    <span id="iv-sentiment" class="sentiment-badge sentiment-neutral">NEUTRAL</span>
+                </div>
+            </div>
+
+            <!-- Squeeze Risk -->
+            <div class="analytics-card">
+                <div class="analytics-title">🔥 Gamma Squeeze Risk</div>
+                <div class="analytics-value" id="squeeze-risk-level">-</div>
+                <div class="risk-indicator">
+                    <div class="risk-bar">
+                        <div id="squeeze-risk-fill" class="risk-fill risk-low" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="analytics-label" id="squeeze-risk-label">Загрузка...</div>
+            </div>
+
+            <!-- Momentum -->
+            <div class="analytics-card">
+                <div class="analytics-title">📊 Price Momentum</div>
+                <div class="analytics-value" id="momentum-signal">-</div>
+                <div class="analytics-label" id="momentum-label">Загрузка...</div>
+            </div>
+
+            <!-- Delta Skew -->
+            <div class="analytics-card">
+                <div class="analytics-title">⚖️ Delta Skew</div>
+                <div class="analytics-value" id="delta-skew-value">-</div>
+                <div class="analytics-label">Call Delta vs Put Delta</div>
+            </div>
+
+            <!-- Vanna Exposure -->
+            <div class="analytics-card">
+                <div class="analytics-title">🌀 Vanna Exposure</div>
+                <div class="analytics-value" id="vanna-net">-</div>
+                <div class="analytics-label" id="vanna-label">Загрузка...</div>
+            </div>
+
+            <!-- Key Levels -->
+            <div class="analytics-card">
+                <div class="analytics-title">📍 Key Levels</div>
+                <div id="key-levels-display" style="margin-top: 10px;">
+                    <div class="analytics-label">Загрузка...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔥 ГРАФИКИ -->
         <div id="charts" class="charts-container">
             <div class="chart-box">
                 <div class="chart-title">📊 OI Distribution (Call vs Put)</div>
@@ -453,145 +590,172 @@
                     <canvas id="maxPainChart"></canvas>
                 </div>
             </div>
-        </div>
 
-        <!-- АНАЛИТИЧЕСКИЕ БЛОКИ -->
-        <div id="analytics" class="analytics-grid">
-            <div class="analytics-card">
-                <div class="analytics-title">🎯 Max Pain</div>
-                <div class="analytics-value" id="max-pain-value">-</div>
-                <div class="analytics-label">Точка максимальной боли</div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">⚡ Gamma Walls</div>
-                <div id="gamma-levels" style="margin-top: 10px;">
-                    <div class="analytics-label">Загрузка...</div>
-                </div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">🔥 Unusual Activity</div>
-                <div id="unusual-activity" style="margin-top: 10px;">
-                    <div class="analytics-label">Загрузка...</div>
-                </div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">📍 Key Levels (OI)</div>
-                <div id="key-levels" style="margin-top: 10px;">
-                    <div class="analytics-label">Загрузка...</div>
-                </div>
+            <!-- 🔥 НОВЫЕ ГРАФИКИ -->
+            <div class="chart-box">
+                <div class="chart-title">🌈 IV Smile</div>
+                <div class="chart-wrapper"><canvas id="ivChart"></canvas>
+</div>
+</div>
+        <div class="chart-box">
+            <div class="chart-title">⚖️ Delta Profile</div>
+            <div class="chart-wrapper">
+                <canvas id="deltaChart"></canvas>
             </div>
         </div>
 
-        <div class="control-panel">
-            <!-- ПЕРЕКЛЮЧАТЕЛЬ ЭКСПИРАЦИЙ -->
-            <div class="expiry-toggle">
-                <span class="filter-label">Экспирация:</span>
-                <button class="expiry-btn active" data-expiry="0dte">INTRADAY (0DTE)</button>
-                <button class="expiry-btn" data-expiry="friday">FRIDAY (1DTE)</button>
-            </div>
-
-            <div class="calculator-panel">
-                <label style="color:#fff; font-weight:bold;">Forward (Форвард):</label>
-                <input type="number" id="forward-input" class="calc-input" placeholder="0" step="0.5" value="0">
-                
-                <label style="color:#fff; font-weight:bold;">Расчет премий:</label>
-                <button class="premium-btn" id="premium-toggle">Вкл. премии</button>
-                <span style="color: #888; font-size: 0.85em;">(Call+Prem, Put-Prem)</span>
-            </div>
-
-            <div class="strike-filter">
-                <span class="filter-label">Показать страйков:</span>
-                <button class="filter-btn" data-count="50">50</button>
-                <button class="filter-btn active" data-count="75">75</button>
-                <button class="filter-btn" data-count="100">100</button>
-                <button class="filter-btn" data-count="125">125</button>
-                <button class="filter-btn" data-count="150">150</button>
+        <div class="chart-box">
+            <div class="chart-title">🔥 GEX Profile</div>
+            <div class="chart-wrapper">
+                <canvas id="gexChart"></canvas>
             </div>
         </div>
 
-        <div id="top5" class="top5-container">
-            <div class="top5-box">
-                <div class="top5-title">🟢 CALLS - ТОП-5</div>
-                <div class="top5-grid">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div>
-                            <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По Volume</div>
-                            <div id="top5-call-vol"></div>
-                        </div>
-                        <div>
-                            <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По OI</div>
-                            <div id="top5-call-oi"></div>
-                        </div>
+        <div class="chart-box">
+            <div class="chart-title">⏱️ Theta Decay</div>
+            <div class="chart-wrapper">
+                <canvas id="thetaChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔥 ГРЕКИ (НОВЫЙ РАЗДЕЛ) -->
+    <div id="greeks" style="max-width: 1200px; margin: 0 auto 30px auto;">
+        <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px;">🎓 Greeks Analytics</h2>
+        
+        <div class="analytics-grid">
+            <div class="analytics-card">
+                <div class="analytics-title">Δ Total Call Delta</div>
+                <div class="analytics-value" id="total-call-delta">-</div>
+            </div>
+
+            <div class="analytics-card">
+                <div class="analytics-title">Δ Total Put Delta</div>
+                <div class="analytics-value" id="total-put-delta">-</div>
+            </div>
+
+            <div class="analytics-card">
+                <div class="analytics-title">Γ Total Gamma</div>
+                <div class="analytics-value" id="total-gamma">-</div>
+            </div>
+
+            <div class="analytics-card">
+                <div class="analytics-title">ν Total Vega</div>
+                <div class="analytics-value" id="total-vega">-</div>
+            </div>
+
+            <div class="analytics-card">
+                <div class="analytics-title">Θ Total Theta</div>
+                <div class="analytics-value" id="total-theta">-</div>
+            </div>
+
+            <div class="analytics-card">
+                <div class="analytics-title">📊 Avg IV</div>
+                <div class="analytics-value" id="avg-iv">-</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <!-- ПЕРЕКЛЮЧАТЕЛЬ ЭКСПИРАЦИЙ -->
+        <div class="expiry-toggle">
+            <span class="filter-label">Экспирация:</span>
+            <button class="expiry-btn active" data-expiry="0dte">INTRADAY (0DTE)</button>
+            <button class="expiry-btn" data-expiry="friday">FRIDAY (1DTE)</button>
+        </div>
+
+        <div class="calculator-panel">
+            <label style="color:#fff; font-weight:bold;">Forward (Форвард):</label>
+            <input type="number" id="forward-input" class="calc-input" placeholder="0" step="0.5" value="0">
+            
+            <label style="color:#fff; font-weight:bold;">Расчет премий:</label>
+            <button class="premium-btn" id="premium-toggle">Вкл. премии</button>
+            <span style="color: #888; font-size: 0.85em;">(Call+Prem, Put-Prem)</span>
+        </div>
+
+        <div class="strike-filter">
+            <span class="filter-label">Показать страйков:</span>
+            <button class="filter-btn" data-count="50">50</button>
+            <button class="filter-btn active" data-count="75">75</button>
+            <button class="filter-btn" data-count="100">100</button>
+            <button class="filter-btn" data-count="125">125</button>
+            <button class="filter-btn" data-count="150">150</button>
+        </div>
+    </div>
+
+    <div id="top5" class="top5-container">
+        <div class="top5-box">
+            <div class="top5-title">🟢 CALLS - ТОП-5</div>
+            <div class="top5-grid">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По Volume</div>
+                        <div id="top5-call-vol"></div>
+                    </div>
+                    <div>
+                        <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По OI</div>
+                        <div id="top5-call-oi"></div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="top5-box">
-                <div class="top5-title">🔴 PUTS - ТОП-5</div>
-                <div class="top5-grid">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div>
-                            <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По Volume</div>
-                            <div id="top5-put-vol"></div>
-                        </div>
-                        <div>
-                            <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По OI</div>
-                            <div id="top5-put-oi"></div>
-                        </div>
+        <div class="top5-box">
+            <div class="top5-title">🔴 PUTS - ТОП-5</div>
+            <div class="top5-grid">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По Volume</div>
+                        <div id="top5-put-vol"></div>
+                    </div>
+                    <div>
+                        <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По OI</div>
+                        <div id="top5-put-oi"></div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    
+    <div class="levels-container">
+        <div class="table-header-info">
+            <span id="table-expiry-label">INTRADAY <span class="dte-tag">0DTE</span></span>
+            <span style="color:#888;">Full Analytics Active</span>
         </div>
         
-        <div class="levels-container">
-            <div class="table-header-info">
-                <span id="table-expiry-label">INTRADAY <span class="dte-tag">0DTE</span></span>
-                <span style="color:#888;">Full Analytics Active</span>
-            </div>
-            
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th colspan="3" style="border-bottom: 2px solid var(--call-color);">CALLS</th>
-                            <th style="background:#222;"></th>
-                            <th colspan="3" style="border-bottom: 2px solid var(--put-color);">PUTS</th>
-                        </tr>
-                        <tr>
-                            <th>OI</th><th>Vol</th><th>Prem</th>
-                            <th style="background:#333; color:#fff;">STRIKE</th>
-                            <th>Prem</th><th>Vol</th><th>OI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="option-body">
-                        <tr><td colspan="7" style="padding: 20px;">⏳ Загрузка...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="5" style="border-bottom: 2px solid var(--call-color);">CALLS</th>
+                        <th style="background:#222;"></th>
+                        <th colspan="5" style="border-bottom: 2px solid var(--put-color);">PUTS</th>
+                    </tr>
+                    <tr>
+                        <th>OI</th><th>Vol</th><th>Prem</th><th>Δ</th><th>Γ</th>
+                        <th style="background:#333; color:#fff;">STRIKE</th>
+                        <th>Γ</th><th>Δ</th><th>Prem</th><th>Vol</th><th>OI</th>
+                    </tr>
+                </thead>
+                <tbody id="option-body">
+                    <tr><td colspan="11" style="padding: 20px;">⏳ Загрузка...</td></tr>
+                </tbody>
+            </table>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section id="download" class="download">
-        <h2>Скачать приложение</h2>
-        <div class="download-card">
-            <h3>Android APK</h3>
-            <p style="color:#888;">Версия 1.0</p>
-            <a href="downloads/gold-options.apk" download class="btn-download">📥 Скачать APK</a>
-            
-            <!-- ВОТ ЭТОТ ТЕКСТ Я ДОБАВИЛ НИЖЕ -->
-            <p style="color: #999; font-size: 0.85em; margin-top: 15px; max-width: 300px; line-height: 1.4;">
-                ⚠ Если браузер предупреждает об опасности — это стандартная процедура для файлов не из Play Market. Приложение безопасно и не требует лишних разрешений.
-            </p>
-            <!-- КОНЕЦ ВСТАВКИ -->
-            
-        </div>
-        <div style="margin-top: 30px;">
-            <span class="disclaimer-link" onclick="openDisclaimer()">📄 Disclaimer & Privacy Policy</span>
-        </div>
-    </section>
+<section id="download" class="download">
+    <h2>Скачать приложение</h2>
+    <div class="download-card">
+        <h3>Android APK</h3>
+        <p style="color:#888;">Версия 1.0</p>
+        <a href="downloads/gold-options.apk" download class="btn-download">📥 Скачать APK</a>
+    </div>
+    <div style="margin-top: 30px;">
+        <span class="disclaimer-link" onclick="openDisclaimer()">📄 Disclaimer & Privacy Policy</span>
+    </div>
+</section>
 
 <footer>
     <p>&copy; 2025 Gold Options Pro Analytics. Все данные предоставляются "как есть" без гарантий.</p>
@@ -600,7 +764,6 @@
         <a href="#" onclick="openDisclaimer(); return false;" style="color: var(--accent-gold);">Политика конфиденциальности</a>
     </p>
 </footer>
-
 <script>
     const DB_ROOT = "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app";
     
@@ -608,11 +771,12 @@
     let cachedTableData = []; 
     let forwardCorrection = 0;
     let displayStrikeCount = 75;
-    let currentExpiry = '0dte'; // '0dte' или 'friday'
+    let currentExpiry = '0dte';
     let premiumEnabled = false;
 
-    // 🔥 ГРАФИКИ 🔥
+    // 🔥 ГРАФИКИ
     let oiChart, volumeChart, gammaChart, maxPainChart;
+    let ivChart, deltaChart, gexChart, thetaChart;
 
     // DISCLAIMER
     function openDisclaimer() {
@@ -623,7 +787,6 @@
         document.getElementById('disclaimerModal').style.display = 'none';
     }
 
-    // Закрытие по клику вне модалки
     window.onclick = function(event) {
         const modal = document.getElementById('disclaimerModal');
         if (event.target == modal) {
@@ -642,7 +805,10 @@
         return 'val-7';
     }
 
-    // 🔥 СОЗДАНИЕ ГРАФИКОВ 🔥
+    // ==========================================================================
+    // 🔥 СОЗДАНИЕ ГРАФИКОВ
+    // ==========================================================================
+
     function createCharts(data) {
         const strikes = data.map(r => r.strike);
         const callOI = data.map(r => r.call?.oi || 0);
@@ -650,7 +816,7 @@
         const callVol = data.map(r => r.call?.vol || 0);
         const putVol = data.map(r => r.put?.vol || 0);
 
-        // График OI Distribution
+        // OI Distribution
         if (oiChart) oiChart.destroy();
         const ctxOI = document.getElementById('oiChart').getContext('2d');
         oiChart = new Chart(ctxOI, {
@@ -674,23 +840,15 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#fff' } }
-                },
+                plugins: { legend: { labels: { color: '#fff' } } },
                 scales: {
-                    x: { 
-                        ticks: { color: '#888', maxRotation: 45 },
-                        grid: { color: '#333' }
-                    },
-                    y: { 
-                        ticks: { color: '#888' },
-                        grid: { color: '#333' }
-                    }
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
                 }
             }
         });
 
-        // График Volume Heatmap
+        // Volume Heatmap
         if (volumeChart) volumeChart.destroy();
         const ctxVol = document.getElementById('volumeChart').getContext('2d');
         volumeChart = new Chart(ctxVol, {
@@ -714,28 +872,22 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#fff' } }
-                },
+                plugins: { legend: { labels: { color: '#fff' } } },
                 scales: {
-                    x: { 
-                        ticks: { color: '#888', maxRotation: 45 },
-                        grid: { color: '#333' }
-                    },
-                    y: { 
-                        ticks: { color: '#888' },
-                        grid: { color: '#333' }
-                    }
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
                 }
             }
         });
 
-        // График Gamma Exposure
+        // Gamma Exposure
         const gammaData = data.map(r => {
             const strike = parseFloat(r.strike);
+            const callGamma = r.call?.gamma || 0;
+            const putGamma = r.put?.gamma || 0;
             const callOI = r.call?.oi || 0;
             const putOI = r.put?.oi || 0;
-            return (callOI - putOI) * strike / 1000;
+            return ((callOI * callGamma) - (putOI * putGamma)) * strike * 100 / 1000000;
         });
 
         if (gammaChart) gammaChart.destroy();
@@ -745,7 +897,7 @@
             data: {
                 labels: strikes,
                 datasets: [{
-                    label: 'Gamma Exposure',
+                    label: 'Gamma Exposure (M)',
                     data: gammaData,
                     backgroundColor: 'rgba(255, 215, 0, 0.2)',
                     borderColor: 'rgba(255, 215, 0, 1)',
@@ -757,23 +909,15 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#fff' } }
-                },
+                plugins: { legend: { labels: { color: '#fff' } } },
                 scales: {
-                    x: { 
-                        ticks: { color: '#888', maxRotation: 45 },
-                        grid: { color: '#333' }
-                    },
-                    y: { 
-                        ticks: { color: '#888' },
-                        grid: { color: '#333' }
-                    }
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
                 }
             }
         });
 
-        // График Max Pain
+        // Max Pain
         const maxPainData = strikes.map(testStrike => {
             let totalLoss = 0;
             data.forEach(s => {
@@ -810,24 +954,158 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#fff' } }
-                },
+                plugins: { legend: { labels: { color: '#fff' } } },
                 scales: {
-                    x: {
-                        ticks: { color: '#888', maxRotation: 45 },
-                        grid: { color: '#333' }
-                    },
-                    y: {
-                        ticks: { color: '#888' },
-                        grid: { color: '#333' }
-                    }
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            }
+        });
+
+        // 🔥 IV SMILE
+        const callIV = data.map(r => r.call?.iv || 0);
+        const putIV = data.map(r => r.put?.iv || 0);
+
+        if (ivChart) ivChart.destroy();
+        const ctxIV = document.getElementById('ivChart').getContext('2d');
+        ivChart = new Chart(ctxIV, {
+            type: 'line',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Call IV',
+                    data: callIV,
+                    borderColor: '#4caf50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4
+                }, {
+                    label: 'Put IV',
+                    data: putIV,
+                    borderColor: '#f44336',
+                    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            }
+        });
+
+        // 🔥 DELTA PROFILE
+        const callDelta = data.map(r => (r.call?.delta || 0) * (r.call?.oi || 0));
+        const putDelta = data.map(r => Math.abs(r.put?.delta || 0) * (r.put?.oi || 0));
+
+        if (deltaChart) deltaChart.destroy();
+        const ctxDelta = document.getElementById('deltaChart').getContext('2d');
+        deltaChart = new Chart(ctxDelta, {
+            type: 'bar',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Call Delta Exposure',
+                    data: callDelta,
+                    backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                    borderColor: 'rgba(76, 175, 80, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Put Delta Exposure',
+                    data: putDelta.map(v => -v),
+                    backgroundColor: 'rgba(244, 67, 54, 0.7)',
+                    borderColor: 'rgba(244, 67, 54, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            }
+        });
+
+        // 🔥 GEX PROFILE
+        if (gexChart) gexChart.destroy();
+        const ctxGex = document.getElementById('gexChart').getContext('2d');
+        gexChart = new Chart(ctxGex, {
+            type: 'bar',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Net GEX',
+                    data: gammaData,
+                    backgroundColor: gammaData.map(v => v > 0 ? 'rgba(76, 175, 80, 0.7)' : 'rgba(244, 67, 54, 0.7)'),
+                    borderColor: gammaData.map(v => v > 0 ? 'rgba(76, 175, 80, 1)' : 'rgba(244, 67, 54, 1)'),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            }
+        });
+
+        // 🔥 THETA DECAY
+        const callTheta = data.map(r => (r.call?.theta || 0) * (r.call?.oi || 0));
+        const putTheta = data.map(r => (r.put?.theta || 0) * (r.put?.oi || 0));
+
+        if (thetaChart) thetaChart.destroy();
+        const ctxTheta = document.getElementById('thetaChart').getContext('2d');
+        thetaChart = new Chart(ctxTheta, {
+            type: 'line',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Call Theta',
+                    data: callTheta,
+                    borderColor: '#4caf50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4
+                }, {
+                    label: 'Put Theta',
+                    data: putTheta,
+                    borderColor: '#f44336',
+                    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
                 }
             }
         });
     }
 
-    // MAX PAIN
+    // ==========================================================================
+    // 🔥 РАСЧЕТЫ
+    // ==========================================================================
+
     function calculateMaxPain(data) {
         const maxPainValues = {};
         
@@ -856,225 +1134,6 @@
         );
         
         document.getElementById('max-pain-value').innerText = '$' + maxPain;
-    }
-
-    // GAMMA LEVELS
-    function calculateGammaLevels(data) {
-        const gammaLevels = data.map(row => {
-            const strike = parseFloat(row.strike);
-            const callOI = row.call?.oi || 0;
-            const putOI = row.put?.oi || 0;
-            
-            const gammaExposure = (callOI - putOI) * strike;
-            
-            return {
-                strike: strike,
-                gamma: gammaExposure,
-                type: gammaExposure > 0 ? 'support' : 'resistance'
-            };
-        });
-        
-        gammaLevels.sort((a, b) => Math.abs(b.gamma) - Math.abs(a.gamma));
-        
-        const html = gammaLevels.slice(0, 3).map(level => `
-            <div class="level-item ${level.type}">
-                <span class="level-strike">$${level.strike}</span>
-                <span class="level-value">${level.type === 'support' ? '🟢' : '🔴'} ${Math.abs(level.gamma).toFixed(0)}</span>
-            </div>
-        `).join('');
-        
-        document.getElementById('gamma-levels').innerHTML = html;
-    }
-
-    // UNUSUAL ACTIVITY
-    function findUnusualActivity(data) {
-        const avgCallVol = data.reduce((sum, r) => sum + (r.call?.vol || 0), 0) / data.length;
-        const avgPutVol = data.reduce((sum, r) => sum + (r.put?.vol || 0), 0) / data.length;
-        
-        const unusual = [];
-        
-        data.forEach(row => {
-            const strike = row.strike;
-            const callVol = row.call?.vol || 0;
-            const putVol = row.put?.vol || 0;
-            const callOI = row.call?.oi || 0;
-            const putOI = row.put?.oi || 0;
-            
-            if (callVol > avgCallVol * 2.5 && callOI > 50) {
-                unusual.push({
-                    strike: strike,
-                    type: 'CALL',
-                    volume: callVol,
-                    oi: callOI
-                });
-            }
-            
-            if (putVol > avgPutVol * 2.5 && putOI > 50) {
-                unusual.push({
-                    strike: strike,
-                    type: 'PUT',
-                    volume: putVol,
-                    oi: putOI
-                });
-            }
-        });
-        
-        unusual.sort((a, b) => b.volume - a.volume);
-        
-        const html = unusual.slice(0, 3).map(item => `
-            <div class="level-item ${item.type === 'CALL' ? 'support' : 'resistance'}">
-                <span class="level-strike">$${item.strike} ${item.type === 'CALL' ? '🟢' : '🔴'}</span>
-                <span class="level-value">Vol: ${item.volume}</span>
-            </div>
-        `).join('');
-        
-        document.getElementById('unusual-activity').innerHTML = html || '<div class="analytics-label">Нет необычной активности</div>';
-    }
-
-    // KEY LEVELS
-    function calculateKeyLevels(data) {
-        const levels = data.map(row => ({
-            strike: parseFloat(row.strike),
-            totalOI: (row.call?.oi || 0) + (row.put?.oi || 0),
-            callOI: row.call?.oi || 0,
-            putOI: row.put?.oi || 0
-        }));
-        
-        levels.sort((a, b) => b.totalOI - a.totalOI);
-        
-        const html = levels.slice(0, 3).map(level => `
-            <div class="level-item">
-                <span class="level-strike">$${level.strike}</span>
-                <span class="level-value">${level.totalOI}</span>
-            </div>
-        `).join('');
-        
-        document.getElementById('key-levels').innerHTML = html;
-    }
-
-    // FORWARD INPUT
-    document.getElementById('forward-input').addEventListener('input', function(e) {
-        const val = parseFloat(e.target.value);
-        forwardCorrection = isNaN(val) ? 0 : val;
-        if (cachedTableData.length > 0) {
-            renderTable(cachedTableData);
-            updateTop5(cachedTableData);
-        }
-    });
-
-    // PREMIUM TOGGLE
-    document.getElementById('premium-toggle').addEventListener('click', function() {
-        premiumEnabled = !premiumEnabled;
-        this.textContent = premiumEnabled ? 'Откл. премии' : 'Вкл. премии';
-        this.classList.toggle('active');
-        if (cachedTableData.length > 0) {
-            renderTable(cachedTableData);
-            updateTop5(cachedTableData);
-        }
-    });
-
-    // EXPIRY TOGGLE
-    document.querySelectorAll('.expiry-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentExpiry = this.dataset.expiry;
-            
-            // Обновляем метку таблицы
-            const label = document.getElementById('table-expiry-label');
-            if (currentExpiry === '0dte') {
-                label.innerHTML = 'INTRADAY <span class="dte-tag">0DTE</span>';
-            } else {
-                label.innerHTML = 'FRIDAY <span class="dte-tag">1DTE</span>';
-            }
-            
-            fetchHeavyData();
-        });
-    });
-
-    // STRIKE FILTER
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            displayStrikeCount = parseInt(this.dataset.count);
-            if (cachedTableData.length > 0) renderTable(cachedTableData);
-        });
-    });
-
-    async function fetchFastPrice() {
-        try {
-            const res = await fetch(`${DB_ROOT}/gold_fast.json`);
-            const data = await res.json();
-            if (data && data.price) {
-                currentFuturesPrice = data.price;
-                document.getElementById('futures-price').innerText = '$' + data.price.toFixed(1);
-                if (cachedTableData.length > 0) renderTable(cachedTableData);
-            }
-        } catch (e) { console.error(e); }
-    }
-
-    async function fetchHeavyData() {
-        try {
-            const endpoint = currentExpiry === '0dte' ? 'gold_heavy.json' : 'gold_friday.json';
-            
-            // 1. ДОБАВЛЯЕМ "?t=..." ЧТОБЫ БРАУЗЕР НЕ БРАЛ ДАННЫЕ ИЗ КЭША
-            const url = `${DB_ROOT}/${endpoint}?t=${Date.now()}`;
-            
-            console.log(`📡 Запрос к: ${url}`); 
-
-            const res = await fetch(url);
-            
-            if (!res.ok) {
-                console.error("Ошибка сети или файл не найден");
-                document.getElementById('option-body').innerHTML = '<tr><td colspan="7" style="color:red">Ошибка доступа к файлу</td></tr>';
-                return;
-            }
-
-            const data = await res.json();
-            
-            if (!data) {
-                console.warn("Данные пришли пустые (null)");
-                document.getElementById('option-body').innerHTML = '<tr><td colspan="7">Данные отсутствуют</td></tr>';
-                return;
-            }
-
-            // Обновляем шапку
-            if (data.balance_price) document.getElementById('balance-price').innerText = '$' + data.balance_price;
-            if (data.updated_at_utc) document.getElementById('updated-time').innerText = data.updated_at_utc;
-            
-            // 2. ЗАЩИТА ОТ FIREBASE (Иногда он шлет Объект вместо Массива)
-            let rawData = data.data;
-            if (rawData && !Array.isArray(rawData)) {
-                console.warn("⚠️ Firebase вернул Объект! Конвертируем в Массив...");
-                rawData = Object.values(rawData);
-            }
-
-            cachedTableData = rawData || [];
-            
-            console.log(`📊 Получено строк: ${cachedTableData.length}`);
-
-            if (cachedTableData.length === 0) {
-                document.getElementById('option-body').innerHTML = '<tr><td colspan="7">Массив данных пуст (0 строк)</td></tr>';
-                return;
-            }
-            
-            // Запуск всех расчетов
-            calculatePCR(cachedTableData);
-            calculateMaxPain(cachedTableData);
-            calculateGammaLevels(cachedTableData);
-            findUnusualActivity(cachedTableData);
-            calculateKeyLevels(cachedTableData);
-            createCharts(cachedTableData);
-            
-            // Отрисовка
-            renderTable(cachedTableData);
-            updateTop5(cachedTableData);
-
-        } catch (e) { 
-            console.error("Критическая ошибка fetchHeavyData:", e);
-            document.getElementById('option-body').innerHTML = `<tr><td colspan="7" style="color:red">JS Error: ${e.message}</td></tr>`;
-        }
     }
 
     function calculatePCR(rows) {
@@ -1109,130 +1168,438 @@
         else el.style.color = "#fff";
     }
 
-    function updateTop5(rows) {
-        // Сортируем всегда по чистому Volume или OI
-        const callsVol = [...rows].sort((a, b) => (b.call?.vol || 0) - (a.call?.vol || 0)).slice(0, 5);
-        const callsOI = [...rows].sort((a, b) => (b.call?.oi || 0) - (a.call?.oi || 0)).slice(0, 5);
-        const putsVol = [...rows].sort((a, b) => (b.put?.vol || 0) - (a.put?.vol || 0)).slice(0, 5);
-        const putsOI = [...rows].sort((a, b) => (b.put?.oi || 0) - (a.put?.oi || 0)).slice(0, 5);
+    // 🔥 ГРЕКИ
+    function calculateGreeks(data) {
+        let totalCallDelta = 0, totalPutDelta = 0;
+        let totalGamma = 0, totalVega = 0, totalTheta = 0;
+        let totalCallIV = 0, totalPutIV = 0, totalOI = 0;
 
-        // Вспомогательная функция для генерации HTML элемента
-        const renderItem = (r, type, metric) => {
-            const rawStrike = parseFloat(r.strike) + forwardCorrection;
-            const premium = type === 'call' ? (r.call?.premium || 0) : (r.put?.premium || 0);
-            const value = type === 'call' ? (r.call?.[metric] || 0) : (r.put?.[metric] || 0);
+        data.forEach(r => {
+            const cOI = r.call?.oi || 0;
+            const pOI = r.put?.oi || 0;
+
+            totalCallDelta += (r.call?.delta || 0) * cOI;
+            totalPutDelta += Math.abs(r.put?.delta || 0) * pOI;
             
-            // Если включена премия, меняем СТРАЙК
-            let displayStrike = rawStrike;
-            if (premiumEnabled) {
-                displayStrike = type === 'call' ? (rawStrike + premium) : (rawStrike - premium);
-            }
+            totalGamma += ((r.call?.gamma || 0) * cOI) + ((r.put?.gamma || 0) * pOI);
+            totalVega += ((r.call?.vega || 0) * cOI) + ((r.put?.vega || 0) * pOI);
+            totalTheta += ((r.call?.theta || 0) * cOI) + ((r.put?.theta || 0) * pOI);
 
-            return `<div class="top5-item ${type === 'call' ? 'call-item' : 'put-item'}">
-                <span class="top5-strike">${Number.isInteger(displayStrike) ? displayStrike : displayStrike.toFixed(1)}</span>
-                <span class="top5-value">${Math.round(value)}</span>
-            </div>`;
-        };
-
-        document.getElementById('top5-call-vol').innerHTML = callsVol.map(r => renderItem(r, 'call', 'vol')).join('');
-        document.getElementById('top5-call-oi').innerHTML = callsOI.map(r => renderItem(r, 'call', 'oi')).join('');
-        document.getElementById('top5-put-vol').innerHTML = putsVol.map(r => renderItem(r, 'put', 'vol')).join('');
-        document.getElementById('top5-put-oi').innerHTML = putsOI.map(r => renderItem(r, 'put', 'oi')).join('');
-    }
-
-    function renderTable(rows) {
-        const tbody = document.getElementById('option-body');
-        tbody.innerHTML = '';
-        
-        if (!rows || rows.length === 0) return;
-
-        let closestIndex = 0;
-        let minDiff = Infinity;
-
-        rows.forEach((row, idx) => {
-            const displayStrike = parseFloat(row.strike) + forwardCorrection;
-            const diff = Math.abs(displayStrike - currentFuturesPrice);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closestIndex = idx;
-            }
+            totalCallIV += (r.call?.iv || 0) * cOI;
+            totalPutIV += (r.put?.iv || 0) * pOI;
+            
+            totalOI += cOI + pOI;
         });
 
-        const halfRange = Math.floor(displayStrikeCount / 2);
-        let startIdx = Math.max(0, closestIndex - halfRange);
-        let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
+        document.getElementById('total-call-delta').innerText = totalCallDelta.toFixed(0);
+        document.getElementById('total-put-delta').innerText = totalPutDelta.toFixed(0);
+        document.getElementById('total-gamma').innerText = totalGamma.toFixed(2);
+        document.getElementById('total-vega').innerText = totalVega.toFixed(0);
+        document.getElementById('total-theta').innerText = totalTheta.toFixed(0);
+        
+        const avgIV = totalOI > 0 ? ((totalCallIV + totalPutIV) / totalOI).toFixed(1) : '0';
+        document.getElementById('avg-iv').innerText = avgIV + '%';
 
-        if (endIdx - startIdx < displayStrikeCount) {
-            startIdx = Math.max(0, endIdx - displayStrikeCount);
+        // Delta Skew
+        const deltaSkew = totalCallDelta - totalPutDelta;
+        document.getElementById('delta-skew-value').innerText = deltaSkew.toFixed(0);
+    }
+
+    // ==========================================================================
+    // 🔥 ИНТРАДЕЙ АНАЛИТИКА
+    // ==========================================================================
+
+    async function fetchIntradayAnalytics() {
+        try {
+            const res = await fetch(`${DB_ROOT}/intraday_analytics.json?t=${Date.now()}`);
+            const analytics = await res.json();
+            
+            if (!analytics) return;
+
+            // Zero Gamma
+            if (analytics.zero_gamma) {
+                document.getElementById('zero-gamma-value').innerText = '$' + analytics.zero_gamma.strike;
+                const pos = analytics.zero_gamma.position === 'above' ? '🟢 Выше' : '🔴 Ниже';
+                document.getElementById('zero-gamma-label').innerText = `Цена ${pos} Zero Gamma`;
+            }
+
+            // IV Skew
+            if (analytics.iv_metrics) {
+                const iv = analytics.iv_metrics;
+                document.getElementById('iv-skew-value').innerText = iv.iv_skew.toFixed(2);
+                
+                const badge = document.getElementById('iv-sentiment');
+                badge.innerText = iv.sentiment.toUpperCase();
+                badge.className = 'sentiment-badge sentiment-' + iv.sentiment;
+            }
+
+            // Squeeze Risk
+            if (analytics.squeeze_risk) {
+                const risk = analytics.squeeze_risk;
+                document.getElementById('squeeze-risk-level').innerText = risk.level;
+                document.getElementById('squeeze-risk-label').innerText = `Score: ${risk.score}% | ATM: $${risk.atm_strike}`;
+                
+                const fill = document.getElementById('squeeze-risk-fill');
+                fill.style.width = risk.score + '%';
+                
+                if (risk.score > 70) {
+                    fill.className = 'risk-fill risk-high';
+                } else if (risk.score > 40) {
+                    fill.className = 'risk-fill risk-medium';
+                } else {
+                    fill.className = 'risk-fill risk-low';
+                }
+            }
+
+            // Momentum
+            if (analytics.momentum) {
+                const mom = analytics.momentum;
+                document.getElementById('momentum-signal').innerText = mom.signal;
+                document.getElementById('momentum-label').innerText = `Strength: ${mom.strength}%`;
+            }
+
+            // Vanna
+            if (analytics.vanna_exposure) {
+                const vanna = analytics.vanna_exposure;
+                document.getElementById('vanna-net').innerText = vanna.net_vanna.toFixed(0);
+                document.getElementById('vanna-label').innerText = `Call: ${vanna.call_vanna.toFixed(0)} | Put: ${vanna.put_vanna.toFixed(0)}`;
+            }
+
+            // Key Levels
+            if (analytics.key_levels) {
+                const levels = analytics.key_levels;
+                let html = '';
+                
+                html += '<div style="color: #f44336; font-weight: bold; margin-bottom: 5px;">🔴 Resistance:</div>';
+                levels.resistance.forEach(s => {
+                    html += `<divclass="level-item resistance"><span>$${s}</span></div>`;
+});
+            html += '<div style="color: #4caf50; font-weight: bold; margin: 10px 0 5px 0;">🟢 Support:</div>';
+            levels.support.forEach(s => {
+                html += `<div class="level-item support"><span>$${s}</span></div>`;
+            });
+            
+            document.getElementById('key-levels-display').innerHTML = html;
         }
 
-        const displayRows = rows.slice(startIdx, endIdx);
+        // 🔥 ALERTS
+        generateAlerts(analytics);
 
-        displayRows.forEach((row, idx) => {
-            const tr = document.createElement('tr');
-            
-            const rawStrike = parseFloat(row.strike) + forwardCorrection;
-            const isATM = (startIdx + idx) === closestIndex;
+    } catch (e) {
+        console.error('Ошибка загрузки аналитики:', e);
+    }
+}
 
-            let c_oi = row.call?.oi || 0;
-            let c_vol = row.call?.vol || 0;
-            const c_prem = row.call?.premium || 0;
-            
-            let p_oi = row.put?.oi || 0;
-            let p_vol = row.put?.vol || 0;
-            const p_prem = row.put?.premium || 0;
+function generateAlerts(analytics) {
+    const container = document.getElementById('alerts-container');
+    let alerts = [];
 
-            // ЛОГИКА ОТОБРАЖЕНИЯ СТРАЙКА В ТАБЛИЦЕ
-            let strikeHtml = '';
-            
-            if (premiumEnabled) {
-                // Если включена премия, считаем Breakeven для обеих сторон
-                const callBE = rawStrike + c_prem; 
-                const putBE = rawStrike - p_prem;
-                
-                // Показываем оба значения: Call BE сверху, Put BE снизу
-                strikeHtml = `
-                    <div style="line-height:1.1;">
-                        <span style="color:#a5d6a7">${callBE.toFixed(1)}</span><br>
-                        <span style="font-size:0.75em; color:#ef9a9a">${putBE.toFixed(1)}</span>
-                    </div>
-                `;
-            } else {
-                strikeHtml = Number.isInteger(rawStrike) ? rawStrike : rawStrike.toFixed(1);
-            }
-
-            const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
-
-            tr.innerHTML = `
-                <td class="${getValueClass(c_oi)}">${Math.round(c_oi)}</td>
-                <td class="${getValueClass(c_vol)}">${Math.round(c_vol)}</td>
-                <td style="color:#aaa;">${c_prem}</td>
-                
-                <td class="${strikeClass}">
-                    ${strikeHtml}
-                </td>
-                
-                <td style="color:#aaa;">${p_prem}</td>
-                <td class="${getValueClass(p_vol)}">${Math.round(p_vol)}</td>
-                <td class="${getValueClass(p_oi)}">${Math.round(p_oi)}</td>
-            `;
-
-            if (isATM) tr.classList.add('row-atm');
-            
-            tbody.appendChild(tr);
+    // Squeeze Risk Alert
+    if (analytics.squeeze_risk && analytics.squeeze_risk.score > 70) {
+        alerts.push({
+            type: 'danger',
+            text: `🔥 ВЫСОКИЙ риск Gamma Squeeze! Score: ${analytics.squeeze_risk.score}%`
         });
     }
 
-    fetchFastPrice();
-    fetchHeavyData();
-    setInterval(fetchFastPrice, 2000);   
-    setInterval(fetchHeavyData, 300000); 
+    // IV Skew Alert
+    if (analytics.iv_metrics) {
+        if (Math.abs(analytics.iv_metrics.iv_skew) > 3) {
+            alerts.push({
+                type: 'warning',
+                text: `⚠️ Экстремальный IV Skew: ${analytics.iv_metrics.iv_skew.toFixed(2)}`
+            });
+        }
+    }
+
+    // Momentum Alert
+    if (analytics.momentum && analytics.momentum.strength > 70) {
+        alerts.push({
+            type: 'info',
+            text: `📊 Сильный ${analytics.momentum.signal} импульс (${analytics.momentum.strength}%)`
+        });
+    }
+
+    // GEX Walls Alert
+    if (analytics.gex_profile) {
+        const walls = [...analytics.gex_profile.top_resistance, ...analytics.gex_profile.top_support];
+        const nearWall = walls.find(w => w.distance < 10);
+        
+        if (nearWall) {
+            alerts.push({
+                type: 'warning',
+                text: `🧱 Приближение к Gamma Wall: $${nearWall.strike} (${nearWall.distance.toFixed(1)} away)`
+            });
+        }
+    }
+
+    // Render Alerts
+    if (alerts.length === 0) {
+        container.innerHTML = '<div class="alert alert-success">✅ Нормальные рыночные условия</div>';
+    } else {
+        container.innerHTML = alerts.map(a => 
+            `<div class="alert alert-${a.type}">${a.text}</div>`
+        ).join('');
+    }
+}
+
+// ==========================================================================
+// FORWARD & PREMIUM
+// ==========================================================================
+
+document.getElementById('forward-input').addEventListener('input', function(e) {
+    const val = parseFloat(e.target.value);
+    forwardCorrection = isNaN(val) ? 0 : val;
+    if (cachedTableData.length > 0) {
+        renderTable(cachedTableData);
+        updateTop5(cachedTableData);
+    }
+});
+
+document.getElementById('premium-toggle').addEventListener('click', function() {
+    premiumEnabled = !premiumEnabled;
+    this.textContent = premiumEnabled ? 'Откл. премии' : 'Вкл. премии';
+    this.classList.toggle('active');
+    if (cachedTableData.length > 0) {
+        renderTable(cachedTableData);
+        updateTop5(cachedTableData);
+    }
+});
+
+// EXPIRY TOGGLE
+document.querySelectorAll('.expiry-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentExpiry = this.dataset.expiry;
+        
+        const label = document.getElementById('table-expiry-label');
+        if (currentExpiry === '0dte') {
+            label.innerHTML = 'INTRADAY <span class="dte-tag">0DTE</span>';
+        } else {
+            label.innerHTML = 'FRIDAY <span class="dte-tag">1DTE</span>';
+        }
+        
+        fetchHeavyData();
+    });
+});
+
+// STRIKE FILTER
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        displayStrikeCount = parseInt(this.dataset.count);
+        if (cachedTableData.length > 0) renderTable(cachedTableData);
+    });
+});
+
+// ==========================================================================
+// FETCH DATA
+// ==========================================================================
+
+async function fetchFastPrice() {
+    try {
+        const res = await fetch(`${DB_ROOT}/gold_fast.json`);
+        const data = await res.json();
+        if (data && data.price) {
+            currentFuturesPrice = data.price;
+            document.getElementById('futures-price').innerText = '$' + data.price.toFixed(1);
+            if (cachedTableData.length > 0) renderTable(cachedTableData);
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function fetchHeavyData() {
+    try {
+        const endpoint = currentExpiry === '0dte' ? 'gold_heavy.json' : 'gold_friday.json';
+        const url = `${DB_ROOT}/${endpoint}?t=${Date.now()}`;
+        
+        console.log(`📡 Запрос к: ${url}`);
+
+        const res = await fetch(url);
+        
+        if (!res.ok) {
+            console.error("Ошибка сети");
+            document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="color:red">Ошибка доступа</td></tr>';
+            return;
+        }
+
+        const data = await res.json();
+        
+        if (!data) {
+            console.warn("Данные пустые");
+            document.getElementById('option-body').innerHTML = '<tr><td colspan="11">Данные отсутствуют</td></tr>';
+            return;
+        }
+
+        if (data.balance_price) document.getElementById('balance-price').innerText = '$' + data.balance_price;
+        if (data.updated_at_utc) document.getElementById('updated-time').innerText = data.updated_at_utc;
+        
+        let rawData = data.data;
+        if (rawData && !Array.isArray(rawData)) {
+            console.warn("⚠️ Firebase вернул Объект! Конвертируем...");
+            rawData = Object.values(rawData);
+        }
+
+        cachedTableData = rawData || [];
+        
+        console.log(`📊 Получено строк: ${cachedTableData.length}`);
+
+        if (cachedTableData.length === 0) {
+            document.getElementById('option-body').innerHTML = '<tr><td colspan="11">Массив пуст</td></tr>';
+            return;
+        }
+        
+        calculatePCR(cachedTableData);
+        calculateMaxPain(cachedTableData);
+        calculateGreeks(cachedTableData);
+        createCharts(cachedTableData);
+        
+        renderTable(cachedTableData);
+        updateTop5(cachedTableData);
+
+    } catch (e) { 
+        console.error("Критическая ошибка:", e);
+        document.getElementById('option-body').innerHTML = `<tr><td colspan="11" style="color:red">Error: ${e.message}</td></tr>`;
+    }
+}
+
+// ==========================================================================
+// TOP-5
+// ==========================================================================
+
+function updateTop5(rows) {
+    const callsVol = [...rows].sort((a, b) => (b.call?.vol || 0) - (a.call?.vol || 0)).slice(0, 5);
+    const callsOI = [...rows].sort((a, b) => (b.call?.oi || 0) - (a.call?.oi || 0)).slice(0, 5);
+    const putsVol = [...rows].sort((a, b) => (b.put?.vol || 0) - (a.put?.vol || 0)).slice(0, 5);
+    const putsOI = [...rows].sort((a, b) => (b.put?.oi || 0) - (a.put?.oi || 0)).slice(0, 5);
+
+    const renderItem = (r, type, metric) => {
+        const rawStrike = parseFloat(r.strike) + forwardCorrection;
+        const premium = type === 'call' ? (r.call?.premium || 0) : (r.put?.premium || 0);
+        const value = type === 'call' ? (r.call?.[metric] || 0) : (r.put?.[metric] || 0);
+        
+        let displayStrike = rawStrike;
+        if (premiumEnabled) {
+            displayStrike = type === 'call' ? (rawStrike + premium) : (rawStrike - premium);
+        }
+
+        return `<div class="top5-item ${type === 'call' ? 'call-item' : 'put-item'}">
+            <span class="top5-strike">${Number.isInteger(displayStrike) ? displayStrike : displayStrike.toFixed(1)}</span>
+            <span class="top5-value">${Math.round(value)}</span>
+        </div>`;
+    };
+
+    document.getElementById('top5-call-vol').innerHTML = callsVol.map(r => renderItem(r, 'call', 'vol')).join('');
+    document.getElementById('top5-call-oi').innerHTML = callsOI.map(r => renderItem(r, 'call', 'oi')).join('');
+    document.getElementById('top5-put-vol').innerHTML = putsVol.map(r => renderItem(r, 'put', 'vol')).join('');
+    document.getElementById('top5-put-oi').innerHTML = putsOI.map(r => renderItem(r, 'put', 'oi')).join('');
+}
+
+// ==========================================================================
+// RENDER TABLE
+// ==========================================================================
+
+function renderTable(rows) {
+    const tbody = document.getElementById('option-body');
+    tbody.innerHTML = '';
+    
+    if (!rows || rows.length === 0) return;
+
+    let closestIndex = 0;
+    let minDiff = Infinity;
+
+    rows.forEach((row, idx) => {
+        const displayStrike = parseFloat(row.strike) + forwardCorrection;
+        const diff = Math.abs(displayStrike - currentFuturesPrice);
+        if (diff < minDiff) {
+            minDiff = diff;
+            closestIndex = idx;
+        }
+    });
+
+    const halfRange = Math.floor(displayStrikeCount / 2);
+    let startIdx = Math.max(0, closestIndex - halfRange);
+    let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
+
+    if (endIdx - startIdx < displayStrikeCount) {
+        startIdx = Math.max(0, endIdx - displayStrikeCount);
+    }
+
+    const displayRows = rows.slice(startIdx, endIdx);
+
+    displayRows.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        
+        const rawStrike = parseFloat(row.strike) + forwardCorrection;
+        const isATM = (startIdx + idx) === closestIndex;
+
+        let c_oi = row.call?.oi || 0;
+        let c_vol = row.call?.vol || 0;
+        const c_prem = row.call?.premium || 0;
+        const c_delta = (row.call?.delta || 0).toFixed(2);
+        const c_gamma = (row.call?.gamma || 0).toFixed(4);
+        
+        let p_oi = row.put?.oi || 0;
+        let p_vol = row.put?.vol || 0;
+        const p_prem = row.put?.premium || 0;
+        const p_delta = (row.put?.delta || 0).toFixed(2);
+        const p_gamma = (row.put?.gamma || 0).toFixed(4);
+
+        let strikeHtml = '';
+        
+        if (premiumEnabled) {
+            const callBE = rawStrike + c_prem; 
+            const putBE = rawStrike - p_prem;
+            
+            strikeHtml = `
+                <div style="line-height:1.1;">
+                    <span style="color:#a5d6a7">${callBE.toFixed(1)}</span><br>
+                    <span style="font-size:0.75em; color:#ef9a9a">${putBE.toFixed(1)}</span>
+                </div>
+            `;
+        } else {
+            strikeHtml = Number.isInteger(rawStrike) ? rawStrike : rawStrike.toFixed(1);
+        }
+
+        const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
+
+        tr.innerHTML = `
+            <td class="${getValueClass(c_oi)}">${Math.round(c_oi)}</td>
+            <td class="${getValueClass(c_vol)}">${Math.round(c_vol)}</td>
+            <td style="color:#aaa;">${c_prem}</td>
+            <td style="color:#4fc3f7;">${c_delta}</td>
+            <td style="color:#FFD700;">${c_gamma}</td>
+            
+            <td class="${strikeClass}">
+                ${strikeHtml}
+            </td>
+            
+            <td style="color:#FFD700;">${p_gamma}</td>
+            <td style="color:#f48fb1;">${p_delta}</td>
+            <td style="color:#aaa;">${p_prem}</td>
+            <td class="${getValueClass(p_vol)}">${Math.round(p_vol)}</td>
+            <td class="${getValueClass(p_oi)}">${Math.round(p_oi)}</td>
+        `;
+
+        if (isATM) tr.classList.add('row-atm');
+        
+        tbody.appendChild(tr);
+    });
+}
+
+// ==========================================================================
+// INITIALIZATION
+// ==========================================================================
+
+fetchFastPrice();
+fetchHeavyData();
+fetchIntradayAnalytics();
+
+setInterval(fetchFastPrice, 2000);   
+setInterval(fetchHeavyData, 300000);  
+setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
-
-
-
-
-
-
