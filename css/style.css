@@ -10,32 +10,115 @@ body {
     line-height: 1.6;
     color: #333;
 }
-/* 🔥 АННОТАЦИИ ДЛЯ ГРАФИКОВ */
+
+/* 🔥 КОНТЕЙНЕР ДЛЯ ПОДСКАЗОК (ГРАФИКИ) */
+.chart-help {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    margin-left: 8px;
+    color: var(--accent-gold);
+    font-size: 1.1em;
+    vertical-align: middle;
+}
+
+/* СКРЫТАЯ АННОТАЦИЯ (TOOLTIP) */
 .chart-annotation {
-    background: rgba(255, 215, 0, 0.05);
-    border-left: 3px solid var(--accent-gold);
-    padding: 10px 15px;
-    margin-top: 10px;
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    background: rgba(26, 26, 26, 0.98);
+    border: 2px solid var(--accent-gold);
+    border-radius: 8px;
+    padding: 12px 15px;
+    
+    width: 300px;
     font-size: 0.85em;
     line-height: 1.5;
-    color: #ccc;
-    border-radius: 5px;
+    color: #e0e0e0;
+    text-align: left;
+    
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* СТРЕЛКА TOOLTIP */
+.chart-annotation::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: var(--accent-gold);
+}
+
+/* ПОКАЗ ПРИ НАВЕДЕНИИ */
+.chart-help:hover .chart-annotation {
+    visibility: visible;
+    opacity: 1;
 }
 
 .chart-annotation strong {
     color: var(--accent-gold);
+    font-weight: bold;
 }
 
 /* 🔥 АННОТАЦИИ ДЛЯ ГРЕКОВ */
+.analytics-help {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    margin-left: 8px;
+    color: var(--accent-gold);
+    font-size: 1em;
+    vertical-align: middle;
+}
+
 .analytics-annotation {
-    background: rgba(255, 215, 0, 0.05);
-    border-top: 1px solid #444;
-    padding: 10px;
-    margin-top: 10px;
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    background: rgba(26, 26, 26, 0.98);
+    border: 2px solid var(--accent-gold);
+    border-radius: 8px;
+    padding: 12px 15px;
+    
+    width: 280px;
     font-size: 0.8em;
     line-height: 1.4;
-    color: #aaa;
+    color: #e0e0e0;
     text-align: left;
+    
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.analytics-annotation::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: var(--accent-gold);
+}
+
+.analytics-help:hover .analytics-annotation {
+    visibility: visible;
+    opacity: 1;
 }
 
 /* ШАПКА */
@@ -100,6 +183,10 @@ nav {
 
 .hero-buttons {
     margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .btn {
@@ -127,9 +214,9 @@ nav {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    background: #24A1DE; /* Фирменный цвет Telegram */
+    background: #24A1DE;
     color: white !important;
-    padding: 10px 20px;
+    padding: 1rem 2rem;
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
@@ -145,19 +232,34 @@ nav {
 }
 
 .btn-telegram svg {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     fill: white;
 }
 
 /* Стиль для кнопки в шапке (меню) */
-.menu-tg a {
+.tg-menu-item {
+    display: flex;
+    align-items: center;
+}
+
+.tg-link-small {
     background: rgba(255, 255, 255, 0.2);
-    padding: 5px 15px !important;
+    padding: 8px 16px;
     border-radius: 20px;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.tg-link-small:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.tg-link-small svg {
+    width: 18px;
+    height: 18px;
 }
 
 /* СЕКЦИИ */
@@ -205,6 +307,86 @@ section h2 {
     margin-bottom: 0.5rem;
 }
 
+/* 🔒 БЛОК БЕЗОПАСНОСТИ */
+.security-info {
+    max-width: 800px;
+    margin: 0 auto 3rem auto;
+}
+
+.security-card {
+    background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+    border: 2px solid #4caf50;
+    border-radius: 15px;
+    padding: 2rem;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+}
+
+.security-icon {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.security-card h3 {
+    color: #81c784;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.security-card p {
+    line-height: 1.8;
+    margin: 1rem 0;
+    color: #e8f5e9;
+}
+
+.security-card strong {
+    color: #a5d6a7;
+    font-weight: bold;
+}
+
+/* ИНСТРУКЦИЯ (РАСКРЫВАЮЩИЙСЯ БЛОК) */
+.install-guide {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1.5rem;
+    cursor: pointer;
+}
+
+.install-guide summary {
+    font-weight: bold;
+    color: #81c784;
+    list-style: none;
+    padding: 0.5rem;
+    user-select: none;
+}
+
+.install-guide summary::-webkit-details-marker {
+    display: none;
+}
+
+.install-guide summary::before {
+    content: '▶ ';
+    display: inline-block;
+    transition: transform 0.3s;
+}
+
+.install-guide[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.install-guide ol {
+    margin: 1rem 0 0 1.5rem;
+    line-height: 2;
+    color: #c8e6c9;
+}
+
+.install-guide li {
+    margin: 0.5rem 0;
+}
+
 /* СКАЧАТЬ */
 .download {
     background: #f8f9fa;
@@ -235,6 +417,12 @@ section h2 {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     margin: 2rem 0 1rem 0;
+}
+
+.apk-size {
+    color: #888;
+    font-size: 0.9em;
+    margin-top: 0.5rem;
 }
 
 .note {
@@ -298,18 +486,6 @@ footer {
     padding: 2rem;
 }
 
-/* АДАПТИВНОСТЬ ДЛЯ ТЕЛЕФОНОВ */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
-    
-    .menu {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-}
 /* ЖИВЫЕ ДАННЫЕ */
 .live-data {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -394,4 +570,63 @@ tbody tr:hover {
     background: #f8f9fa;
 }
 
+/* Для мобильных - показываем аннотации постоянно */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .menu {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    /* АННОТАЦИИ НА МОБИЛЬНЫХ - ВСЕГДА ВИДНЫ */
+    .chart-annotation,
+    .analytics-annotation {
+        position: relative;
+        visibility: visible;
+        opacity: 1;
+        width: 100%;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        margin-top: 10px;
+        background: rgba(255, 215, 0, 0.1);
+        border-color: rgba(255, 215, 0, 0.5);
+    }
+    
+    .chart-annotation::after,
+    .analytics-annotation::after {
+        display: none;
+    }
+
+    .chart-help,
+    .analytics-help {
+        display: block;
+        margin-top: 5px;
+    }
+
+    .security-card {
+        padding: 1.5rem;
+    }
+}
+
+/* Адаптивность для планшетов */
+@media (max-width: 1024px) {
+    .chart-annotation,
+    .analytics-annotation {
+        width: 250px;
+        font-size: 0.8em;
+    }
+}
