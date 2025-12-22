@@ -122,6 +122,44 @@ nav {
     box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
+/* Кнопка Телеграм */
+.btn-telegram {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #24A1DE; /* Фирменный цвет Telegram */
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 15px rgba(36, 161, 222, 0.3);
+}
+
+.btn-telegram:hover {
+    background: #2290c7;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(36, 161, 222, 0.5);
+}
+
+.btn-telegram svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+
+/* Стиль для кнопки в шапке (меню) */
+.menu-tg a {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 15px !important;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
 /* СЕКЦИИ */
 section {
     padding: 4rem 2rem;
@@ -355,4 +393,5 @@ th {
 tbody tr:hover {
     background: #f8f9fa;
 }
+
 
