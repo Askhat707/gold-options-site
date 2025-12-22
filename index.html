@@ -605,30 +605,42 @@
 
             <!-- 🔥 НОВЫЕ ГРАФИКИ -->
             <div class="chart-box">
-                <div class="chart-title">🌈 IV Smile</div>
-                <div class="chart-wrapper"><canvas id="ivChart"></canvas>
-</div>
+    <div class="chart-title">🌈 IV Smile</div>
+    <div class="chart-wrapper">
+        <canvas id="ivChart"></canvas>
+    </div>
+    <div class="chart-annotation">
+        ❓ <strong>Как читать:</strong> "Улыбка" = рынок ждет сильное движение. Если Put IV > Call IV (перекос вправо) = страх падения. Плоская линия = спокойный рынок.
+    </div>
 </div>
         <div class="chart-box">
-            <div class="chart-title">⚖️ Delta Profile</div>
-            <div class="chart-wrapper">
-                <canvas id="deltaChart"></canvas>
-            </div>
-        </div>
+    <div class="chart-title">⚖️ Delta Profile</div>
+    <div class="chart-wrapper">
+        <canvas id="deltaChart"></canvas>
+    </div>
+    <div class="chart-annotation">
+        ❓ <strong>Как читать:</strong> Delta показывает направленность позиций. Если Call Delta > Put Delta = бычий настрой. Большие столбцы = концентрация направленных ставок на уровне.
+    </div>
+</div>
 
         <div class="chart-box">
-            <div class="chart-title">🔥 GEX Profile</div>
-            <div class="chart-wrapper">
-                <canvas id="gexChart"></canvas>
-            </div>
-        </div>
-
+    <div class="chart-title">🔥 GEX Profile</div>
+    <div class="chart-wrapper">
+        <canvas id="gexChart"></canvas>
+    </div>
+    <div class="chart-annotation">
+        ❓ <strong>Как читать:</strong> Зеленые столбцы = зоны сопротивления (MM покупают при падении). Красные = поддержки (MM продают при росте). Самые высокие = сильнейшие Gamma Walls.
+    </div>
+</div>
         <div class="chart-box">
-            <div class="chart-title">⏱️ Theta Decay</div>
-            <div class="chart-wrapper">
-                <canvas id="thetaChart"></canvas>
-            </div>
-        </div>
+    <div class="chart-title">⏱️ Theta Decay</div>
+    <div class="chart-wrapper">
+        <canvas id="thetaChart"></canvas>
+    </div>
+    <div class="chart-annotation">
+        ❓ <strong>Как читать:</strong> Theta = временной распад опционов. Чем ниже линия, тем быстрее опционы теряют стоимость. Высокая Theta на ATM = продавцы опционов зарабатывают максимум.
+    </div>
+</div>
     </div>
 
     <!-- 🔥 ГРЕКИ (НОВЫЙ РАЗДЕЛ) -->
@@ -1615,6 +1627,7 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
 
