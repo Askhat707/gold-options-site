@@ -392,21 +392,39 @@
 <body>
 
     <header>
-        <div class="logo"><span>📊</span> Gold Options</div>
+    <div class="logo"><span>📊</span> Gold Options</div>
+    <nav>
         <ul class="menu">
             <li><a href="#analytics">Аналитика</a></li>
             <li><a href="#charts">Графики</a></li>
             <li><a href="#greeks">Greeks</a></li>
             <li><a href="#top5">ТОП-5</a></li>
             <li><a href="#download">APK</a></li>
+            <!-- Кнопка Telegram в меню -->
+            <li class="tg-menu-item">
+                <a href="https://t.me/+-tmtq_FUl2NhMjVi" target="_blank" class="tg-link-small">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.891 8.146l-1.703 8.026c-.128.564-.463.702-.937.437l-2.592-1.911-1.251 1.203c-.138.138-.254.254-.518.254l.186-2.637 4.8-4.336c.209-.186-.045-.289-.323-.104l-5.932 3.735-2.556-.799c-.555-.174-.567-.555.116-.822l9.989-3.85c.463-.174.867.104.721.799z"/></svg>
+                    Telegram
+                </a>
+            </li>
         </ul>
-    </header>
+    </nav>
+</header>
 
     <section class="hero">
-        <h1>Gold Analytics Pro</h1>
-        <p class="subtitle">Max Pain • Gamma Walls • Greeks Analytics • Real-time Data</p>
-        <a href="#download" class="btn-primary">Скачать Android APK</a>
-    </section>
+    <h1>Gold Analytics Pro</h1>
+    <p class="subtitle">Max Pain • Gamma Walls • Greeks Analytics • Real-time Data</p>
+    
+    <div class="hero-buttons">
+        <a href="#download" class="btn btn-primary">Скачать Android APK</a>
+        
+        <!-- Большая кнопка Telegram -->
+        <a href="https://t.me/+-tmtq_FUl2NhMjVi" target="_blank" class="btn btn-telegram">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.891 8.146l-1.703 8.026c-.128.564-.463.702-.937.437l-2.592-1.911-1.251 1.203c-.138.138-.254.254-.518.254l.186-2.637 4.8-4.336c.209-.186-.045-.289-.323-.104l-5.932 3.735-2.556-.799c-.555-.174-.567-.555.116-.822l9.989-3.85c.463-.174.867.104.721.799z"/></svg>
+            Наш канал
+        </a>
+    </div>
+</section>
 
     <!-- DISCLAIMER MODAL -->
     <div id="disclaimerModal" class="disclaimer-modal">
@@ -1645,6 +1663,7 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
 
