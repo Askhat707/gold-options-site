@@ -582,13 +582,19 @@
         <!-- 🔥 ГРАФИКИ -->
         <div id="charts" class="charts-container">
             <div class="chart-box">
-    <div class="chart-title">📊 OI Distribution (Call vs Put)</div>
-    <div class="chart-wrapper">
-        <canvas id="oiChart"></canvas>
-    </div>
-    <div class="chart-annotation">
-        ❓ <strong>Как читать:</strong> Высокий Put OI = поддержка снизу. Высокий Call OI = сопротивление сверху. Если Put > Call на уровне — маркет-мейкеры защищают цену снизу.
-    </div>
+    <div class="chart-title">
+    📊 OI Distribution (Call vs Put)
+    <span class="chart-help">
+        ❓
+        <div class="chart-annotation">
+            <strong>Как читать:</strong> Высокий Put OI = поддержка снизу. 
+            Высокий Call OI = сопротивление сверху. Если Put > Call на уровне — 
+            маркет-мейкеры защищают цену снизу.
+        </div>
+    </span>
+</div>
+<div class="chart-wrapper">
+    <canvas id="oiChart"></canvas>
 </div>
 
             <div class="chart-box">
@@ -667,11 +673,15 @@
         
         <div class="analytics-grid">
             <div class="analytics-card">
-    <div class="analytics-title">Δ Total Call Delta</div>
-    <div class="analytics-value" id="total-call-delta">-</div>
-    <div class="analytics-annotation">
-        ❓ Delta = скорость изменения цены опциона. Высокий Call Delta = много направленных бычьих ставок.
-    </div>
+    <div class="analytics-title">
+    Δ Total Call Delta
+    <span class="analytics-help">
+        ❓
+        <div class="analytics-annotation">
+            Delta = скорость изменения цены опциона. 
+            Высокий Call Delta = много направленных бычьих ставок.
+        </div>
+    </span>
 </div>
 
             <div class="analytics-card">
@@ -1663,6 +1673,7 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
 
