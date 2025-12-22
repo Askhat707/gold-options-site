@@ -585,13 +585,12 @@
     <div class="chart-box">
         <div class="chart-title">
             📊 OI Distribution (Call vs Put)
-            <span class="chart-help">
-                ❓
-                <div class="chart-annotation">
+            <span class="chart-help">❓
+                <span class="chart-annotation">
                     <strong>Как читать:</strong> Высокий Put OI = поддержка снизу. 
                     Высокий Call OI = сопротивление сверху. Если Put > Call на уровне — 
                     маркет-мейкеры защищают цену снизу.
-                </div>
+                </span>
             </span>
         </div>
         <div class="chart-wrapper">
@@ -603,12 +602,11 @@
     <div class="chart-box">
         <div class="chart-title">
             📈 Volume Heatmap
-            <span class="chart-help">
-                ❓
-                <div class="chart-annotation">
+            <span class="chart-help">❓
+                <span class="chart-annotation">
                     <strong>Как читать:</strong> Резкие скачки Volume = активная торговля на уровне. 
                     Если Volume выше среднего — уровень "горячий". Смотри, где концентрация объема — там ключевые битвы.
-                </div>
+                </span>
             </span>
         </div>
         <div class="chart-wrapper">
@@ -620,12 +618,11 @@
     <div class="chart-box">
         <div class="chart-title">
             ⚡ Gamma Exposure
-            <span class="chart-help">
-                ❓
-                <div class="chart-annotation">
+            <span class="chart-help">❓
+                <span class="chart-annotation">
                     <strong>Как читать:</strong> Положительная Gamma = сопротивление, MM покупают при росте. 
                     Отрицательная = поддержка, MM продают. Большие пики = "Gamma Walls" — магниты цены.
-                </div>
+                </span>
             </span>
         </div>
         <div class="chart-wrapper">
@@ -637,12 +634,11 @@
     <div class="chart-box">
         <div class="chart-title">
             🎯 Max Pain Analysis
-            <span class="chart-help">
-                ❓
-                <div class="chart-annotation">
+            <span class="chart-help">❓
+                <span class="chart-annotation">
                     <strong>Как читать:</strong> Минимум на графике = Max Pain (точка, где опционы теряют максимум стоимости). 
                     Цена стремится к этой точке к экспирации. Чем дальше от Max Pain, тем сильнее "притяжение".
-                </div>
+                </span>
             </span>
         </div>
         <div class="chart-wrapper">
@@ -654,12 +650,11 @@
     <div class="chart-box">
         <div class="chart-title">
             🌈 IV Smile
-            <span class="chart-help">
-                ❓
-                <div class="chart-annotation">
+            <span class="chart-help">❓
+                <span class="chart-annotation">
                     <strong>Как читать:</strong> "Улыбка" = рынок ждет сильное движение. 
                     Если Put IV > Call IV (перекос вправо) = страх падения. Плоская линия = спокойный рынок.
-                </div>
+                </span>
             </span>
         </div>
         <div class="chart-wrapper">
@@ -671,12 +666,11 @@
     <div class="chart-box">
         <div class="chart-title">
             ⚖️ Delta Profile
-            <span class="chart-help">
-                ❓
-                <div class="chart-annotation">
+            <span class="chart-help">❓
+                <span class="chart-annotation">
                     <strong>Как читать:</strong> Delta показывает направленность позиций. 
                     Если Call Delta > Put Delta = бычий настрой. Большие столбцы = концентрация направленных ставок на уровне.
-                </div>
+                </span>
             </span>
         </div>
         <div class="chart-wrapper">
@@ -688,12 +682,11 @@
     <div class="chart-box">
         <div class="chart-title">
             🔥 GEX Profile
-            <span class="chart-help">
-                ❓
-                <div class="chart-annotation">
+            <span class="chart-help">❓
+                <span class="chart-annotation">
                     <strong>Как читать:</strong> Зеленые столбцы = зоны сопротивления (MM продают при падении). 
                     Красные = поддержки (MM покупают при росте). Самые высокие = сильнейшие Gamma Walls.
-                </div>
+                </span>
             </span>
         </div>
         <div class="chart-wrapper">
@@ -705,12 +698,11 @@
     <div class="chart-box">
         <div class="chart-title">
             ⏱️ Theta Decay
-            <span class="chart-help">
-                ❓
-                <div class="chart-annotation">
+            <span class="chart-help">❓
+                <span class="chart-annotation">
                     <strong>Как читать:</strong> Theta = временной распад опционов. 
                     Чем ниже линия, тем быстрее опционы теряют стоимость. Высокая Theta на ATM = продавцы опционов зарабатывают максимум.
-                </div>
+                </span>
             </span>
         </div>
         <div class="chart-wrapper">
@@ -728,12 +720,11 @@
         <div class="analytics-card">
             <div class="analytics-title">
                 Δ Total Call Delta
-                <span class="analytics-help">
-                    ❓
-                    <div class="analytics-annotation">
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
                         Delta = скорость изменения цены опциона. 
                         Высокий Call Delta = много направленных бычьих ставок.
-                    </div>
+                    </span>
                 </span>
             </div>
             <div class="analytics-value" id="total-call-delta">-</div>
@@ -743,11 +734,10 @@
         <div class="analytics-card">
             <div class="analytics-title">
                 Δ Total Put Delta
-                <span class="analytics-help">
-                    ❓
-                    <div class="analytics-annotation">
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
                         Put Delta (всегда отрицательный). Если |Put Delta| > Call Delta = медвежий настрой рынка.
-                    </div>
+                    </span>
                 </span>
             </div>
             <div class="analytics-value" id="total-put-delta">-</div>
@@ -757,11 +747,10 @@
         <div class="analytics-card">
             <div class="analytics-title">
                 Γ Total Gamma
-                <span class="analytics-help">
-                    ❓
-                    <div class="analytics-annotation">
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
                         Gamma = ускорение Delta. Высокая Gamma = резкие движения цены при пробое уровней. Риск Gamma Squeeze.
-                    </div>
+                    </span>
                 </span>
             </div>
             <div class="analytics-value" id="total-gamma">-</div>
@@ -771,11 +760,10 @@
         <div class="analytics-card">
             <div class="analytics-title">
                 ν Total Vega
-                <span class="analytics-help">
-                    ❓
-                    <div class="analytics-annotation">
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
                         Vega = чувствительность к волатильности. Высокая Vega = опционы сильно реагируют на изменение IV.
-                    </div>
+                    </span>
                 </span>
             </div>
             <div class="analytics-value" id="total-vega">-</div>
@@ -785,11 +773,10 @@
         <div class="analytics-card">
             <div class="analytics-title">
                 Θ Total Theta
-                <span class="analytics-help">
-                    ❓
-                    <div class="analytics-annotation">
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
                         Theta = временной распад. Отрицательная = покупатели опционов теряют деньги каждый день. Продавцы зарабатывают.
-                    </div>
+                    </span>
                 </span>
             </div>
             <div class="analytics-value" id="total-theta">-</div>
@@ -799,11 +786,10 @@
         <div class="analytics-card">
             <div class="analytics-title">
                 📊 Avg IV
-                <span class="analytics-help">
-                    ❓
-                    <div class="analytics-annotation">
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
                         IV = подразумеваемая волатильность. Высокая IV (>30%) = дорогие опционы, рынок ждет сильных движений.
-                    </div>
+                    </span>
                 </span>
             </div>
             <div class="analytics-value" id="avg-iv">-</div>
@@ -1786,6 +1772,7 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
 
