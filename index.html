@@ -741,7 +741,7 @@
     <div class="download-card">
         <h3>Android APK</h3>
         <p style="color:#888;">Версия 1.0</p>
-        <a href="downloads/gold-options.apk" download class="btn-download">📥 Скачать APK</a>
+        <a href="downloads/gold-options2.apk" download class="btn-download">📥 Скачать APK</a>
         <p class="apk-size">Размер: ~5 МБ</p>
     </div>
     
@@ -1392,7 +1392,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
 async function fetchFastPrice() {
     try {
-        const res = await fetch(`${DB_ROOT}/gold_fast.json`);
+        const res = await fetch(`${DB_ROOT}/gold_fast2.json`);
         const data = await res.json();
         if (data && data.price) {
             currentFuturesPrice = data.price;
@@ -1404,7 +1404,7 @@ async function fetchFastPrice() {
 
 async function fetchHeavyData() {
     try {
-        const endpoint = currentExpiry === '0dte' ? 'gold_heavy.json' : 'gold_friday.json';
+        const endpoint = currentExpiry === '0dte' ? 'gold_heavy2.json' : 'gold_friday.json';
         const url = `${DB_ROOT}/${endpoint}?t=${Date.now()}`;
         
         console.log(`📡 Запрос к: ${url}`);
@@ -1595,6 +1595,7 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
 
