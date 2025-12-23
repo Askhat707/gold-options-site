@@ -1335,6 +1335,47 @@ deltaChart = new Chart(ctxDelta, {
             const analytics = await res.json();
             
             if (!analytics) return;
+            // --- ОБНОВЛЕНИЕ НОВЫХ ПОЛЕЙ ---
+
+            // 1. Expected Move
+            if (analytics.expected_move) {
+                const move = parseFloat(analytics.expected_move);
+                document.getElementById('exp-move-value').innerText = `±$${move.toFixed(2)}`;
+                
+                if (currentFuturesPrice > 0) {
+                    const up = (currentFuturesPrice + move).toFixed(1);
+                    const down = (currentFuturesPrice - move).toFixed(1);
+                    document.getElementById('exp-move-range').innerText = `${down} — ${up}`;
+                }
+            }
+            
+            // 2. Probabilities (в твоем JSON значения большие, делим на 100 для корректного % если нужно, 
+            // но судя по 4695, Python прислал целое число, сделаем формат 46.9%)
+            if (analytics.probabilities) {
+                const pCall = (analytics.probabilities.call_itm / 100).toFixed(1);
+                const pPut = (analytics.probabilities.put_itm / 100).toFixed(1);
+                document.getElementById('prob-call').innerText = pCall + '%';
+                document.getElementById('prob-put').innerText = pPut + '%';
+            }
+            
+            // 3. Advanced Greeks
+            if (analytics.adv_metrics) {
+                document.getElementById('metric-color').innerText = analytics.adv_metrics.color || '0';
+                // Добавим проверку на charm, если Python его шлет (в JSON у тебя было color, добавим charm)
+                document.getElementById('metric-charm').innerText = analytics.adv_metrics.charm || '0.00';
+            }
+            
+            // 4. Календарь
+            if (analytics.calendar && Array.isArray(analytics.calendar)) {
+                const calContainer = document.getElementById('calendar-list');
+                calContainer.innerHTML = analytics.calendar.map(item => `
+                    <div class="calendar-item">
+                        <span class="calendar-time">${item.time}</span>
+                        <span class="event-name">${item.event}</span>
+                        <span class="impact-${item.impact}">●</span>
+                    </div>
+                `).join('');
+            }
 
             // Zero Gamma
             if (analytics.zero_gamma) {
@@ -1734,6 +1775,7 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
 
