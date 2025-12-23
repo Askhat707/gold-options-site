@@ -6,8 +6,8 @@
     --card-bg: #1e1e1e;
     --text-color: #e0e0e0;
     --accent-gold: #FFD700;
-    --call-color: #2e7d32;
-    --put-color: #c62828;
+    --call-color: #c62828; /* ТЕПЕРЬ КРАСНЫЙ (Сопротивление) */
+    --put-color: #2e7d32;  /* ТЕПЕРЬ ЗЕЛЕНЫЙ (Поддержка) */
     --strike-bg: #2c2c2c;
     --bullish: #4caf50;
     --bearish: #f44336;
@@ -219,8 +219,8 @@ header { background: #333; padding: 10px 20px; display: flex; justify-content: s
     margin: 5px 0; display: flex; justify-content: space-between;
     align-items: center; border-left: 3px solid transparent;
 }
-.level-item.support { border-left-color: var(--call-color); }
-.level-item.resistance { border-left-color: var(--put-color); }
+.level-item.support { border-left-color: var(--put-color); }      /* Поддержка = Путы (Зеленый) */
+.level-item.resistance { border-left-color: var(--call-color); }   /* Сопротивление = Коллы (Красный) */
 .level-strike { font-weight: bold; color: #fff; }
 .level-value { color: var(--accent-gold); font-weight: bold; }
 
@@ -419,3 +419,4 @@ footer { background: #111; padding: 20px; text-align: center; color: #666; font-
         bottom: 150%;
     }
 }
+
