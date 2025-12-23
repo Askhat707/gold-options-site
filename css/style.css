@@ -218,6 +218,21 @@ header { background: #333; padding: 10px 20px; display: flex; justify-content: s
 .analytics-label {
     color: #888; font-size: 0.85em; text-align: center;
 }
+.calendar-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px dashed #333;
+}
+.calendar-item:last-child { border-bottom: none; }
+.calendar-time { color: var(--accent-gold); font-weight: bold; margin-right: 8px; }
+.impact-high { color: #f44336; } 
+.impact-medium { color: #ff9800; }
+.event-name { color: #ccc; flex-grow: 1; text-align: left; }
+/* ---------------------- */
+
+.level-item {
+    background: #222; padding: 8px 12px; border-radius: 6px;
 
 .level-item {
     background: #222; padding: 8px 12px; border-radius: 6px;
@@ -424,5 +439,6 @@ footer { background: #111; padding: 20px; text-align: center; color: #666; font-
         bottom: 150%;
     }
 }
+
 
 
