@@ -2,17 +2,22 @@
 /* 🔥 1. ГЛАВНЫЕ СТИЛИ И ПЕРЕМЕННЫЕ */
 /* ========================================= */
 :root {
+    /* Твои привычные цвета */
+    --call-color: #2e7d32; /* Зеленый (Коллы) */
+    --put-color: #c62828;  /* Красный (Путы) */
+    /* Остальное не меняем */
     --bg-color: #121212;
     --card-bg: #1e1e1e;
     --text-color: #e0e0e0;
     --accent-gold: #FFD700;
-    --call-color: #c62828; /* ТЕПЕРЬ КРАСНЫЙ (Сопротивление) */
-    --put-color: #2e7d32;  /* ТЕПЕРЬ ЗЕЛЕНЫЙ (Поддержка) */
-    --strike-bg: #2c2c2c;
     --bullish: #4caf50;
     --bearish: #f44336;
     --neutral: #9e9e9e;
 }
+
+/* Привязываем заголовки уровней к твоим цветам */
+.level-item.resistance { border-left-color: var(--call-color); } /* Сопротивление = Зеленый */
+.level-item.support { border-left-color: var(--put-color); }     /* Поддержка = Красный */
 
 * { box-sizing: border-box; }
 body { font-family: 'Segoe UI', sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
@@ -419,4 +424,5 @@ footer { background: #111; padding: 20px; text-align: center; color: #666; font-
         bottom: 150%;
     }
 }
+
 
