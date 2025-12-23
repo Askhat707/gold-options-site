@@ -343,6 +343,71 @@
                 <div class="analytics-value" id="max-pain-value">-</div>
                 <div class="analytics-label">Точка максимальной боли</div>
             </div>
+                        <!-- 1. Expected Move -->
+            <div class="analytics-card">
+                <div class="analytics-title">
+                    📏 Expected Move (±1σ)
+                    <span class="analytics-help">❓
+                        <span class="analytics-annotation">
+                            <strong>Ожидаемое движение:</strong> Диапазон (68% вероятности), в котором цена останется до экспирации. Рассчитано на основе IV.
+                        </span>
+                    </span>
+                </div>
+                <div class="analytics-value" id="exp-move-value" style="color: var(--accent-gold);">-</div>
+                <div class="analytics-label" id="exp-move-range">Загрузка диапазона...</div>
+            </div>
+            
+            <!-- 2. Probabilities (ITM) -->
+            <div class="analytics-card">
+                <div class="analytics-title">
+                    🎯 ITM Probability
+                    <span class="analytics-help">❓
+                        <span class="analytics-annotation">
+                            Вероятность того, что цена окажется "в деньгах" к моменту экспирации. Основано на Дельте ATM опционов.
+                        </span>
+                    </span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                    <div style="text-align: center;">
+                        <div style="color: var(--call-color); font-weight: bold; font-size: 1.2em;" id="prob-call">-</div>
+                        <div style="font-size: 0.7em; color: #888;">CALL ITM</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: var(--put-color); font-weight: bold; font-size: 1.2em;" id="prob-put">-</div>
+                        <div style="font-size: 0.7em; color: #888;">PUT ITM</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 3. Greeks 2.0 (Charm/Color) -->
+            <div class="analytics-card">
+                <div class="analytics-title">
+                    🌀 Advanced Greeks
+                    <span class="analytics-help">❓
+                        <span class="analytics-annotation">
+                            <strong>Color:</strong> Изменение Гаммы во времени. <br><strong>Charm:</strong> Скорость распада Дельты. Важно для оценки риска на выходных.
+                        </span>
+                    </span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 5px;">
+                    <div class="level-item" style="border: none; background: rgba(255,255,255,0.05);">
+                        <span style="font-size: 0.8em; color: #888;">Color (Γ Decay):</span>
+                        <span id="metric-color" style="font-weight: bold;">-</span>
+                    </div>
+                    <div class="level-item" style="border: none; background: rgba(255,255,255,0.05);">
+                        <span style="font-size: 0.8em; color: #888;">Charm (Δ Decay):</span>
+                        <span id="metric-charm" style="font-weight: bold;">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 4. Economic Calendar -->
+            <div class="analytics-card">
+                <div class="analytics-title">📅 Gold News Calendar</div>
+                <div id="calendar-list" style="margin-top: 10px; font-size: 0.85em;">
+                    <div class="analytics-label">Загрузка событий...</div>
+                </div>
+            </div>
 
             <!-- Zero Gamma -->
             <div class="analytics-card">
@@ -1669,6 +1734,7 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
 
