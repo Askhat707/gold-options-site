@@ -327,10 +327,12 @@
                 <div class="small-text">Баланс</div>
                 <div class="big-number" id="balance-price">...</div>
             </div>
-            <div class="data-card">
-                <div class="small-text">Updated UTC</div>
-                <div class="big-number" id="updated-time">--:--</div>
-            </div>
+            <div class="data-card" style="min-width: 200px;">
+    <div class="small-text" style="color: var(--accent-gold); font-weight: bold; line-height: 1.2;">
+        ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ<br>ДАННЫХ ПО UTC
+    </div>
+    <div class="big-number" id="updated-time" style="font-size: 1.1em; margin-top: 5px;">--.---.---- --:--:--</div>
+</div>
         </div>
 
         <!-- 🔥 ИНТРАДЕЙ АНАЛИТИКА -->
@@ -622,11 +624,11 @@
 
     <div class="control-panel">
         <!-- ПЕРЕКЛЮЧАТЕЛЬ ЭКСПИРАЦИЙ -->
-        <div class="expiry-toggle">
-            <span class="filter-label">Экспирация:</span>
-            <button class="expiry-btn active" data-expiry="0dte">INTRADAY (0DTE)</button>
-            <button class="expiry-btn" data-expiry="friday">FRIDAY (1DTE)</button>
-        </div>
+<div class="expiry-toggle">
+    <span class="filter-label">Экспирация:</span>
+    <button class="expiry-btn active" data-expiry="0dte">INTRADAY</button>
+    <button class="expiry-btn" data-expiry="friday">FRIDAY</button>
+</div>
 
         <div class="calculator-panel">
             <label style="color:#fff; font-weight:bold;">Forward (Форвард):</label>
@@ -683,9 +685,9 @@
     
     <div class="levels-container">
         <div class="table-header-info">
-            <span id="table-expiry-label">INTRADAY <span class="dte-tag">0DTE</span></span>
-            <span style="color:#888;">Full Analytics Active</span>
-        </div>
+    <span id="table-expiry-label">INTRADAY</span>
+    <span style="color:#888;">Full Analytics Active</span>
+</div>
         
         <div class="table-wrapper">
             <table>
@@ -739,11 +741,11 @@
     </div>
     
     <div class="download-card">
-        <h3>Android APK</h3>
-        <p style="color:#888;">Версия 1.0</p>
-        <a href="downloads/gold-options2.apk" download class="btn-download">📥 Скачать APK</a>
-        <p class="apk-size">Размер: ~5 МБ</p>
-    </div>
+    <h3>Android APK</h3>
+    <p style="color:#888;">Версия 3.0</p>
+    <a href="downloads/gold-options3.apk" download class="btn-download">📥 Скачать APK</a>
+    <p class="apk-size">Размер: ~9.4 МБ</p>
+</div>
     
     <div style="margin-top: 30px;">
         <span class="disclaimer-link" onclick="openDisclaimer()">📄 Disclaimer & Privacy Policy</span>
@@ -1366,11 +1368,8 @@ document.querySelectorAll('.expiry-btn').forEach(btn => {
         currentExpiry = this.dataset.expiry;
         
         const label = document.getElementById('table-expiry-label');
-        if (currentExpiry === '0dte') {
-            label.innerHTML = 'INTRADAY <span class="dte-tag">0DTE</span>';
-        } else {
-            label.innerHTML = 'FRIDAY <span class="dte-tag">1DTE</span>';
-        }
+        // Просто меняем текст заголовка без лишних тегов
+        label.innerText = currentExpiry === '0dte' ? 'INTRADAY' : 'FRIDAY';
         
         fetchHeavyData();
     });
@@ -1425,8 +1424,22 @@ async function fetchHeavyData() {
             return;
         }
 
-        if (data.balance_price) document.getElementById('balance-price').innerText = '$' + data.balance_price;
-        if (data.updated_at_utc) document.getElementById('updated-time').innerText = data.updated_at_utc;
+        if (data.balance_price) {
+            document.getElementById('balance-price').innerText = '$' + data.balance_price;
+        }
+
+        if (data.updated_at_utc) {
+            // Создаем дату именно в формате UTC, чтобы она совпадала с временем сервера
+            const now = new Date();
+            const day = String(now.getUTCDate()).padStart(2, '0');
+            const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+            const year = now.getUTCFullYear();
+            const dateStr = `${day}.${month}.${year}`;
+            
+            // Выводим: ДАТА (пробел) ВРЕМЯ_ИЗ_БАЗЫ
+            document.getElementById('updated-time').innerHTML = 
+                `<span style="color: #888; font-size: 0.8em;">${dateStr}</span> <span style="color: #fff;">${data.updated_at_utc}</span>`;
+        }
         
         let rawData = data.data;
         if (rawData && !Array.isArray(rawData)) {
@@ -1595,6 +1608,7 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
 
