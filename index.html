@@ -410,9 +410,7 @@
             📊 OI Distribution (Call vs Put)
             <span class="chart-help">❓
                 <span class="chart-annotation">
-                    <strong>Как читать:</strong> Высокий Put OI = поддержка снизу. 
-                    Высокий Call OI = сопротивление сверху. Если Put > Call на уровне — 
-                    маркет-мейкеры защищают цену снизу.
+                    <strong>Как читать:</strong> Зеленый (Calls) = Сопротивление сверху. Красный (Puts) = Поддержка снизу. Если зеленых столбцов много — цене трудно расти.
                 </span>
             </span>
         </div>
@@ -506,7 +504,7 @@
             🔥 GEX Profile
             <span class="chart-help">❓
                 <span class="chart-annotation">
-                    <strong>Как читать:</strong> Красные столбцы (Коллы) = зоны сопротивления (MM продают фьючерс при росте цены). Зеленые столбцы (Путы) = зоны поддержки (MM покупают фьючерс при падении цены).
+                    <strong>Как читать:</strong> Зеленые столбцы (Calls) = зоны сопротивления. Красные столбцы (Puts) = зоны поддержки. Чем выше столбцы, тем сильнее уровень.
                 </span>
             </span>
         </div>
@@ -815,18 +813,18 @@
             data: {
                 labels: strikes,
                 datasets: [{
-                    label: 'Call OI',
-                    data: callOI,
-                    backgroundColor: 'rgba(46, 125, 50, 0.7)',
-                    borderColor: 'rgba(46, 125, 50, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Put OI',
-                    data: putOI.map(v => -v),
-                    backgroundColor: 'rgba(198, 40, 40, 0.7)',
-                    borderColor: 'rgba(198, 40, 40, 1)',
-                    borderWidth: 1
-                }]
+    label: 'Call OI',
+    data: callOI,
+    backgroundColor: 'rgba(46, 125, 50, 0.8)',
+    barPercentage: 0.9,       // СТОЛБЦЫ ТОЛЩЕ
+    categoryPercentage: 1.0
+}, {
+    label: 'Put OI',
+    data: putOI.map(v => -v),
+    backgroundColor: 'rgba(198, 40, 40, 0.8)',
+    barPercentage: 0.9,       // СТОЛБЦЫ ТОЛЩЕ
+    categoryPercentage: 1.0
+}]
             },
             options: {
                 responsive: true,
@@ -1037,18 +1035,35 @@
                 datasets: [{
                     label: 'Net GEX',
                     data: gammaData,
-                    backgroundColor: gammaData.map(v => v > 0 ? 'rgba(76, 175, 80, 0.7)' : 'rgba(244, 67, 54, 0.7)'),
-                    borderColor: gammaData.map(v => v > 0 ? 'rgba(76, 175, 80, 1)' : 'rgba(244, 67, 54, 1)'),
-                    borderWidth: 1
+                    // Если > 0 (Коллы) — Зеленый. Если < 0 (Путы) — Красный.
+                    backgroundColor: gammaData.map(v => v > 0 ? 'rgba(46, 125, 50, 0.8)' : 'rgba(198, 40, 40, 0.8)'),
+                    borderColor: gammaData.map(v => v > 0 ? 'rgba(46, 125, 50, 1)' : 'rgba(198, 40, 40, 1)'),
+                    borderWidth: 1,
+                    barPercentage: 0.9,      // Толщина самих столбцов
+                    categoryPercentage: 1.0  // Убирает пустые отступы между группами, делая столбцы еще шире
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
+                interaction: {
+                    mode: 'index', // Всплывашка срабатывает по всей вертикали страйка
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: '#fff' }
+                    }
+                },
                 scales: {
-                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
-                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                    x: {
+                        ticks: { color: '#888', maxRotation: 45 },
+                        grid: { color: '#333' }
+                    },
+                    y: {
+                        ticks: { color: '#888' },
+                        grid: { color: '#333' }
+                    }
                 }
             }
         });
@@ -1257,21 +1272,24 @@
             }
 
             // Key Levels
-            if (analytics.key_levels) {
-                const levels = analytics.key_levels;
-                let html = '';
-                
-                html += '<div style="color: #f44336; font-weight: bold; margin-bottom: 5px;">🔴 Resistance:</div>';
-                levels.resistance.forEach(s => {
-                    html += `<divclass="level-item resistance"><span>$${s}</span></div>`;
-});
-            html += '<div style="color: #4caf50; font-weight: bold; margin: 10px 0 5px 0;">🟢 Support:</div>';
-            levels.support.forEach(s => {
-                html += `<div class="level-item support"><span>$${s}</span></div>`;
-            });
-            
-            document.getElementById('key-levels-display').innerHTML = html;
-        }
+           if (analytics.key_levels) {
+    const levels = analytics.key_levels;
+    let html = '';
+    
+    // Resistance (Коллы) — Зеленый
+    html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance (Calls):</div>';
+    levels.resistance.forEach(s => {
+        html += `<div class="level-item resistance"><span>$${s}</span></div>`;
+    });
+
+    // Support (Путы) — Красный
+    html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support (Puts):</div>';
+    levels.support.forEach(s => {
+        html += `<div class="level-item support"><span>$${s}</span></div>`;
+    });
+    
+    document.getElementById('key-levels-display').innerHTML = html;
+}
 
         // 🔥 ALERTS
         generateAlerts(analytics);
@@ -1605,6 +1623,7 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
 
