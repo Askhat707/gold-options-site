@@ -425,8 +425,10 @@
             📈 Volume Heatmap
             <span class="chart-help">❓
                 <span class="chart-annotation">
-                    <strong>Как читать:</strong> Резкие скачки Volume = активная торговля на уровне. 
-                    Если Volume выше среднего — уровень "горячий". Смотри, где концентрация объема — там ключевые битвы.
+            <strong>Как читать:</strong> <br>
+            Показывает «живые» деньги прямо сейчас. <br>
+            Высокий объем на Зеленых (Calls) означает, что уровни сопротивления активно защищают. <br>
+            Высокий объем на Красных (Puts) — уровни поддержки активно выкупают.
                 </span>
             </span>
         </div>
@@ -806,68 +808,99 @@
         const putVol = data.map(r => r.put?.vol || 0);
 
         // OI Distribution
-        if (oiChart) oiChart.destroy();
-        const ctxOI = document.getElementById('oiChart').getContext('2d');
-        oiChart = new Chart(ctxOI, {
-            type: 'bar',
-            data: {
-                labels: strikes,
-                datasets: [{
-    label: 'Call OI',
-    data: callOI,
-    backgroundColor: 'rgba(46, 125, 50, 0.8)',
-    barPercentage: 0.9,       // СТОЛБЦЫ ТОЛЩЕ
-    categoryPercentage: 1.0
-}, {
-    label: 'Put OI',
-    data: putOI.map(v => -v),
-    backgroundColor: 'rgba(198, 40, 40, 0.8)',
-    barPercentage: 0.9,       // СТОЛБЦЫ ТОЛЩЕ
-    categoryPercentage: 1.0
-}]
+if (oiChart) oiChart.destroy();
+const ctxOI = document.getElementById('oiChart').getContext('2d');
+oiChart = new Chart(ctxOI, {
+    type: 'bar',
+    data: {
+        labels: strikes,
+        datasets: [{
+            label: 'Call OI',
+            data: callOI,
+            backgroundColor: 'rgba(46, 125, 50, 0.8)',
+            borderColor: 'rgba(46, 125, 50, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }, {
+            label: 'Put OI',
+            data: putOI.map(v => -v),
+            backgroundColor: 'rgba(198, 40, 40, 0.8)',
+            borderColor: 'rgba(198, 40, 40, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
+        plugins: { 
+            legend: { labels: { color: '#fff' } } 
+        },
+        scales: {
+            x: { 
+                ticks: { color: '#888', maxRotation: 45 }, 
+                grid: { color: '#333' } 
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
-                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
-                }
+            y: { 
+                ticks: { color: '#888' }, 
+                grid: { color: '#333' } 
             }
-        });
-
+        }
+    }
+});
         // Volume Heatmap
-        if (volumeChart) volumeChart.destroy();
-        const ctxVol = document.getElementById('volumeChart').getContext('2d');
-        volumeChart = new Chart(ctxVol, {
-            type: 'bar',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Call Vol',
-                    data: callVol,
-                    backgroundColor: 'rgba(79, 195, 247, 0.7)',
-                    borderColor: 'rgba(79, 195, 247, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Put Vol',
-                    data: putVol.map(v => -v),
-                    backgroundColor: 'rgba(255, 138, 101, 0.7)',
-                    borderColor: 'rgba(255, 138, 101, 1)',
-                    borderWidth: 1
-                }]
+if (volumeChart) volumeChart.destroy();
+const ctxVol = document.getElementById('volumeChart').getContext('2d');
+volumeChart = new Chart(ctxVol, {
+    type: 'bar',
+    data: {
+        labels: strikes,
+        datasets: [{
+            label: 'Call Vol',
+            data: callVol,
+            backgroundColor: 'rgba(79, 195, 247, 0.7)',
+            borderColor: 'rgba(79, 195, 247, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }, {
+            label: 'Put Vol',
+            data: putVol.map(v => -v),
+            backgroundColor: 'rgba(255, 138, 101, 0.7)',
+            borderColor: 'rgba(255, 138, 101, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
+        plugins: { 
+            legend: { labels: { color: '#fff' } } 
+        },
+        scales: {
+            x: { 
+                ticks: { color: '#888', maxRotation: 45 }, 
+                grid: { color: '#333' } 
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
-                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
-                }
+            y: { 
+                ticks: { color: '#888' }, 
+                grid: { color: '#333' } 
             }
-        });
+        }
+    }
+});
 
         // Gamma Exposure
         const gammaData = data.map(r => {
@@ -991,39 +1024,55 @@
         });
 
         // 🔥 DELTA PROFILE
-        const callDelta = data.map(r => (r.call?.delta || 0) * (r.call?.oi || 0));
-        const putDelta = data.map(r => Math.abs(r.put?.delta || 0) * (r.put?.oi || 0));
+const callDelta = data.map(r => (r.call?.delta || 0) * (r.call?.oi || 0));
+const putDelta = data.map(r => Math.abs(r.put?.delta || 0) * (r.put?.oi || 0));
 
-        if (deltaChart) deltaChart.destroy();
-        const ctxDelta = document.getElementById('deltaChart').getContext('2d');
-        deltaChart = new Chart(ctxDelta, {
-            type: 'bar',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Call Delta Exposure',
-                    data: callDelta,
-                    backgroundColor: 'rgba(76, 175, 80, 0.7)',
-                    borderColor: 'rgba(76, 175, 80, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Put Delta Exposure',
-                    data: putDelta.map(v => -v),
-                    backgroundColor: 'rgba(244, 67, 54, 0.7)',
-                    borderColor: 'rgba(244, 67, 54, 1)',
-                    borderWidth: 1
-                }]
+if (deltaChart) deltaChart.destroy();
+const ctxDelta = document.getElementById('deltaChart').getContext('2d');
+deltaChart = new Chart(ctxDelta, {
+    type: 'bar',
+    data: {
+        labels: strikes,
+        datasets: [{
+            label: 'Call Delta Exposure',
+            data: callDelta,
+            backgroundColor: 'rgba(76, 175, 80, 0.7)',
+            borderColor: 'rgba(76, 175, 80, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }, {
+            label: 'Put Delta Exposure',
+            data: putDelta.map(v => -v),
+            backgroundColor: 'rgba(244, 67, 54, 0.7)',
+            borderColor: 'rgba(244, 67, 54, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
+        plugins: { 
+            legend: { labels: { color: '#fff' } } 
+        },
+        scales: {
+            x: { 
+                ticks: { color: '#888', maxRotation: 45 }, 
+                grid: { color: '#333' } 
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
-                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
-                }
+            y: { 
+                ticks: { color: '#888' }, 
+                grid: { color: '#333' } 
             }
-        });
+        }
+    }
+});
 
         // 🔥 GEX PROFILE
         if (gexChart) gexChart.destroy();
@@ -1443,18 +1492,15 @@ async function fetchHeavyData() {
             document.getElementById('balance-price').innerText = '$' + data.balance_price;
         }
 
-        if (data.updated_at_utc) {
-            // Создаем дату именно в формате UTC, чтобы она совпадала с временем сервера
-            const now = new Date();
-            const day = String(now.getUTCDate()).padStart(2, '0');
-            const month = String(now.getUTCMonth() + 1).padStart(2, '0');
-            const year = now.getUTCFullYear();
-            const dateStr = `${day}.${month}.${year}`;
-            
-            // Выводим: ДАТА (пробел) ВРЕМЯ_ИЗ_БАЗЫ
-            document.getElementById('updated-time').innerHTML = 
-                `<span style="color: #888; font-size: 0.8em;">${dateStr}</span> <span style="color: #fff;">${data.updated_at_utc}</span>`;
-        }
+       if (data.updated_at_utc) {
+    // Разбиваем дату и время для красивого отображения
+    const parts = data.updated_at_utc.split(' ');
+    const date = parts[0]; // DD.MM.YYYY
+    const time = parts[1]; // HH:MM:SS
+    
+    document.getElementById('updated-time').innerHTML = 
+        `<span style="color: #888; font-size: 0.8em;">${date}</span> <span style="color: #fff;">${time}</span>`;
+}
         
         let rawData = data.data;
         if (rawData && !Array.isArray(rawData)) {
@@ -1623,6 +1669,7 @@ setInterval(fetchIntradayAnalytics, 10000); // 🔥 Каждые 10 секунд
 </script>
 </body>
 </html>
+
 
 
 
