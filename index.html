@@ -1144,10 +1144,12 @@
 
     function createCharts(data) {
         const strikes = data.map(r => r.strike);
+        
+        // 🔥 ИСПРАВЛЕНИЕ: Читаем 'volume', если нет 'vol'
         const callOI = data.map(r => r.call?.oi || 0);
         const putOI = data.map(r => r.put?.oi || 0);
-        const callVol = data.map(r => r.call?.vol || 0);
-        const putVol = data.map(r => r.put?.vol || 0);
+        const callVol = data.map(r => r.call?.volume || r.call?.vol || 0); 
+        const putVol = data.map(r => r.put?.volume || r.put?.vol || 0);
 
         // 1. OI Distribution
         if (oiChart) oiChart.destroy();
@@ -1177,10 +1179,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
+                interaction: { mode: 'index', intersect: false },
                 plugins: { legend: { labels: { color: '#fff' } } },
                 scales: {
                     x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
@@ -1189,7 +1188,7 @@
             }
         });
 
-        // 2. Volume Heatmap
+        // 2. Volume Heatmap (ТЕПЕРЬ БУДЕТ РАБОТАТЬ)
         if (volumeChart) volumeChart.destroy();
         const ctxVol = document.getElementById('volumeChart').getContext('2d');
         volumeChart = new Chart(ctxVol, {
@@ -1217,10 +1216,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
+                interaction: { mode: 'index', intersect: false },
                 plugins: { legend: { labels: { color: '#fff' } } },
                 scales: {
                     x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
@@ -1273,12 +1269,8 @@
                 const strike = parseFloat(s.strike);
                 const callOI = s.call?.oi || 0;
                 const putOI = s.put?.oi || 0;
-                if (testStrike > strike) {
-                    totalLoss += (testStrike - strike) * callOI * 100;
-                }
-                if (testStrike < strike) {
-                    totalLoss += (strike - testStrike) * putOI * 100;
-                }
+                if (testStrike > strike) totalLoss += (testStrike - strike) * callOI * 100;
+                if (testStrike < strike) totalLoss += (strike - testStrike) * putOI * 100;
             });
             return totalLoss / 1000000;
         });
@@ -1380,10 +1372,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
+                interaction: { mode: 'index', intersect: false },
                 plugins: { legend: { labels: { color: '#fff' } } },
                 scales: {
                     x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
@@ -1412,10 +1401,7 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
+                interaction: { mode: 'index', intersect: false },
                 plugins: { legend: { labels: { color: '#fff' } } },
                 scales: {
                     x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
@@ -1463,7 +1449,6 @@
             }
         });
     }
-
 
     // ==========================================================================
     // 🔥 РАСЧЕТЫ
@@ -1578,103 +1563,124 @@
         // Expected Move
         if (analytics.expected_move) {
             const move = parseFloat(analytics.expected_move);
-            document.getElementById('exp-move-value').innerText = `±$${move.toFixed(2)}`;
+            const emEl = document.getElementById('exp-move-value');
+            if(emEl) emEl.innerText = `±$${move.toFixed(2)}`;
             
             if (currentFuturesPrice > 0) {
                 const up = (currentFuturesPrice + move).toFixed(1);
                 const down = (currentFuturesPrice - move).toFixed(1);
-                document.getElementById('exp-move-range').innerText = `${down} — ${up}`;
+                const rangeEl = document.getElementById('exp-move-range');
+                if(rangeEl) rangeEl.innerText = `${down} — ${up}`;
             }
         }
         
         // Probabilities
         if (analytics.probabilities) {
-            document.getElementById('prob-call').innerText = analytics.probabilities.call_itm + '%';
-            document.getElementById('prob-put').innerText = analytics.probabilities.put_itm + '%';
+            const pCall = document.getElementById('prob-call');
+            const pPut = document.getElementById('prob-put');
+            if(pCall) pCall.innerText = analytics.probabilities.call_itm + '%';
+            if(pPut) pPut.innerText = analytics.probabilities.put_itm + '%';
         }
         
         // Advanced Greeks
         if (analytics.adv_metrics) {
-            document.getElementById('metric-color').innerText = analytics.adv_metrics.color || '0';
-            document.getElementById('metric-charm').innerText = analytics.adv_metrics.charm || '0';
+            const mColor = document.getElementById('metric-color');
+            const mCharm = document.getElementById('metric-charm');
+            if(mColor) mColor.innerText = analytics.adv_metrics.color ? analytics.adv_metrics.color.toFixed(4) : '0';
+            if(mCharm) mCharm.innerText = analytics.adv_metrics.charm ? analytics.adv_metrics.charm.toFixed(4) : '0';
         }
         
         // Calendar
         if (analytics.calendar && Array.isArray(analytics.calendar)) {
             const calContainer = document.getElementById('calendar-list');
-            calContainer.innerHTML = analytics.calendar.map(item => `
-                <div style="padding: 5px 0; border-bottom: 1px solid #333;">
-                    <span style="color: var(--accent-gold); font-weight: bold;">${item.time}</span>
-                    <span style="color: #ccc; margin-left: 10px;">${item.event}</span>
-                </div>
-            `).join('');
+            if(calContainer) {
+                calContainer.innerHTML = analytics.calendar.map(item => `
+                    <div style="padding: 5px 0; border-bottom: 1px solid #333;">
+                        <span style="color: var(--accent-gold); font-weight: bold;">${item.time}</span>
+                        <span style="color: #ccc; margin-left: 10px;">${item.event}</span>
+                    </div>
+                `).join('');
+            }
         }
 
-        // Zero Gamma
+        // 🔥 ИСПРАВЛЕНИЕ ZERO GAMMA ($undefined FIX)
         if (analytics.zero_gamma) {
-            document.getElementById('zero-gamma-value').innerText = '$' + analytics.zero_gamma.strike;
-            const pos = analytics.zero_gamma.position === 'above' ? '🟢 Выше' : '🔴 Ниже';
-            document.getElementById('zero-gamma-label').innerText = `Цена ${pos} Zero Gamma`;
+            const zVal = document.getElementById('zero-gamma-value');
+            const zLabel = document.getElementById('zero-gamma-label');
+            
+            // Если пришел объект, берем strike, если число - берем число
+            const val = analytics.zero_gamma.strike || analytics.zero_gamma;
+            
+            if(zVal) zVal.innerText = '$' + val;
+            
+            if(zLabel && currentFuturesPrice > 0) {
+                const pos = currentFuturesPrice > val ? '🟢 Выше' : '🔴 Ниже';
+                zLabel.innerText = `Цена ${pos} Zero Gamma`;
+            }
         }
 
         // IV Skew
         if (analytics.iv_metrics) {
             const iv = analytics.iv_metrics;
-            document.getElementById('iv-skew-value').innerText = iv.iv_skew.toFixed(2);
+            const ivVal = document.getElementById('iv-skew-value');
+            if(ivVal) ivVal.innerText = iv.iv_skew.toFixed(2);
             
             const badge = document.getElementById('iv-sentiment');
-            badge.innerText = iv.sentiment.toUpperCase();
-            badge.className = 'sentiment-badge sentiment-' + iv.sentiment;
+            if(badge) {
+                badge.innerText = iv.sentiment.toUpperCase();
+                badge.className = 'sentiment-badge sentiment-' + iv.sentiment;
+            }
         }
 
         // Squeeze Risk
         if (analytics.squeeze_risk) {
             const risk = analytics.squeeze_risk;
-            document.getElementById('squeeze-risk-level').innerText = risk.level;
-            document.getElementById('squeeze-risk-label').innerText = `Score: ${risk.score}% | ATM: $${risk.atm_strike}`;
+            const sLevel = document.getElementById('squeeze-risk-level');
+            const sLabel = document.getElementById('squeeze-risk-label');
+            if(sLevel) sLevel.innerText = risk.level;
+            if(sLabel) sLabel.innerText = `Score: ${risk.score}% | ATM: $${risk.atm_strike}`;
             
             const fill = document.getElementById('squeeze-risk-fill');
-            fill.style.width = risk.score + '%';
-            
-            if (risk.score > 70) {
-                fill.className = 'risk-fill risk-high';
-            } else if (risk.score > 40) {
-                fill.className = 'risk-fill risk-medium';
-            } else {
-                fill.className = 'risk-fill risk-low';
+            if(fill) {
+                fill.style.width = risk.score + '%';
+                if (risk.score > 70) fill.className = 'risk-fill risk-high';
+                else if (risk.score > 40) fill.className = 'risk-fill risk-medium';
+                else fill.className = 'risk-fill risk-low';
             }
         }
 
         // Momentum
         if (analytics.momentum) {
             const mom = analytics.momentum;
-            document.getElementById('momentum-signal').innerText = mom.signal;
-            document.getElementById('momentum-label').innerText = `Strength: ${mom.strength}%`;
+            const mSig = document.getElementById('momentum-signal');
+            const mLab = document.getElementById('momentum-label');
+            if(mSig) mSig.innerText = mom.signal;
+            if(mLab) mLab.innerText = `Strength: ${mom.strength}%`;
         }
 
         // Vanna
         if (analytics.vanna_exposure) {
             const vanna = analytics.vanna_exposure;
-            document.getElementById('vanna-net').innerText = vanna.net_vanna.toFixed(0);
-            document.getElementById('vanna-label').innerText = `Call: ${vanna.call_vanna.toFixed(0)} | Put: ${vanna.put_vanna.toFixed(0)}`;
+            const vNet = document.getElementById('vanna-net');
+            const vLab = document.getElementById('vanna-label');
+            if(vNet) vNet.innerText = vanna.net_vanna.toFixed(0);
+            if(vLab) vLab.innerText = `Call: ${vanna.call_vanna.toFixed(0)} | Put: ${vanna.put_vanna.toFixed(0)}`;
         }
 
         // Key Levels
         if (analytics.key_levels) {
             const levels = analytics.key_levels;
-            let html = '';
-            
-            html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance (Calls):</div>';
-            levels.resistance.forEach(s => {
-                html += `<div class="level-item resistance"><span>$${s}</span></div>`;
-            });
+            const kCont = document.getElementById('key-levels-display');
+            if(kCont) {
+                let html = '';
+                html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance (Calls):</div>';
+                if(levels.resistance) levels.resistance.forEach(s => html += `<div class="level-item resistance"><span>$${s}</span></div>`);
 
-            html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support (Puts):</div>';
-            levels.support.forEach(s => {
-                html += `<div class="level-item support"><span>$${s}</span></div>`;
-            });
-            
-            document.getElementById('key-levels-display').innerHTML = html;
+                html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support (Puts):</div>';
+                if(levels.support) levels.support.forEach(s => html += `<div class="level-item support"><span>$${s}</span></div>`);
+                
+                kCont.innerHTML = html;
+            }
         }
 
         // Alerts
@@ -1995,6 +2001,7 @@
 </script>
 </body>
 </html>
+
 
 
 
