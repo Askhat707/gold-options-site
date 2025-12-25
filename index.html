@@ -842,7 +842,7 @@
     
     function connectWebSocket() {
         // Убедись, что адрес правильный (wss://...)
-        const wsUrl = "wss://askhat777-semipalatinsk-core.hf.space/ws";
+        const wsUrl = "wss://askhat777-gold-relay.hf.space/ws";
         console.log(`🔌 Попытка подключения к: ${wsUrl}`);
         
         ws = new WebSocket(wsUrl);
@@ -859,26 +859,47 @@
         
         // 📩 КОГДА ПРИШЛИ ДАННЫЕ
         ws.onmessage = (event) => {
-            try {
-                const msg = JSON.parse(event.data);
-                
-                // 1. ЦЕНА (Обновляем переменную и UI)
-                if (msg.type === 'price') {
-                    currentFuturesPrice = msg.data.price; // ВАЖНО: Обновляем глобальную переменную
-                    
-                    const priceEl = document.getElementById('futures-price');
-                    if (priceEl) {
-                        priceEl.innerText = '$' + msg.data.price.toFixed(1);
-                        // Эффект мигания (белый -> золотой)
-                        priceEl.style.color = '#fff';
-                        setTimeout(() => priceEl.style.color = 'var(--accent-gold)', 200);
-                    }
+    try {
+        const msg = JSON.parse(event.data);
+        
+        // 🟢 СТАТУС ОНЛАЙН
+        if (msg.type === 'status') {
+            const statusEl = document.querySelector('.warning-block .warning-text');
+            if (msg.publisher_online) {
+                statusEl.innerHTML = `
+                    <span style="color:#4caf50; font-weight:bold;">🟢 ПАРСЕР ОНЛАЙН</span><br>
+                    Данные обновляются в реальном времени.
+                `;
+            } else {
+                statusEl.innerHTML = `
+                    <span style="color:#f44336; font-weight:bold;">🔴 ПАРСЕР ОФФЛАЙН</span><br>
+                    Ожидание подключения...
+                `;
+            }
+        }
+        
+        // 1. ЦЕНА
+        if (msg.type === 'price') {
+            currentFuturesPrice = msg.data.price;
+            
+            // Обновляем статус на "LIVE"
+            const warnEl = document.querySelector('.warning-block .warning-text');
+            warnEl.innerHTML = `
+                <span style="color:#4caf50; font-weight:bold;">🟢 LIVE</span> | 
+                Последнее обновление: ${msg.data.updated_at}
+            `;
+            
+            const priceEl = document.getElementById('futures-price');
+            if (priceEl) {
+                priceEl.innerText = '$' + msg.data.price.toFixed(1);
+                priceEl.style.color = '#fff';
+                setTimeout(() => priceEl.style.color = 'var(--accent-gold)', 200);
+            }
 
-                    // Перерисовываем таблицу, чтобы она двигалась за ценой
-                    if (cachedTableData && cachedTableData.length > 0) {
-                        renderTable(cachedTableData);
-                    }
-                }
+            if (cachedTableData && cachedTableData.length > 0) {
+                renderTable(cachedTableData);
+            }
+        }
                 
                 // 2. СВЕЧИ (Логирование)
                 if (msg.type === 'candle') {
@@ -1974,6 +1995,7 @@
 </script>
 </body>
 </html>
+
 
 
 
