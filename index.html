@@ -840,9 +840,7 @@
     
     function connectWebSocket() {
         // Определяем URL WebSocket
-        const wsUrl = window.location.hostname === 'localhost' 
-            ? 'ws://localhost:7860/ws' 
-            : `wss://${window.location.hostname}/ws`;
+        const wsUrl = "wss://askhat777-semipalatinsk-core.hf.space/ws";
         
         ws = new WebSocket(wsUrl);
         
@@ -853,11 +851,12 @@
         ws.onmessage = (event) => {
             const msg = JSON.parse(event.data);
             
-            // 🔥 ОБРАБОТКА ЦЕНЫ
+            // 🔥 ЦЕНА (ЛЕТАЕТ)
             if (msg.type === 'price') {
                 currentFuturesPrice = msg.data.price;
                 document.getElementById('futures-price').innerText = '$' + msg.data.price.toFixed(1);
-                // Если есть загруженная таблица, перерисовываем ее (чтобы подсветка ATM двигалась)
+                
+                // ЭТА СТРОКА ЗАСТАВЛЯЕТ ТАБЛИЦУ ДВИГАТЬСЯ ЗА ЦЕНОЙ
                 if (cachedTableData.length > 0) renderTable(cachedTableData);
             }
             
@@ -1801,3 +1800,4 @@ deltaChart = new Chart(ctxDelta, {
 </script>
 </body>
 </html>
+
