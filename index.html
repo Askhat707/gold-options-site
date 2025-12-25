@@ -1,13 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gold Options - Pro Analytics</title>
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
     <style>
         :root {
             --bg-color: #121212;
@@ -23,7 +16,7 @@
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-color); color: var(--text-color); }
         a { text-decoration: none; color: inherit; }
         
         /* 🔥 ИСПРАВЛЕННЫЕ ПОДСКАЗКИ */
@@ -56,47 +49,68 @@
             transition: all 0.2s ease-in-out; pointer-events: none; z-index: 99999;
         }
 
+        .chart-annotation::after, .analytics-annotation::after {
+            content: ''; position: absolute; top: 100%; left: 50%; margin-left: -6px;
+            border-width: 6px; border-style: solid;
+            border-color: var(--accent-gold) transparent transparent transparent;
+        }
+        
+        .chart-annotation strong, .analytics-annotation strong { color: var(--accent-gold); font-weight: bold; }
+
         .chart-help:hover .chart-annotation, 
         .analytics-help:hover .analytics-annotation {
             visibility: visible; opacity: 1; bottom: 125%;
         }
 
-        /* ДИЗАЙН */
+        /* ОСТАЛЬНОЙ ДИЗАЙН */
         header { background: #333; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .logo { font-size: 1.5em; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .menu { list-style: none; display: flex; gap: 20px; }
+        .menu { list-style: none; display: flex; gap: 20px; padding: 0; margin: 0; }
         .menu a:hover { color: var(--accent-gold); }
         .tg-link-small { background: #24A1DE; padding: 5px 12px; border-radius: 15px; display: flex; align-items: center; gap: 5px; font-size: 0.8em; color: white; }
+        .tg-link-small:hover { background: #1d8cbd; transform: translateY(-1px); }
 
         .hero { background: linear-gradient(135deg, #000000 0%, #434343 100%); padding: 40px 20px; text-align: center; color: #fff; }
         .hero h1 { margin: 0 0 5px 0; font-size: 2em; font-weight: 800; color: var(--accent-gold); }
         .subtitle { font-size: 1.1em; margin-bottom: 20px; opacity: 0.8; }
+        .hero-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
         .btn { padding: 12px 25px; border-radius: 25px; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; border: none; cursor: pointer; text-decoration: none; }
         .btn-primary { background: var(--accent-gold); color: #000; }
+        .btn-primary:hover { background: #fff; }
         .btn-telegram { background: #24A1DE; color: white; }
+        .btn-telegram:hover { background: #1d8cbd; transform: translateY(-2px); }
 
         .live-data { padding: 20px; background: #000; }
         .warning-block { text-align: center; margin-bottom: 20px; border: 1px solid #b71c1c; background: rgba(183, 28, 28, 0.1); padding: 15px; border-radius: 8px; }
+        .warning-title { color: #e57373; font-size: 1em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .warning-text { color: #ccc; font-size: 0.9em; margin: 0; }
+
         .alerts-container { max-width: 1200px; margin: 0 auto 20px auto; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-        .alert { padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 0.9em; border-left: 4px solid; }
+        .alert { padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 0.9em; border-left: 4px solid; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .alert-warning { background: rgba(255, 152, 0, 0.1); border-color: #ff9800; color: #ffb74d; }
         .alert-danger { background: rgba(244, 67, 54, 0.1); border-color: #f44336; color: #ef5350; }
+        .alert-info { background: rgba(33, 150, 243, 0.1); border-color: #2196f3; color: #42a5f5; }
         .alert-success { background: rgba(76, 175, 80, 0.1); border-color: #4caf50; color: #66bb6a; }
 
         .data-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
         .data-card { background: #222; padding: 10px; border-radius: 8px; min-width: 140px; text-align: center; border: 1px solid #333; }
         .big-number { font-size: 1.3em; font-weight: bold; color: var(--accent-gold); margin: 5px 0; }
+        .small-text { color: #888; font-size: 0.75em; }
         .pcr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .pcr-item div:first-child { font-weight: bold; color: #fff; }
+        .pcr-item div:last-child { font-size: 0.7em; color: #888; }
 
         .analytics-grid { max-width: 1200px; margin: 0 auto 20px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
         .analytics-card { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); border: 1px solid #444; border-radius: 10px; padding: 20px; }
-        .analytics-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-gold); }
-        .analytics-value { font-size: 2em; font-weight: bold; color: #fff; text-align: center; margin: 10px 0; }
+        .analytics-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-gold); border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+        .analytics-value { font-size: 2em; font-weight: bold; color: #fff; text-align: center; margin: 10px 0; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
         .analytics-label { color: #888; font-size: 0.85em; text-align: center; }
 
-        .level-item { background: #222; padding: 8px 12px; border-radius: 6px; margin: 5px 0; display: flex; justify-content: space-between; border-left: 3px solid transparent; }
+        .level-item { background: #222; padding: 8px 12px; border-radius: 6px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid transparent; }
         .level-item.support { border-left-color: var(--call-color); }
         .level-item.resistance { border-left-color: var(--put-color); }
+        .level-strike { font-weight: bold; color: #fff; }
 
         .charts-container { max-width: 1200px; margin: 0 auto 30px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .chart-box { background: #1a1a1a; border: 1px solid #444; padding: 20px; border-radius: 10px; }
@@ -107,55 +121,98 @@
         .sentiment-bearish { background: var(--bearish); color: #fff; }
         .sentiment-neutral { background: var(--neutral); color: #fff; }
 
+        .risk-indicator { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
         .risk-bar { width: 100%; height: 20px; background: #333; border-radius: 10px; overflow: hidden; position: relative; }
-        .risk-fill { height: 100%; transition: width 0.5s ease; }
+        .risk-fill { height: 100%; transition: width 0.5s ease; border-radius: 10px; }
         .risk-low { background: var(--bullish); }
         .risk-medium { background: #ff9800; }
         .risk-high { background: var(--bearish); }
 
         .control-panel { max-width: 1000px; margin: 0 auto 20px auto; background: #1a1a1a; border: 1px solid #444; padding: 20px; border-radius: 10px; display: flex; flex-direction: column; gap: 15px; }
         .expiry-toggle, .calculator-panel, .strike-filter { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .expiry-btn, .filter-btn { background: #333; color: #aaa; border: 1px solid #555; padding: 8px 16px; border-radius: 5px; cursor: pointer; }
-        .expiry-btn.active, .filter-btn.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); }
-        .calc-input { background: #111; border: 1px solid #555; color: var(--accent-gold); padding: 10px; border-radius: 5px; width: 100px; text-align: center; font-weight: bold; }
-        .premium-btn { background: #d32f2f; color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .expiry-toggle { background: #2a2a2a; padding: 15px; border: 1px solid var(--accent-gold); border-radius: 8px; }
+        .calculator-panel { background: #2a2a2a; border: 1px solid var(--accent-gold); padding: 15px; border-radius: 8px; }
+        
+        button { cursor: pointer; }
+        .expiry-btn, .filter-btn { background: #333; color: #aaa; border: 1px solid #555; padding: 8px 16px; border-radius: 5px; transition: all 0.3s; }
+        .expiry-btn:hover, .filter-btn:hover { background: #444; }
+        .expiry-btn.active, .filter-btn.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); font-weight: bold; }
+        .calc-input { background: #111; border: 1px solid #555; color: var(--accent-gold); padding: 10px; border-radius: 5px; width: 100px; font-size: 1.2em; text-align: center; font-weight: bold; }
+        .premium-btn { background: #d32f2f; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; transition: all 0.3s; }
+        .premium-btn:hover { background: #f44336; }
         .premium-btn.active { background: #4caf50; }
 
         .top5-container { max-width: 1000px; margin: 0 auto 20px auto; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .top5-box { background: #1a1a1a; border: 1px solid #444; padding: 15px; border-radius: 10px; }
-        .top5-title { font-size: 1.1em; font-weight: bold; color: var(--accent-gold); margin-bottom: 10px; text-align: center; border-bottom: 2px solid #333; }
-        .top5-item { background: #222; padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between; margin-bottom: 5px; border-left: 3px solid transparent; }
+        .top5-title { font-size: 1.1em; font-weight: bold; color: var(--accent-gold); margin-bottom: 10px; text-align: center; border-bottom: 2px solid #333; padding-bottom: 8px; }
+        .top5-item { background: #222; padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid transparent; margin-bottom: 5px; }
         .top5-item.call-item { border-left-color: var(--call-color); }
         .top5-item.put-item { border-left-color: var(--put-color); }
+        .top5-strike { font-weight: bold; color: #fff; font-size: 1.1em; min-width: 70px; }
+        .top5-value { color: var(--accent-gold); font-weight: bold; font-size: 1em; }
 
         .levels-container { max-width: 1000px; margin: 0 auto; background: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
-        .table-wrapper { overflow-x: auto; max-height: 600px; }
+        .table-header-info { background: #2c2c2c; padding: 8px 20px; text-align: center; color: #fff; font-size: 0.9em; border-bottom: 1px solid #444; display: flex; justify-content: space-between; }
+        .dte-tag { background: #d32f2f; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; }
+        .table-wrapper { overflow-x: auto; max-height: 600px; overflow-y: auto; }
         table { width: 100%; border-collapse: collapse; text-align: center; font-size: 0.85em; }
-        thead { background: #111; color: #aaa; position: sticky; top: 0; z-index: 5; }
-        th, td { padding: 6px 4px; border-bottom: 1px solid #2a2a2a; }
-        .col-strike { background: #252525; color: #fff; font-weight: bold; font-size: 1.1em; width: 80px; }
+        thead { background: #111; color: #aaa; font-size: 0.9em; position: sticky; top: 0; z-index: 5; }
+        th { padding: 8px 4px; font-weight: 600; white-space: nowrap; }
+        td { padding: 6px 4px; border-bottom: 1px solid #2a2a2a; } 
+        .col-strike { background: #252525; color: #fff; font-weight: bold; font-size: 1.1em; border-left: 1px solid #333; border-right: 1px solid #333; width: 80px; }
         .row-atm td { background: rgba(255, 215, 0, 0.1); border-top: 1px solid var(--accent-gold); border-bottom: 1px solid var(--accent-gold); }
+        .forward-active { color: var(--accent-gold) !important; text-decoration: underline; }
 
-        /* Классы для значений таблицы */
-        .val-0 { color: #333; } .val-1 { color: #666; } .val-2 { color: #999; } .val-3 { color: #ccc; }
-        .val-4 { color: #fff; font-weight: bold; } .val-5 { color: #4fc3f7; font-weight: bold; }
-        .val-6 { color: #FFD700; font-weight: bold; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+        .val-0 { color: #333; } .val-1 { color: #666; } .val-2 { color: #999; } .val-3 { color: #ccc; font-weight: 500; }
+        .val-4 { color: #fff; font-weight: bold; } .val-5 { color: #4fc3f7; font-weight: bold; font-size: 1.05em; }
+        .val-6 { color: #FFD700; font-weight: bold; font-size: 1.1em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
         .val-7 { background: #b71c1c; color: #fff; font-weight: bold; padding: 4px; border-radius: 4px; }
 
-        .disclaimer-modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
+        .download { padding: 40px 20px; text-align: center; }
+        .download-card { background: #222; padding: 30px; display:inline-block; border-radius:10px; border:1px solid #333; }
+        .btn-download { background: var(--call-color); color: white; padding: 15px 30px; border-radius: 5px; display: inline-block; margin: 10px 0; font-weight: bold; }
+        .disclaimer-link { background: #333; color: var(--accent-gold); padding: 10px 20px; border-radius: 5px; display: inline-block; margin: 10px; cursor: pointer; font-weight: bold; }
+        .disclaimer-link:hover { background: #444; }
+
+        .security-info { max-width: 800px; margin: 0 auto 3rem auto; text-align: left; }
+        .security-card { background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%); border: 2px solid #4caf50; border-radius: 15px; padding: 2rem; color: #fff; box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3); }
+        .security-icon { font-size: 3rem; text-align: center; margin-bottom: 1rem; }
+        .security-card h3 { color: #81c784; text-align: center; margin-bottom: 1rem; font-size: 1.5rem; }
+        .install-guide { background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 1rem; margin-top: 1.5rem; cursor: pointer; }
+        .install-guide summary { font-weight: bold; color: #81c784; outline: none; }
+
+        .disclaimer-modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow: auto; }
         .disclaimer-content { background: #1a1a1a; margin: 5% auto; padding: 30px; border: 2px solid var(--accent-gold); border-radius: 10px; width: 90%; max-width: 700px; color: #fff; }
+        .close-disclaimer { background: var(--accent-gold); color: #000; padding: 10px 30px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; float: right; }
+        .close-disclaimer:hover { background: #fff; }
 
         footer { background: #111; padding: 20px; text-align: center; color: #666; font-size: 0.8em; }
 
         @media (max-width: 768px) {
             .menu { display: none; }
+            .hero h1 { font-size: 1.8em; }
+            .calculator-panel, .strike-filter, .expiry-toggle { flex-direction: column; }
             .top5-container, .analytics-grid, .charts-container { grid-template-columns: 1fr; }
+            .chart-annotation, .analytics-annotation { width: 250px; left: 50%; bottom: 150%; }
         }
     </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="Опционные уровни Gold (CME). Max Pain, Gamma Walls, Greeks Analytics, Real-time Charts.">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+
+    <title>Gold Options - Pro Analytics</title>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+   
 </head>
 <body>
 
-<header>
+    <header>
     <div class="logo"><span>📊</span> Gold Options</div>
     <nav>
         <ul class="menu">
@@ -163,191 +220,609 @@
             <li><a href="#charts">Графики</a></li>
             <li><a href="#greeks">Greeks</a></li>
             <li><a href="#top5">ТОП-5</a></li>
-            <li><a href="https://t.me/+-tmtq_FUl2NhMjVi" target="_blank" class="tg-link-small">Telegram</a></li>
+            <li><a href="#download">APK</a></li>
+            <!-- Кнопка Telegram в меню -->
+            <li class="tg-menu-item">
+                <a href="https://t.me/+-tmtq_FUl2NhMjVi" target="_blank" class="tg-link-small">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.891 8.146l-1.703 8.026c-.128.564-.463.702-.937.437l-2.592-1.911-1.251 1.203c-.138.138-.254.254-.518.254l.186-2.637 4.8-4.336c.209-.186-.045-.289-.323-.104l-5.932 3.735-2.556-.799c-.555-.174-.567-.555.116-.822l9.989-3.85c.463-.174.867.104.721.799z"/></svg>
+                    Telegram
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
 
-<section class="hero">
+    <section class="hero">
     <h1>Gold Analytics Pro</h1>
     <p class="subtitle">Max Pain • Gamma Walls • Greeks Analytics • Real-time Data</p>
+    
     <div class="hero-buttons">
         <a href="#download" class="btn btn-primary">Скачать Android APK</a>
-        <a href="https://t.me/+-tmtq_FUl2NhMjVi" target="_blank" class="btn btn-telegram">Наш канал</a>
+        
+        <!-- Большая кнопка Telegram -->
+        <a href="https://t.me/+-tmtq_FUl2NhMjVi" target="_blank" class="btn btn-telegram">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.891 8.146l-1.703 8.026c-.128.564-.463.702-.937.437l-2.592-1.911-1.251 1.203c-.138.138-.254.254-.518.254l.186-2.637 4.8-4.336c.209-.186-.045-.289-.323-.104l-5.932 3.735-2.556-.799c-.555-.174-.567-.555.116-.822l9.989-3.85c.463-.174.867.104.721.799z"/></svg>
+            Наш канал
+        </a>
     </div>
 </section>
 
-<section class="live-data">
-    <div class="warning-block">
-        <div style="color: #e57373; font-weight: bold;">⚠ СТАТУС ДАННЫХ</div>
-        <p style="font-size: 0.9em; color: #ccc;">WebSocket: LIVE | Опционные уровни: 5 мин задержка</p>
+    <!-- DISCLAIMER MODAL -->
+    <div id="disclaimerModal" class="disclaimer-modal">
+        <div class="disclaimer-content">
+            <h2>⚠️ ОТКАЗ ОТ ОТВЕТСТВЕННОСТИ</h2>
+            
+            <p><strong>Информационный характер:</strong><br>
+            Все данные, графики, аналитика и расчеты на платформе "Gold Analytics Pro" предоставляются исключительно в информационных и образовательных целях. Они НЕ являются финансовым советом, рекомендацией к покупке/продаже активов или торговым сигналом.</p>
+            
+            <p><strong>Отсутствие гарантий:</strong><br>
+            Разработчик не гарантирует абсолютную точность, полноту или актуальность данных. Информация по опционам и фьючерсам может передаваться с задержкой или содержать погрешности, зависящие от источников данных.</p>
+            
+            <p><strong>Высокий риск:</strong><br>
+            Торговля фьючерсами и опционами, особенно внутридневными контрактами (0DTE), сопряжена с чрезвычайно высоким риском полной потери капитала. Пользователь несет полную ответственность за свои торговые решения.</p>
+            
+            <p><strong>Ограничение ответственности:</strong><br>
+            Разработчик не несет ответственности за любые финансовые убытки, упущенную выгоду или другие последствия, возникшие в результате использования данного приложения.</p>
+            
+            <p><strong>Источники данных:</strong><br>
+            Приложение агрегирует данные из публичных источников для визуализации и удобства анализа. Данные не проходят официальную сертификацию биржи.</p>
+            
+            <hr style="border-color: #444; margin: 20px 0;">
+            
+            <h2>🔒 ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</h2>
+            
+            <p><strong>Сбор данных:</strong><br>
+            Приложение "Gold Analytics Pro" не собирает персональные данные пользователей. Все расчеты производятся локально в браузере.</p>
+            
+            <p><strong>Cookies:</strong><br>
+            Сайт может использовать технические cookies для обеспечения корректной работы функционала. Мы не используем рекламные или аналитические cookies третьих сторон.</p>
+            
+            <p><strong>Внешние ссылки:</strong><br>
+            Сайт может содержать ссылки на внешние ресурсы. Мы не несем ответственности за политику конфиденциальности этих сайтов.</p>
+            
+            <p><strong>Изменения политики:</strong><br>
+            Мы оставляем за собой право изменять данную политику конфиденциальности. Актуальная версия всегда доступна на сайте.</p>
+            
+            <button class="close-disclaimer" onclick="closeDisclaimer()">Понятно</button>
+            <div style="clear:both;"></div>
+        </div>
     </div>
 
-    <div id="alerts-container" class="alerts-container"></div>
-    
-    <div class="data-container">
-        <div class="data-card">
-            <div style="color: #888; font-size: 0.75em;">Цена (Live)</div>
-            <div class="big-number" id="futures-price">...</div>
+    <section class="live-data">
+        
+        <div class="warning-block">
+            <div class="warning-title">⚠ СТАТУС ДАННЫХ</div>
+            <p class="warning-text">
+                Опционные уровни обновляются с задержкой 5 минут.<br>
+                Цена фьючерса обновляется с задержкой до 5 секунд.<br>
+                Интрадей аналитика обновляется каждые 10 секунд.
+            </p>
         </div>
-        <div class="data-card" style="min-width: 180px;">
-            <div class="pcr-grid">
-                <div class="pcr-item"><div id="pcr-oi">...</div><div>PCR (OI)</div></div>
-                <div class="pcr-item"><div id="pcr-vol">...</div><div>PCR (Vol)</div></div>
-            </div>
-        </div>
-        <div class="data-card">
-            <div style="color: #888; font-size: 0.75em;">Баланс</div>
-            <div class="big-number" id="balance-price">...</div>
-        </div>
-        <div class="data-card" style="min-width: 200px;">
-            <div style="color: var(--accent-gold); font-size: 0.7em; font-weight: bold;">ОБНОВЛЕНИЕ UTC</div>
-            <div class="big-number" id="updated-time" style="font-size: 1.1em;">--:--:--</div>
-        </div>
-    </div>
 
-    <!-- 🔥 АНАЛИТИКА (WebSocket) -->
-    <div id="analytics" class="analytics-grid">
-        <div class="analytics-card">
-            <div class="analytics-title">🎯 Max Pain</div>
-            <div class="analytics-value" id="max-pain-value">-</div>
-            <div class="analytics-label">Точка экспирации</div>
+        <!-- 🔥 ALERTS -->
+        <div id="alerts-container" class="alerts-container">
+            <!-- Динамически заполняется -->
         </div>
         
-        <div class="analytics-card">
-            <div class="analytics-title">📏 Expected Move <span class="analytics-help">❓<span class="analytics-annotation">Ожидаемое движение на основе IV.</span></span></div>
-            <div class="analytics-value" id="exp-move-value" style="color: var(--accent-gold);">-</div>
-            <div class="analytics-label" id="exp-move-range">Расчет...</div>
+        <div class="data-container">
+            <div class="data-card">
+                <div class="small-text">Цена (Live)</div>
+                <div class="big-number" id="futures-price">...</div>
+            </div>
+            
+            <div class="data-card" style="min-width: 180px;">
+                <div class="pcr-grid">
+                    <div class="pcr-item">
+                        <div id="pcr-oi">...</div>
+                        <div>PCR (OI)</div>
+                    </div>
+                    <div class="pcr-item">
+                        <div id="pcr-vol">...</div>
+                        <div>PCR (Vol)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="data-card">
+                <div class="small-text">Баланс</div>
+                <div class="big-number" id="balance-price">...</div>
+            </div>
+            <div class="data-card" style="min-width: 200px;">
+    <div class="small-text" style="color: var(--accent-gold); font-weight: bold; line-height: 1.2;">
+        ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ<br>ДАННЫХ ПО UTC
+    </div>
+    <div class="big-number" id="updated-time" style="font-size: 1.1em; margin-top: 5px;">--.---.---- --:--:--</div>
+</div>
         </div>
 
-        <div class="analytics-card">
-            <div class="analytics-title">🎯 ITM Probability</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                <div style="text-align: center;"><div style="color: var(--call-color); font-weight: bold;" id="prob-call">-</div><div style="font-size: 0.7em;">CALL ITM</div></div>
-                <div style="text-align: center;"><div style="color: var(--put-color); font-weight: bold;" id="prob-put">-</div><div style="font-size: 0.7em;">PUT ITM</div></div>
+        <!-- 🔥 ИНТРАДЕЙ АНАЛИТИКА -->
+        <div id="analytics" class="analytics-grid">
+            <!-- Max Pain -->
+            <div class="analytics-card">
+                <div class="analytics-title">🎯 Max Pain</div>
+                <div class="analytics-value" id="max-pain-value">-</div>
+                <div class="analytics-label">Точка максимальной боли</div>
+            </div>
+                        <!-- 1. Expected Move -->
+            <div class="analytics-card">
+                <div class="analytics-title">
+                    📏 Expected Move (±1σ)
+                    <span class="analytics-help">❓
+                        <span class="analytics-annotation">
+                            <strong>Ожидаемое движение:</strong> Диапазон (68% вероятности), в котором цена останется до экспирации. Рассчитано на основе IV.
+                        </span>
+                    </span>
+                </div>
+                <div class="analytics-value" id="exp-move-value" style="color: var(--accent-gold);">-</div>
+                <div class="analytics-label" id="exp-move-range">Загрузка диапазона...</div>
+            </div>
+            
+            <!-- 2. Probabilities (ITM) -->
+            <div class="analytics-card">
+                <div class="analytics-title">
+                    🎯 ITM Probability
+                    <span class="analytics-help">❓
+                        <span class="analytics-annotation">
+                            Вероятность того, что цена окажется "в деньгах" к моменту экспирации. Основано на Дельте ATM опционов.
+                        </span>
+                    </span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                    <div style="text-align: center;">
+                        <div style="color: var(--call-color); font-weight: bold; font-size: 1.2em;" id="prob-call">-</div>
+                        <div style="font-size: 0.7em; color: #888;">CALL ITM</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: var(--put-color); font-weight: bold; font-size: 1.2em;" id="prob-put">-</div>
+                        <div style="font-size: 0.7em; color: #888;">PUT ITM</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 3. Greeks 2.0 (Charm/Color) -->
+            <div class="analytics-card">
+                <div class="analytics-title">
+                    🌀 Advanced Greeks
+                    <span class="analytics-help">❓
+                        <span class="analytics-annotation">
+                            <strong>Color:</strong> Изменение Гаммы во времени. <br><strong>Charm:</strong> Скорость распада Дельты. Важно для оценки риска на выходных.
+                        </span>
+                    </span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 5px;">
+                    <div class="level-item" style="border: none; background: rgba(255,255,255,0.05);">
+                        <span style="font-size: 0.8em; color: #888;">Color (Γ Decay):</span>
+                        <span id="metric-color" style="font-weight: bold;">-</span>
+                    </div>
+                    <div class="level-item" style="border: none; background: rgba(255,255,255,0.05);">
+                        <span style="font-size: 0.8em; color: #888;">Charm (Δ Decay):</span>
+                        <span id="metric-charm" style="font-weight: bold;">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 4. Economic Calendar -->
+            <div class="analytics-card">
+                <div class="analytics-title">📅 Gold News Calendar</div>
+                <div id="calendar-list" style="margin-top: 10px; font-size: 0.85em;">
+                    <div class="analytics-label">Загрузка событий...</div>
+                </div>
+            </div>
+
+            <!-- Zero Gamma -->
+            <div class="analytics-card">
+                <div class="analytics-title">⚡ Zero Gamma</div>
+                <div class="analytics-value" id="zero-gamma-value">-</div>
+                <div class="analytics-label" id="zero-gamma-label">Загрузка...</div>
+            </div>
+
+            <!-- IV Skew -->
+            <div class="analytics-card">
+                <div class="analytics-title">📈 IV Skew</div>
+                <div class="analytics-value" id="iv-skew-value">-</div>
+                <div class="analytics-label">
+                    <span id="iv-sentiment" class="sentiment-badge sentiment-neutral">NEUTRAL</span>
+                </div>
+            </div>
+
+            <!-- Squeeze Risk -->
+            <div class="analytics-card">
+                <div class="analytics-title">🔥 Gamma Squeeze Risk</div>
+                <div class="analytics-value" id="squeeze-risk-level">-</div>
+                <div class="risk-indicator">
+                    <div class="risk-bar">
+                        <div id="squeeze-risk-fill" class="risk-fill risk-low" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="analytics-label" id="squeeze-risk-label">Загрузка...</div>
+            </div>
+
+            <!-- Momentum -->
+            <div class="analytics-card">
+                <div class="analytics-title">📊 Price Momentum</div>
+                <div class="analytics-value" id="momentum-signal">-</div>
+                <div class="analytics-label" id="momentum-label">Загрузка...</div>
+            </div>
+
+            <!-- Delta Skew -->
+            <div class="analytics-card">
+                <div class="analytics-title">⚖️ Delta Skew</div>
+                <div class="analytics-value" id="delta-skew-value">-</div>
+                <div class="analytics-label">Call Delta vs Put Delta</div>
+            </div>
+
+            <!-- Vanna Exposure -->
+            <div class="analytics-card">
+                <div class="analytics-title">🌀 Vanna Exposure</div>
+                <div class="analytics-value" id="vanna-net">-</div>
+                <div class="analytics-label" id="vanna-label">Загрузка...</div>
+            </div>
+
+            <!-- Key Levels -->
+            <div class="analytics-card">
+                <div class="analytics-title">📍 Key Levels</div>
+                <div id="key-levels-display" style="margin-top: 10px;">
+                    <div class="analytics-label">Загрузка...</div>
+                </div>
             </div>
         </div>
 
+        <!-- 🔥 ГРАФИКИ -->
+<div id="charts" class="charts-container">
+    <!-- 1. OI Distribution -->
+    <div class="chart-box">
+        <div class="chart-title">
+            📊 OI Distribution (Call vs Put)
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    <strong>Как читать:</strong> Зеленый (Calls) = Сопротивление сверху. Красный (Puts) = Поддержка снизу. Если зеленых столбцов много — цене трудно расти.
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="oiChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 2. Volume Heatmap -->
+    <div class="chart-box">
+        <div class="chart-title">
+            📈 Volume Heatmap
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+            <strong>Как читать:</strong> <br>
+            Показывает «живые» деньги прямо сейчас. <br>
+            Высокий объем на Зеленых (Calls) означает, что уровни сопротивления активно защищают. <br>
+            Высокий объем на Красных (Puts) — уровни поддержки активно выкупают.
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="volumeChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 3. Gamma Exposure -->
+    <div class="chart-box">
+        <div class="chart-title">
+            ⚡ Gamma Exposure
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    <strong>Как читать:</strong> Положительная Gamma (Коллы) = сопротивление росту, MM продают при росте цены, замедляя её. Отрицательная Gamma (Путы) = поддержка, MM покупают при падении, удерживая цену.
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="gammaChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 4. Max Pain Analysis -->
+    <div class="chart-box">
+        <div class="chart-title">
+            🎯 Max Pain Analysis
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    <strong>Как читать:</strong> Минимум на графике = Max Pain (точка, где опционы теряют максимум стоимости). 
+                    Цена стремится к этой точке к экспирации. Чем дальше от Max Pain, тем сильнее "притяжение".
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="maxPainChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 5. IV Smile -->
+    <div class="chart-box">
+        <div class="chart-title">
+            🌈 IV Smile
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    <strong>Как читать:</strong> "Улыбка" = рынок ждет сильное движение. 
+                    Если Put IV > Call IV (перекос вправо) = страх падения. Плоская линия = спокойный рынок.
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="ivChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 6. Delta Profile -->
+    <div class="chart-box">
+        <div class="chart-title">
+            ⚖️ Delta Profile
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    <strong>Как читать:</strong> Delta показывает направленность позиций. 
+                    Если Call Delta > Put Delta = бычий настрой. Большие столбцы = концентрация направленных ставок на уровне.
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="deltaChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 7. GEX Profile -->
+    <div class="chart-box">
+        <div class="chart-title">
+            🔥 GEX Profile
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    <strong>Как читать:</strong> Зеленые столбцы (Calls) = зоны сопротивления. Красные столбцы (Puts) = зоны поддержки. Чем выше столбцы, тем сильнее уровень.
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="gexChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 8. Theta Decay -->
+    <div class="chart-box">
+        <div class="chart-title">
+            ⏱️ Theta Decay
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    <strong>Как читать:</strong> Theta = временной распад опционов. 
+                    Чем ниже линия, тем быстрее опционы теряют стоимость. Высокая Theta на ATM = продавцы опционов зарабатывают максимум.
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="thetaChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- 🔥 ГРЕКИ (НОВЫЙ РАЗДЕЛ) -->
+<div id="greeks" style="max-width: 1200px; margin: 0 auto 30px auto;">
+    <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px;">🎓 Greeks Analytics</h2>
+    
+    <div class="analytics-grid">
+        <!-- 1. Total Call Delta -->
         <div class="analytics-card">
-            <div class="analytics-title">🌀 Advanced Greeks</div>
-            <div style="font-size: 0.85em;">
-                <div style="display:flex; justify-content:space-between;"><span>Color:</span> <span id="metric-color">-</span></div>
-                <div style="display:flex; justify-content:space-between;"><span>Charm:</span> <span id="metric-charm">-</span></div>
+            <div class="analytics-title">
+                Δ Total Call Delta
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+    Delta Коллов — это совокупное сопротивление. Чем выше это значение, тем больше «стен» из лимитных заявок стоит выше текущей цены.
+</span>
+                </span>
             </div>
+            <div class="analytics-value" id="total-call-delta">-</div>
         </div>
 
+        <!-- 2. Total Put Delta -->
         <div class="analytics-card">
-            <div class="analytics-title">📅 Gold News</div>
-            <div id="calendar-list" style="font-size: 0.8em; max-height: 80px; overflow-y: auto;">...</div>
+            <div class="analytics-title">
+                Δ Total Put Delta
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+    Delta Путов — это совокупная поддержка. Высокое значение указывает на сильное желание рынка удерживать текущие уровни снизу.
+</span>
+                </span>
+            </div>
+            <div class="analytics-value" id="total-put-delta">-</div>
         </div>
 
+        <!-- 3. Total Gamma -->
         <div class="analytics-card">
-            <div class="analytics-title">⚡ Zero Gamma</div>
-            <div class="analytics-value" id="zero-gamma-value">-</div>
-            <div class="analytics-label" id="zero-gamma-label">Загрузка...</div>
+            <div class="analytics-title">
+                Γ Total Gamma
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        Gamma = ускорение Delta. Высокая Gamma = резкие движения цены при пробое уровней. Риск Gamma Squeeze.
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="total-gamma">-</div>
         </div>
 
+        <!-- 4. Total Vega -->
         <div class="analytics-card">
-            <div class="analytics-title">📈 IV Skew</div>
-            <div class="analytics-value" id="iv-skew-value">-</div>
-            <div class="analytics-label"><span id="iv-sentiment" class="sentiment-badge sentiment-neutral">NEUTRAL</span></div>
+            <div class="analytics-title">
+                ν Total Vega
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        Vega = чувствительность к волатильности. Высокая Vega = опционы сильно реагируют на изменение IV.
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="total-vega">-</div>
         </div>
 
+        <!-- 5. Total Theta -->
         <div class="analytics-card">
-            <div class="analytics-title">🔥 Gamma Squeeze Risk</div>
-            <div class="analytics-value" id="squeeze-risk-level">-</div>
-            <div class="risk-indicator"><div class="risk-bar"><div id="squeeze-risk-fill" class="risk-fill risk-low" style="width: 0%"></div></div></div>
-            <div class="analytics-label" id="squeeze-risk-label">Загрузка...</div>
+            <div class="analytics-title">
+                Θ Total Theta
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        Theta = временной распад. Отрицательная = покупатели опционов теряют деньги каждый день. Продавцы зарабатывают.
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="total-theta">-</div>
         </div>
 
+        <!-- 6. Avg IV -->
         <div class="analytics-card">
-            <div class="analytics-title">📊 Momentum</div>
-            <div class="analytics-value" id="momentum-signal">-</div>
-            <div class="analytics-label" id="momentum-label">Загрузка...</div>
-        </div>
-
-        <div class="analytics-card">
-            <div class="analytics-title">🌀 Vanna Exposure</div>
-            <div class="analytics-value" id="vanna-net">-</div>
-            <div class="analytics-label" id="vanna-label">Загрузка...</div>
-        </div>
-
-        <div class="analytics-card">
-            <div class="analytics-title">📍 Key Levels</div>
-            <div id="key-levels-display" style="font-size: 0.8em;">...</div>
+            <div class="analytics-title">
+                📊 Avg IV
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        IV = подразумеваемая волатильность. Высокая IV (>30%) = дорогие опционы, рынок ждет сильных движений.
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="avg-iv">-</div>
         </div>
     </div>
+</div>
 
-    <!-- 🔥 ГРАФИКИ (8 штук) -->
-    <div id="charts" class="charts-container">
-        <div class="chart-box"><div class="chart-title">📊 OI Distribution</div><div class="chart-wrapper"><canvas id="oiChart"></canvas></div></div>
-        <div class="chart-box"><div class="chart-title">📈 Volume Heatmap</div><div class="chart-wrapper"><canvas id="volumeChart"></canvas></div></div>
-        <div class="chart-box"><div class="chart-title">⚡ Gamma Exposure</div><div class="chart-wrapper"><canvas id="gammaChart"></canvas></div></div>
-        <div class="chart-box"><div class="chart-title">🎯 Max Pain Analysis</div><div class="chart-wrapper"><canvas id="maxPainChart"></canvas></div></div>
-        <div class="chart-box"><div class="chart-title">🌈 IV Smile</div><div class="chart-wrapper"><canvas id="ivChart"></canvas></div></div>
-        <div class="chart-box"><div class="chart-title">⚖️ Delta Profile</div><div class="chart-wrapper"><canvas id="deltaChart"></canvas></div></div>
-        <div class="chart-box"><div class="chart-title">🔥 GEX Profile</div><div class="chart-wrapper"><canvas id="gexChart"></canvas></div></div>
-        <div class="chart-box"><div class="chart-title">⏱️ Theta Decay</div><div class="chart-wrapper"><canvas id="thetaChart"></canvas></div></div>
-    </div>
 
-    <!-- ГРЕКИ -->
-    <div id="greeks" style="max-width: 1200px; margin: 0 auto 30px auto;">
-        <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px;">🎓 Greeks Analytics</h2>
-        <div class="analytics-grid">
-            <div class="analytics-card"><div class="analytics-title">Δ Call Delta</div><div class="analytics-value" id="total-call-delta">-</div></div>
-            <div class="analytics-card"><div class="analytics-title">Δ Put Delta</div><div class="analytics-value" id="total-put-delta">-</div></div>
-            <div class="analytics-card"><div class="analytics-title">Γ Total Gamma</div><div class="analytics-value" id="total-gamma">-</div></div>
-            <div class="analytics-card"><div class="analytics-title">ν Total Vega</div><div class="analytics-value" id="total-vega">-</div></div>
-            <div class="analytics-card"><div class="analytics-title">Θ Total Theta</div><div class="analytics-value" id="total-theta">-</div></div>
-            <div class="analytics-card"><div class="analytics-title">📊 Avg IV</div><div class="analytics-value" id="avg-iv">-</div></div>
-        </div>
-    </div>
 
     <div class="control-panel">
-        <div class="expiry-toggle">
-            <button class="expiry-btn active" data-expiry="0dte">INTRADAY</button>
-            <button class="expiry-btn" data-expiry="friday">FRIDAY</button>
-        </div>
+        <!-- ПЕРЕКЛЮЧАТЕЛЬ ЭКСПИРАЦИЙ -->
+<div class="expiry-toggle">
+    <span class="filter-label">Экспирация:</span>
+    <button class="expiry-btn active" data-expiry="0dte">INTRADAY</button>
+    <button class="expiry-btn" data-expiry="friday">FRIDAY</button>
+</div>
+
         <div class="calculator-panel">
-            <label>Forward:</label>
-            <input type="number" id="forward-input" class="calc-input" value="0">
+            <label style="color:#fff; font-weight:bold;">Forward (Форвард):</label>
+            <input type="number" id="forward-input" class="calc-input" placeholder="0" step="0.5" value="0">
+            
+            <label style="color:#fff; font-weight:bold;">Расчет премий:</label>
             <button class="premium-btn" id="premium-toggle">Вкл. премии</button>
+            <span style="color: #888; font-size: 0.85em;">(Call+Prem, Put-Prem)</span>
         </div>
+
         <div class="strike-filter">
+            <span class="filter-label">Показать страйков:</span>
+            <button class="filter-btn" data-count="50">50</button>
             <button class="filter-btn active" data-count="75">75</button>
+            <button class="filter-btn" data-count="100">100</button>
+            <button class="filter-btn" data-count="125">125</button>
             <button class="filter-btn" data-count="150">150</button>
         </div>
     </div>
 
-    <!-- ТАБЛИЦА -->
+    <div id="top5" class="top5-container">
+        <div class="top5-box">
+            <div class="top5-title">🟢 CALLS - ТОП-5</div>
+            <div class="top5-grid">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По Volume</div>
+                        <div id="top5-call-vol"></div>
+                    </div>
+                    <div>
+                        <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По OI</div>
+                        <div id="top5-call-oi"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="top5-box">
+            <div class="top5-title">🔴 PUTS - ТОП-5</div>
+            <div class="top5-grid">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По Volume</div>
+                        <div id="top5-put-vol"></div>
+                    </div>
+                    <div>
+                        <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По OI</div>
+                        <div id="top5-put-oi"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="levels-container">
+        <div class="table-header-info">
+    <span id="table-expiry-label">INTRADAY</span>
+    <span style="color:#888;">Full Analytics Active</span>
+</div>
+        
         <div class="table-wrapper">
             <table>
                 <thead>
-                    <tr><th colspan="5">CALLS</th><th style="background:#222;"></th><th colspan="5">PUTS</th></tr>
-                    <tr><th>OI</th><th>Vol</th><th>Prem</th><th>Δ</th><th>Γ</th><th style="background:#333;">STRIKE</th><th>Γ</th><th>Δ</th><th>Prem</th><th>Vol</th><th>OI</th></tr>
+                    <tr>
+                        <th colspan="5" style="border-bottom: 2px solid var(--call-color);">CALLS</th>
+                        <th style="background:#222;"></th>
+                        <th colspan="5" style="border-bottom: 2px solid var(--put-color);">PUTS</th>
+                    </tr>
+                    <tr>
+                        <th>OI</th><th>Vol</th><th>Prem</th><th>Δ</th><th>Γ</th>
+                        <th style="background:#333; color:#fff;">STRIKE</th>
+                        <th>Γ</th><th>Δ</th><th>Prem</th><th>Vol</th><th>OI</th>
+                    </tr>
                 </thead>
-                <tbody id="option-body"><tr><td colspan="11">⏳ Загрузка...</td></tr></tbody>
+                <tbody id="option-body">
+                    <tr><td colspan="11" style="padding: 20px;">⏳ Загрузка...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 </section>
 
-<!-- МОДАЛКА -->
-<div id="disclaimerModal" class="disclaimer-modal">
-    <div class="disclaimer-content">
-        <h2>⚠️ ОТКАЗ ОТ ОТВЕТСТВЕННОСТИ</h2>
-        <p>Данные предоставляются исключительно в информационных целях...</p>
-        <button onclick="document.getElementById('disclaimerModal').style.display='none'" class="btn btn-primary" style="float:right;">Понятно</button>
+<section id="download" class="download">
+    <h2>Скачать приложение</h2>
+    
+    <!-- 🔥 НОВЫЙ БЛОК С ПРЕДУПРЕЖДЕНИЕМ -->
+    <div class="security-info">
+        <div class="security-card">
+            <div class="security-icon">🔒</div>
+            <h3>Безопасность установки</h3>
+            <p>
+                Для установки APK-файла необходимо <strong>разрешить установку из неизвестных источников</strong> 
+                в настройках Android (Настройки → Безопасность → Неизвестные источники).
+            </p>
+            <p>
+                Наш APK-файл <strong>не содержит вирусов</strong> и полностью безопасен. 
+                Мы не собираем персональные данные и не требуем подозрительных разрешений.
+            </p>
+            <details class="install-guide">
+                <summary>📖 Инструкция по установке</summary>
+                <ol>
+                    <li>Скачайте APK-файл на устройство</li>
+                    <li>Откройте <strong>Настройки → Безопасность</strong></li>
+                    <li>Включите <strong>"Неизвестные источники"</strong> или <strong>"Установка из других источников"</strong></li>
+                    <li>Откройте скачанный файл и нажмите <strong>"Установить"</strong></li>
+                    <li>После установки можно вернуть настройку безопасности обратно</li>
+                </ol>
+            </details>
+        </div>
     </div>
+    
+    <div class="download-card">
+    <h3>Android APK</h3>
+    <p style="color:#888;">Версия 3.0</p>
+    <a href="downloads/gold-options3.apk" download class="btn-download">📥 Скачать APK</a>
+    <p class="apk-size">Размер: ~9.4 МБ</p>
 </div>
-
-<footer><p>&copy; 2025 Gold Options Pro. Все данные "as is".</p></footer>
-
+    
+    <div style="margin-top: 30px;">
+        <span class="disclaimer-link" onclick="openDisclaimer()">📄 Disclaimer & Privacy Policy</span>
+    </div>
+</section>
+<footer>
+    <p>&copy; 2025 Gold Options Pro Analytics. Все данные предоставляются "как есть" без гарантий.</p>
+    <p style="margin-top: 10px;">
+        <a href="#" onclick="openDisclaimer(); return false;" style="color: var(--accent-gold);">Отказ от ответственности</a> | 
+        <a href="#" onclick="openDisclaimer(); return false;" style="color: var(--accent-gold);">Политика конфиденциальности</a>
+    </p>
+</footer>
 <script>
     const DB_ROOT = "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app";
     
-    // Глобальное состояние
     let currentFuturesPrice = 0;
     let cachedTableData = []; 
     let forwardCorrection = 0;
@@ -355,118 +830,657 @@
     let currentExpiry = '0dte';
     let premiumEnabled = false;
 
-    // Ссылки на графики
-    let oiChart, volumeChart, gammaChart, maxPainChart, ivChart, deltaChart, gexChart, thetaChart;
-
+    // 🔥 ГРАФИКИ
+    let oiChart, volumeChart, gammaChart, maxPainChart;
+    let ivChart, deltaChart, gexChart, thetaChart;
+    
     // 🔥 WEBSOCKET ПОДКЛЮЧЕНИЕ
     let ws;
+    let reconnectInterval = 5000;
+    
     function connectWebSocket() {
+        // Определяем URL WebSocket
         const wsUrl = window.location.hostname === 'localhost' 
             ? 'ws://localhost:7860/ws' 
             : `wss://${window.location.hostname}/ws`;
         
         ws = new WebSocket(wsUrl);
-        ws.onopen = () => console.log('✅ WebSocket Connected');
+        
+        ws.onopen = () => {
+            console.log('✅ WebSocket подключен');
+        };
+        
         ws.onmessage = (event) => {
             const msg = JSON.parse(event.data);
             
+            // 🔥 ОБРАБОТКА ЦЕНЫ
             if (msg.type === 'price') {
                 currentFuturesPrice = msg.data.price;
                 document.getElementById('futures-price').innerText = '$' + msg.data.price.toFixed(1);
+                // Если есть загруженная таблица, перерисовываем ее (чтобы подсветка ATM двигалась)
                 if (cachedTableData.length > 0) renderTable(cachedTableData);
             }
             
+            // 🔥 ОБРАБОТКА СВЕЧЕЙ (на будущее)
+            if (msg.type === 'candle') {
+                console.log('🕯️ Новая свеча M1:', msg.data);
+                // Здесь можно добавить отрисовку графика свечей
+            }
+            
+            // 🔥 ОБРАБОТКА АНАЛИТИКИ
             if (msg.type === 'analytics') {
                 updateAnalytics(msg.data);
             }
-            
-            if (msg.type === 'candle') {
-                console.log('🕯️ New Candle:', msg.data);
-            }
         };
+        
+        ws.onerror = (error) => {
+            console.error('❌ WebSocket ошибка:', error);
+        };
+        
         ws.onclose = () => {
-            console.warn('🔌 WS Closed. Retry 5s...');
-            setTimeout(connectWebSocket, 5000);
+            console.warn('🔌 WebSocket закрыт. Переподключение через 5 сек...');
+            setTimeout(connectWebSocket, reconnectInterval);
         };
     }
 
-    // 🔥 ОБНОВЛЕНИЕ АНАЛИТИКИ (из WebSocket)
+    // DISCLAIMER
+    function openDisclaimer() {
+        document.getElementById('disclaimerModal').style.display = 'block';
+    }
+
+    function closeDisclaimer() {
+        document.getElementById('disclaimerModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('disclaimerModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function getValueClass(value) {
+        if (value === 0) return 'val-0';
+        if (value < 50) return 'val-1';
+        if (value < 100) return 'val-2';
+        if (value < 500) return 'val-3';
+        if (value < 1000) return 'val-4';
+        if (value < 2000) return 'val-5';
+        if (value < 5000) return 'val-6';
+        return 'val-7';
+    }
+
+    // ==========================================================================
+    // 🔥 СОЗДАНИЕ ГРАФИКОВ
+    // ==========================================================================
+
+    function createCharts(data) {
+        const strikes = data.map(r => r.strike);
+        const callOI = data.map(r => r.call?.oi || 0);
+        const putOI = data.map(r => r.put?.oi || 0);
+        const callVol = data.map(r => r.call?.vol || 0);
+        const putVol = data.map(r => r.put?.vol || 0);
+
+        // OI Distribution
+if (oiChart) oiChart.destroy();
+const ctxOI = document.getElementById('oiChart').getContext('2d');
+oiChart = new Chart(ctxOI, {
+    type: 'bar',
+    data: {
+        labels: strikes,
+        datasets: [{
+            label: 'Call OI',
+            data: callOI,
+            backgroundColor: 'rgba(46, 125, 50, 0.8)',
+            borderColor: 'rgba(46, 125, 50, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }, {
+            label: 'Put OI',
+            data: putOI.map(v => -v),
+            backgroundColor: 'rgba(198, 40, 40, 0.8)',
+            borderColor: 'rgba(198, 40, 40, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
+        plugins: { 
+            legend: { labels: { color: '#fff' } } 
+        },
+        scales: {
+            x: { 
+                ticks: { color: '#888', maxRotation: 45 }, 
+                grid: { color: '#333' } 
+            },
+            y: { 
+                ticks: { color: '#888' }, 
+                grid: { color: '#333' } 
+            }
+        }
+    }
+});
+        // Volume Heatmap
+if (volumeChart) volumeChart.destroy();
+const ctxVol = document.getElementById('volumeChart').getContext('2d');
+volumeChart = new Chart(ctxVol, {
+    type: 'bar',
+    data: {
+        labels: strikes,
+        datasets: [{
+            label: 'Call Vol',
+            data: callVol,
+            backgroundColor: 'rgba(79, 195, 247, 0.7)',
+            borderColor: 'rgba(79, 195, 247, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }, {
+            label: 'Put Vol',
+            data: putVol.map(v => -v),
+            backgroundColor: 'rgba(255, 138, 101, 0.7)',
+            borderColor: 'rgba(255, 138, 101, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
+        plugins: { 
+            legend: { labels: { color: '#fff' } } 
+        },
+        scales: {
+            x: { 
+                ticks: { color: '#888', maxRotation: 45 }, 
+                grid: { color: '#333' } 
+            },
+            y: { 
+                ticks: { color: '#888' }, 
+                grid: { color: '#333' } 
+            }
+        }
+    }
+});
+
+        // Gamma Exposure
+        const gammaData = data.map(r => {
+            const strike = parseFloat(r.strike);
+            const callGamma = r.call?.gamma || 0;
+            const putGamma = r.put?.gamma || 0;
+            const callOI = r.call?.oi || 0;
+            const putOI = r.put?.oi || 0;
+            return ((callOI * callGamma) - (putOI * putGamma)) * strike * 100 / 1000000;
+        });
+
+        if (gammaChart) gammaChart.destroy();
+        const ctxGamma = document.getElementById('gammaChart').getContext('2d');
+        gammaChart = new Chart(ctxGamma, {
+            type: 'line',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Gamma Exposure (M)',
+                    data: gammaData,
+                    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                    borderColor: 'rgba(255, 215, 0, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            }
+        });
+
+        // Max Pain
+        const maxPainData = strikes.map(testStrike => {
+            let totalLoss = 0;
+            data.forEach(s => {
+                const strike = parseFloat(s.strike);
+                const callOI = s.call?.oi || 0;
+                const putOI = s.put?.oi || 0;
+                
+                if (testStrike > strike) {
+                    totalLoss += (testStrike - strike) * callOI * 100;
+                }
+                if (testStrike < strike) {
+                    totalLoss += (strike - testStrike) * putOI * 100;
+                }
+            });
+            return totalLoss / 1000000;
+        });
+
+        if (maxPainChart) maxPainChart.destroy();
+        const ctxMaxPain = document.getElementById('maxPainChart').getContext('2d');
+        maxPainChart = new Chart(ctxMaxPain, {
+            type: 'line',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Total Loss (M)',
+                    data: maxPainData,
+                    backgroundColor: 'rgba(183, 28, 28, 0.2)',
+                    borderColor: 'rgba(183, 28, 28, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            }
+        });
+
+        // 🔥 IV SMILE
+        const callIV = data.map(r => r.call?.iv || 0);
+        const putIV = data.map(r => r.put?.iv || 0);
+
+        if (ivChart) ivChart.destroy();
+        const ctxIV = document.getElementById('ivChart').getContext('2d');
+        ivChart = new Chart(ctxIV, {
+            type: 'line',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Call IV',
+                    data: callIV,
+                    borderColor: '#4caf50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4
+                }, {
+                    label: 'Put IV',
+                    data: putIV,
+                    borderColor: '#f44336',
+                    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            }
+        });
+
+        // 🔥 DELTA PROFILE
+const callDelta = data.map(r => (r.call?.delta || 0) * (r.call?.oi || 0));
+const putDelta = data.map(r => Math.abs(r.put?.delta || 0) * (r.put?.oi || 0));
+
+if (deltaChart) deltaChart.destroy();
+const ctxDelta = document.getElementById('deltaChart').getContext('2d');
+deltaChart = new Chart(ctxDelta, {
+    type: 'bar',
+    data: {
+        labels: strikes,
+        datasets: [{
+            label: 'Call Delta Exposure',
+            data: callDelta,
+            backgroundColor: 'rgba(76, 175, 80, 0.7)',
+            borderColor: 'rgba(76, 175, 80, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }, {
+            label: 'Put Delta Exposure',
+            data: putDelta.map(v => -v),
+            backgroundColor: 'rgba(244, 67, 54, 0.7)',
+            borderColor: 'rgba(244, 67, 54, 1)',
+            borderWidth: 1,
+            barPercentage: 0.9,
+            categoryPercentage: 1.0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
+        plugins: { 
+            legend: { labels: { color: '#fff' } } 
+        },
+        scales: {
+            x: { 
+                ticks: { color: '#888', maxRotation: 45 }, 
+                grid: { color: '#333' } 
+            },
+            y: { 
+                ticks: { color: '#888' }, 
+                grid: { color: '#333' } 
+            }
+        }
+    }
+});
+
+        // 🔥 GEX PROFILE
+        if (gexChart) gexChart.destroy();
+        const ctxGex = document.getElementById('gexChart').getContext('2d');
+        gexChart = new Chart(ctxGex, {
+            type: 'bar',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Net GEX',
+                    data: gammaData,
+                    // Если > 0 (Коллы) — Зеленый. Если < 0 (Путы) — Красный.
+                    backgroundColor: gammaData.map(v => v > 0 ? 'rgba(46, 125, 50, 0.8)' : 'rgba(198, 40, 40, 0.8)'),
+                    borderColor: gammaData.map(v => v > 0 ? 'rgba(46, 125, 50, 1)' : 'rgba(198, 40, 40, 1)'),
+                    borderWidth: 1,
+                    barPercentage: 0.9,      // Толщина самих столбцов
+                    categoryPercentage: 1.0  // Убирает пустые отступы между группами, делая столбцы еще шире
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index', // Всплывашка срабатывает по всей вертикали страйка
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: '#fff' }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#888', maxRotation: 45 },
+                        grid: { color: '#333' }
+                    },
+                    y: {
+                        ticks: { color: '#888' },
+                        grid: { color: '#333' }
+                    }
+                }
+            }
+        });
+
+        // 🔥 THETA DECAY
+        const callTheta = data.map(r => (r.call?.theta || 0) * (r.call?.oi || 0));
+        const putTheta = data.map(r => (r.put?.theta || 0) * (r.put?.oi || 0));
+
+        if (thetaChart) thetaChart.destroy();
+        const ctxTheta = document.getElementById('thetaChart').getContext('2d');
+        thetaChart = new Chart(ctxTheta, {
+            type: 'line',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Call Theta',
+                    data: callTheta,
+                    borderColor: '#4caf50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4
+                }, {
+                    label: 'Put Theta',
+                    data: putTheta,
+                    borderColor: '#f44336',
+                    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            }
+        });
+    }
+
+    // ==========================================================================
+    // 🔥 РАСЧЕТЫ
+    // ==========================================================================
+
+    function calculateMaxPain(data) {
+        const maxPainValues = {};
+        
+        data.forEach(strikeData => {
+            const testStrike = parseFloat(strikeData.strike);
+            let totalLoss = 0;
+            
+            data.forEach(s => {
+                const strike = parseFloat(s.strike);
+                const callOI = s.call?.oi || 0;
+                const putOI = s.put?.oi || 0;
+                
+                if (testStrike > strike) {
+                    totalLoss += (testStrike - strike) * callOI * 100;
+                }
+                if (testStrike < strike) {
+                    totalLoss += (strike - testStrike) * putOI * 100;
+                }
+            });
+            
+            maxPainValues[testStrike] = totalLoss;
+        });
+        
+        const maxPain = Object.keys(maxPainValues).reduce((a, b) => 
+            maxPainValues[a] < maxPainValues[b] ? a : b
+        );
+        
+        document.getElementById('max-pain-value').innerText = '$' + maxPain;
+    }
+
+    function calculatePCR(rows) {
+        let totalPutOI = 0, totalCallOI = 0;
+        let totalPutVol = 0, totalCallVol = 0;
+
+        rows.forEach(r => {
+            if(r.put) {
+                totalPutOI += (r.put.oi || 0);
+                totalPutVol += (r.put.vol || 0);
+            }
+            if(r.call) {
+                totalCallOI += (r.call.oi || 0);
+                totalCallVol += (r.call.vol || 0);
+            }
+        });
+        
+        let pcrOI = totalCallOI > 0 ? (totalPutOI / totalCallOI).toFixed(2) : "0.00";
+        let pcrVol = totalCallVol > 0 ? (totalPutVol / totalCallVol).toFixed(2) : "0.00";
+        
+        document.getElementById('pcr-oi').innerText = pcrOI;
+        document.getElementById('pcr-vol').innerText = pcrVol;
+        
+        colorPCR('pcr-oi', parseFloat(pcrOI));
+        colorPCR('pcr-vol', parseFloat(pcrVol));
+    }
+
+    function colorPCR(elementId, value) {
+        const el = document.getElementById(elementId);
+        if(value > 1.0) el.style.color = "#f44336";
+        else if(value < 0.7) el.style.color = "#4caf50";
+        else el.style.color = "#fff";
+    }
+
+    // 🔥 ГРЕКИ
+    function calculateGreeks(data) {
+        let totalCallDelta = 0, totalPutDelta = 0;
+        let totalGamma = 0, totalVega = 0, totalTheta = 0;
+        let totalCallIV = 0, totalPutIV = 0, totalOI = 0;
+
+        data.forEach(r => {
+            const cOI = r.call?.oi || 0;
+            const pOI = r.put?.oi || 0;
+
+            totalCallDelta += (r.call?.delta || 0) * cOI;
+            totalPutDelta += Math.abs(r.put?.delta || 0) * pOI;
+            
+            totalGamma += ((r.call?.gamma || 0) * cOI) + ((r.put?.gamma || 0) * pOI);
+            totalVega += ((r.call?.vega || 0) * cOI) + ((r.put?.vega || 0) * pOI);
+            totalTheta += ((r.call?.theta || 0) * cOI) + ((r.put?.theta || 0) * pOI);
+
+            totalCallIV += (r.call?.iv || 0) * cOI;
+            totalPutIV += (r.put?.iv || 0) * pOI;
+            
+            totalOI += cOI + pOI;
+        });
+
+        document.getElementById('total-call-delta').innerText = totalCallDelta.toFixed(0);
+        document.getElementById('total-put-delta').innerText = totalPutDelta.toFixed(0);
+        document.getElementById('total-gamma').innerText = totalGamma.toFixed(2);
+        document.getElementById('total-vega').innerText = totalVega.toFixed(0);
+        document.getElementById('total-theta').innerText = totalTheta.toFixed(0);
+        
+        const avgIV = totalOI > 0 ? ((totalCallIV + totalPutIV) / totalOI).toFixed(1) : '0';
+        document.getElementById('avg-iv').innerText = avgIV + '%';
+
+        // Delta Skew
+        const deltaSkew = totalCallDelta - totalPutDelta;
+        document.getElementById('delta-skew-value').innerText = deltaSkew.toFixed(0);
+    }
+
+    // ==========================================================================
+    // 🔥 ИНТРАДЕЙ АНАЛИТИКА (ОБНОВЛЯЕТСЯ ТЕПЕРЬ ИЗ SOCKET)
+    // ==========================================================================
+
     function updateAnalytics(analytics) {
         if (!analytics) return;
-
+        
         // Expected Move
         if (analytics.expected_move) {
             const move = parseFloat(analytics.expected_move);
             document.getElementById('exp-move-value').innerText = `±$${move.toFixed(2)}`;
+            
             if (currentFuturesPrice > 0) {
                 const up = (currentFuturesPrice + move).toFixed(1);
                 const down = (currentFuturesPrice - move).toFixed(1);
                 document.getElementById('exp-move-range').innerText = `${down} — ${up}`;
             }
         }
-
+        
         // Probabilities
         if (analytics.probabilities) {
             document.getElementById('prob-call').innerText = analytics.probabilities.call_itm + '%';
             document.getElementById('prob-put').innerText = analytics.probabilities.put_itm + '%';
         }
-
-        // Greeks
+        
+        // Advanced Greeks
         if (analytics.adv_metrics) {
             document.getElementById('metric-color').innerText = analytics.adv_metrics.color || '0';
-            document.getElementById('metric-charm').innerText = analytics.adv_metrics.charm || '0.00';
+            document.getElementById('metric-charm').innerText = analytics.adv_metrics.charm || '0';
         }
-
-        // News
-        if (analytics.calendar) {
-            document.getElementById('calendar-list').innerHTML = analytics.calendar.map(i => 
-                `<div><b style="color:var(--accent-gold)">${i.time}</b> ${i.event}</div>`
-            ).join('');
+        
+        // Calendar
+        if (analytics.calendar && Array.isArray(analytics.calendar)) {
+            const calContainer = document.getElementById('calendar-list');
+            calContainer.innerHTML = analytics.calendar.map(item => `
+                <div style="padding: 5px 0; border-bottom: 1px solid #333;">
+                    <span style="color: var(--accent-gold); font-weight: bold;">${item.time}</span>
+                    <span style="color: #ccc; margin-left: 10px;">${item.event}</span>
+                </div>
+            `).join('');
         }
 
         // Zero Gamma
         if (analytics.zero_gamma) {
             document.getElementById('zero-gamma-value').innerText = '$' + analytics.zero_gamma.strike;
-            document.getElementById('zero-gamma-label').innerText = `Цена ${analytics.zero_gamma.position === 'above' ? '🟢 Выше' : '🔴 Ниже'} GEX 0`;
+            const pos = analytics.zero_gamma.position === 'above' ? '🟢 Выше' : '🔴 Ниже';
+            document.getElementById('zero-gamma-label').innerText = `Цена ${pos} Zero Gamma`;
         }
 
-        // Skew
+        // IV Skew
         if (analytics.iv_metrics) {
-            document.getElementById('iv-skew-value').innerText = analytics.iv_metrics.iv_skew.toFixed(2);
-            const b = document.getElementById('iv-sentiment');
-            b.innerText = analytics.iv_metrics.sentiment.toUpperCase();
-            b.className = 'sentiment-badge sentiment-' + analytics.iv_metrics.sentiment;
+            const iv = analytics.iv_metrics;
+            document.getElementById('iv-skew-value').innerText = iv.iv_skew.toFixed(2);
+            
+            const badge = document.getElementById('iv-sentiment');
+            badge.innerText = iv.sentiment.toUpperCase();
+            badge.className = 'sentiment-badge sentiment-' + iv.sentiment;
         }
 
-        // Squeeze
+        // Squeeze Risk
         if (analytics.squeeze_risk) {
             const risk = analytics.squeeze_risk;
             document.getElementById('squeeze-risk-level').innerText = risk.level;
             document.getElementById('squeeze-risk-label').innerText = `Score: ${risk.score}% | ATM: $${risk.atm_strike}`;
+            
             const fill = document.getElementById('squeeze-risk-fill');
             fill.style.width = risk.score + '%';
-            fill.className = 'risk-fill ' + (risk.score > 70 ? 'risk-high' : risk.score > 40 ? 'risk-medium' : 'risk-low');
+            
+            if (risk.score > 70) {
+                fill.className = 'risk-fill risk-high';
+            } else if (risk.score > 40) {
+                fill.className = 'risk-fill risk-medium';
+            } else {
+                fill.className = 'risk-fill risk-low';
+            }
         }
 
         // Momentum
         if (analytics.momentum) {
-            document.getElementById('momentum-signal').innerText = analytics.momentum.signal;
-            document.getElementById('momentum-label').innerText = `Strength: ${analytics.momentum.strength}%`;
+            const mom = analytics.momentum;
+            document.getElementById('momentum-signal').innerText = mom.signal;
+            document.getElementById('momentum-label').innerText = `Strength: ${mom.strength}%`;
         }
 
         // Vanna
         if (analytics.vanna_exposure) {
-            document.getElementById('vanna-net').innerText = analytics.vanna_exposure.net_vanna.toFixed(0);
-            document.getElementById('vanna-label').innerText = `C: ${analytics.vanna_exposure.call_vanna.toFixed(0)} | P: ${analytics.vanna_exposure.put_vanna.toFixed(0)}`;
+            const vanna = analytics.vanna_exposure;
+            document.getElementById('vanna-net').innerText = vanna.net_vanna.toFixed(0);
+            document.getElementById('vanna-label').innerText = `Call: ${vanna.call_vanna.toFixed(0)} | Put: ${vanna.put_vanna.toFixed(0)}`;
         }
 
-        // Levels
+        // Key Levels
         if (analytics.key_levels) {
-            let h = '<div style="color:var(--bullish)">🟢 Resistance:</div>';
-            analytics.key_levels.resistance.forEach(s => h += `<div class="level-item resistance"><span>$${s}</span></div>`);
-            h += '<div style="color:var(--bearish); margin-top:5px;">🔴 Support:</div>';
-            analytics.key_levels.support.forEach(s => h += `<div class="level-item support"><span>$${s}</span></div>`);
-            document.getElementById('key-levels-display').innerHTML = h;
+            const levels = analytics.key_levels;
+            let html = '';
+            
+            html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance (Calls):</div>';
+            levels.resistance.forEach(s => {
+                html += `<div class="level-item resistance"><span>$${s}</span></div>`;
+            });
+
+            html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support (Puts):</div>';
+            levels.support.forEach(s => {
+                html += `<div class="level-item support"><span>$${s}</span></div>`;
+            });
+            
+            document.getElementById('key-levels-display').innerHTML = html;
         }
 
         // Alerts
@@ -474,163 +1488,316 @@
     }
 
     function generateAlerts(analytics) {
-        const c = document.getElementById('alerts-container');
-        let a = [];
-        if (analytics.squeeze_risk?.score > 75) a.push({t:'danger', m:'🔥 ВЫСОКИЙ риск Gamma Squeeze!'});
-        if (Math.abs(analytics.iv_metrics?.iv_skew) > 3) a.push({t:'warning', m:'⚠️ Экстремальный IV Skew!'});
-        
-        if (a.length === 0) c.innerHTML = '<div class="alert alert-success">✅ Условия стабильны</div>';
-        else c.innerHTML = a.map(i => `<div class="alert alert-${i.t}">${i.m}</div>`).join('');
-    }
+        const container = document.getElementById('alerts-container');
+        let alerts = [];
 
-    // 🔥 ФУНКЦИИ РАСЧЕТОВ (Greeks, Max Pain, etc.)
-    function calculateGreeks(data) {
-        let cd = 0, pd = 0, g = 0, v = 0, t = 0, ivSum = 0, oiSum = 0;
-        data.forEach(r => {
-            const coi = r.call?.oi || 0; const poi = r.put?.oi || 0;
-            cd += (r.call?.delta || 0) * coi; pd += Math.abs(r.put?.delta || 0) * poi;
-            g += ((r.call?.gamma || 0) * coi) + ((r.put?.gamma || 0) * poi);
-            v += ((r.call?.vega || 0) * coi) + ((r.put?.vega || 0) * poi);
-            t += ((r.call?.theta || 0) * coi) + ((r.put?.theta || 0) * poi);
-            ivSum += (r.call?.iv || 0) * coi + (r.put?.iv || 0) * poi;
-            oiSum += coi + poi;
-        });
-        document.getElementById('total-call-delta').innerText = Math.round(cd);
-        document.getElementById('total-put-delta').innerText = Math.round(pd);
-        document.getElementById('total-gamma').innerText = g.toFixed(2);
-        document.getElementById('total-vega').innerText = Math.round(v);
-        document.getElementById('total-theta').innerText = Math.round(t);
-        document.getElementById('avg-iv').innerText = (ivSum/oiSum).toFixed(1) + '%';
-    }
-
-    function calculateMaxPain(data) {
-        let minLoss = Infinity, maxPainStrike = 0;
-        data.forEach(target => {
-            let loss = 0;
-            data.forEach(s => {
-                const strike = parseFloat(s.strike);
-                if (parseFloat(target.strike) > strike) loss += (parseFloat(target.strike) - strike) * (s.call?.oi || 0) * 100;
-                if (parseFloat(target.strike) < strike) loss += (strike - parseFloat(target.strike)) * (s.put?.oi || 0) * 100;
+        // Squeeze Risk Alert
+        if (analytics.squeeze_risk && analytics.squeeze_risk.score > 70) {
+            alerts.push({
+                type: 'danger',
+                text: `🔥 ВЫСОКИЙ риск Gamma Squeeze! Score: ${analytics.squeeze_risk.score}%`
             });
-            if (loss < minLoss) { minLoss = loss; maxPainStrike = target.strike; }
-        });
-        document.getElementById('max-pain-value').innerText = '$' + maxPainStrike;
+        }
+
+        // IV Skew Alert
+        if (analytics.iv_metrics) {
+            if (Math.abs(analytics.iv_metrics.iv_skew) > 3) {
+                alerts.push({
+                    type: 'warning',
+                    text: `⚠️ Экстремальный IV Skew: ${analytics.iv_metrics.iv_skew.toFixed(2)}`
+                });
+            }
+        }
+
+        // Momentum Alert
+        if (analytics.momentum && analytics.momentum.strength > 70) {
+            alerts.push({
+                type: 'info',
+                text: `📊 Сильный ${analytics.momentum.signal} импульс (${analytics.momentum.strength}%)`
+            });
+        }
+
+        // GEX Walls Alert
+        if (analytics.gex_profile) {
+            const walls = [...analytics.gex_profile.top_resistance, ...analytics.gex_profile.top_support];
+            const nearWall = walls.find(w => w.distance < 10);
+            
+            if (nearWall) {
+                alerts.push({
+                    type: 'warning',
+                    text: `🧱 Приближение к Gamma Wall: $${nearWall.strike} (${nearWall.distance.toFixed(1)} away)`
+                });
+            }
+        }
+
+        // Render Alerts
+        if (alerts.length === 0) {
+            container.innerHTML = '<div class="alert alert-success">✅ Нормальные рыночные условия</div>';
+        } else {
+            container.innerHTML = alerts.map(a => 
+                `<div class="alert alert-${a.type}">${a.text}</div>`
+            ).join('');
+        }
     }
 
-    function calculatePCR(data) {
-        let coi = 0, poi = 0, cv = 0, pv = 0;
-        data.forEach(r => {
-            coi += (r.call?.oi || 0); poi += (r.put?.oi || 0);
-            cv += (r.call?.vol || 0); pv += (r.put?.vol || 0);
+    // ==========================================================================
+    // FORWARD & PREMIUM
+    // ==========================================================================
+
+    document.getElementById('forward-input').addEventListener('input', function(e) {
+        const val = parseFloat(e.target.value);
+        forwardCorrection = isNaN(val) ? 0 : val;
+        if (cachedTableData.length > 0) {
+            renderTable(cachedTableData);
+            updateTop5(cachedTableData);
+        }
+    });
+
+    document.getElementById('premium-toggle').addEventListener('click', function() {
+        premiumEnabled = !premiumEnabled;
+        this.textContent = premiumEnabled ? 'Откл. премии' : 'Вкл. премии';
+        this.classList.toggle('active');
+        if (cachedTableData.length > 0) {
+            renderTable(cachedTableData);
+            updateTop5(cachedTableData);
+        }
+    });
+
+    // EXPIRY TOGGLE
+    document.querySelectorAll('.expiry-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentExpiry = this.dataset.expiry;
+            
+            const label = document.getElementById('table-expiry-label');
+            // Просто меняем текст заголовка без лишних тегов
+            label.innerText = currentExpiry === '0dte' ? 'INTRADAY' : 'FRIDAY';
+            
+            fetchHeavyData();
         });
-        document.getElementById('pcr-oi').innerText = (poi/coi).toFixed(2);
-        document.getElementById('pcr-vol').innerText = (pv/cv).toFixed(2);
+    });
+
+    // STRIKE FILTER
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            displayStrikeCount = parseInt(this.dataset.count);
+            if (cachedTableData.length > 0) renderTable(cachedTableData);
+        });
+    });
+
+    // ==========================================================================
+    // FETCH DATA
+    // ==========================================================================
+
+    // ЭТА ФУНКЦИЯ ОСТАЛАСЬ, Т.К. ОНА ЗАГРУЖАЕТ "ТЯЖЕЛЫЕ" ДАННЫЕ ИЗ FIREBASE
+    async function fetchHeavyData() {
+        try {
+            const endpoint = currentExpiry === '0dte' ? 'gold_heavy2.json' : 'gold_friday.json';
+            const url = `${DB_ROOT}/${endpoint}?t=${Date.now()}`;
+            
+            console.log(`📡 Запрос к: ${url}`);
+
+            const res = await fetch(url);
+            
+            if (!res.ok) {
+                console.error("Ошибка сети");
+                document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="color:red">Ошибка доступа</td></tr>';
+                return;
+            }
+
+            const data = await res.json();
+            
+            if (!data) {
+                console.warn("Данные пустые");
+                document.getElementById('option-body').innerHTML = '<tr><td colspan="11">Данные отсутствуют</td></tr>';
+                return;
+            }
+
+            if (data.balance_price) {
+                document.getElementById('balance-price').innerText = '$' + data.balance_price;
+            }
+
+           if (data.updated_at_utc) {
+                // Разбиваем дату и время для красивого отображения
+                const parts = data.updated_at_utc.split(' ');
+                const date = parts[0]; // DD.MM.YYYY
+                const time = parts[1]; // HH:MM:SS
+                
+                document.getElementById('updated-time').innerHTML = 
+                    `<span style="color: #888; font-size: 0.8em;">${date}</span> <span style="color: #fff;">${time}</span>`;
+            }
+            
+            let rawData = data.data;
+            if (rawData && !Array.isArray(rawData)) {
+                console.warn("⚠️ Firebase вернул Объект! Конвертируем...");
+                rawData = Object.values(rawData);
+            }
+
+            cachedTableData = rawData || [];
+            
+            console.log(`📊 Получено строк: ${cachedTableData.length}`);
+
+            if (cachedTableData.length === 0) {
+                document.getElementById('option-body').innerHTML = '<tr><td colspan="11">Массив пуст</td></tr>';
+                return;
+            }
+            
+            calculatePCR(cachedTableData);
+            calculateMaxPain(cachedTableData);
+            calculateGreeks(cachedTableData);
+            createCharts(cachedTableData);
+            
+            renderTable(cachedTableData);
+            updateTop5(cachedTableData);
+
+        } catch (e) { 
+            console.error("Критическая ошибка:", e);
+            document.getElementById('option-body').innerHTML = `<tr><td colspan="11" style="color:red">Error: ${e.message}</td></tr>`;
+        }
     }
 
-    // 🔥 РЕНДЕР ТАБЛИЦЫ
-    function getValueClass(v) {
-        if (!v || v === 0) return 'val-0';
-        if (v < 100) return 'val-2';
-        if (v < 500) return 'val-4';
-        if (v < 2000) return 'val-6';
-        return 'val-7';
+    // ==========================================================================
+    // TOP-5
+    // ==========================================================================
+
+    function updateTop5(rows) {
+        const callsVol = [...rows].sort((a, b) => (b.call?.vol || 0) - (a.call?.vol || 0)).slice(0, 5);
+        const callsOI = [...rows].sort((a, b) => (b.call?.oi || 0) - (a.call?.oi || 0)).slice(0, 5);
+        const putsVol = [...rows].sort((a, b) => (b.put?.vol || 0) - (a.put?.vol || 0)).slice(0, 5);
+        const putsOI = [...rows].sort((a, b) => (b.put?.oi || 0) - (a.put?.oi || 0)).slice(0, 5);
+
+        const renderItem = (r, type, metric) => {
+            const rawStrike = parseFloat(r.strike) + forwardCorrection;
+            const premium = type === 'call' ? (r.call?.premium || 0) : (r.put?.premium || 0);
+            const value = type === 'call' ? (r.call?.[metric] || 0) : (r.put?.[metric] || 0);
+            
+            let displayStrike = rawStrike;
+            if (premiumEnabled) {
+                displayStrike = type === 'call' ? (rawStrike + premium) : (rawStrike - premium);
+            }
+
+            return `<div class="top5-item ${type === 'call' ? 'call-item' : 'put-item'}">
+                <span class="top5-strike">${Number.isInteger(displayStrike) ? displayStrike : displayStrike.toFixed(1)}</span>
+                <span class="top5-value">${Math.round(value)}</span>
+            </div>`;
+        };
+
+        document.getElementById('top5-call-vol').innerHTML = callsVol.map(r => renderItem(r, 'call', 'vol')).join('');
+        document.getElementById('top5-call-oi').innerHTML = callsOI.map(r => renderItem(r, 'call', 'oi')).join('');
+        document.getElementById('top5-put-vol').innerHTML = putsVol.map(r => renderItem(r, 'put', 'vol')).join('');
+        document.getElementById('top5-put-oi').innerHTML = putsOI.map(r => renderItem(r, 'put', 'oi')).join('');
     }
+
+    // ==========================================================================
+    // RENDER TABLE
+    // ==========================================================================
 
     function renderTable(rows) {
         const tbody = document.getElementById('option-body');
         tbody.innerHTML = '';
         
-        let closestIdx = 0, minDiff = Infinity;
-        rows.forEach((r, i) => {
-            let diff = Math.abs(parseFloat(r.strike) + forwardCorrection - currentFuturesPrice);
-            if (diff < minDiff) { minDiff = diff; closestIdx = i; }
+        if (!rows || rows.length === 0) return;
+
+        let closestIndex = 0;
+        let minDiff = Infinity;
+
+        // Находим страйк, ближайший к текущей цене фьючерса
+        rows.forEach((row, idx) => {
+            const displayStrike = parseFloat(row.strike) + forwardCorrection;
+            const diff = Math.abs(displayStrike - currentFuturesPrice);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestIndex = idx;
+            }
         });
 
-        const start = Math.max(0, closestIdx - Math.floor(displayStrikeCount/2));
-        const end = Math.min(rows.length, start + displayStrikeCount);
+        const halfRange = Math.floor(displayStrikeCount / 2);
+        let startIdx = Math.max(0, closestIndex - halfRange);
+        let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
 
-        rows.slice(start, end).forEach((r, i) => {
+        if (endIdx - startIdx < displayStrikeCount) {
+            startIdx = Math.max(0, endIdx - displayStrikeCount);
+        }
+
+        const displayRows = rows.slice(startIdx, endIdx);
+
+        displayRows.forEach((row, idx) => {
             const tr = document.createElement('tr');
-            const strike = parseFloat(r.strike) + forwardCorrection;
-            const isATM = (start + i) === closestIdx;
+            
+            const rawStrike = parseFloat(row.strike) + forwardCorrection;
+            // Подсветка строки, если она соответствует найденному ATM страйку
+            const isATM = (startIdx + idx) === closestIndex;
+
+            let c_oi = row.call?.oi || 0;
+            let c_vol = row.call?.vol || 0;
+            const c_prem = row.call?.premium || 0;
+            const c_delta = (row.call?.delta || 0).toFixed(2);
+            const c_gamma = (row.call?.gamma || 0).toFixed(4);
+            
+            let p_oi = row.put?.oi || 0;
+            let p_vol = row.put?.vol || 0;
+            const p_prem = row.put?.premium || 0;
+            const p_delta = (row.put?.delta || 0).toFixed(2);
+            const p_gamma = (row.put?.gamma || 0).toFixed(4);
+
+            let strikeHtml = '';
+            
+            if (premiumEnabled) {
+                const callBE = rawStrike + c_prem; 
+                const putBE = rawStrike - p_prem;
+                
+                strikeHtml = `
+                    <div style="line-height:1.1;">
+                        <span style="color:#a5d6a7">${callBE.toFixed(1)}</span><br>
+                        <span style="font-size:0.75em; color:#ef9a9a">${putBE.toFixed(1)}</span>
+                    </div>
+                `;
+            } else {
+                strikeHtml = Number.isInteger(rawStrike) ? rawStrike : rawStrike.toFixed(1);
+            }
+
+            const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
 
             tr.innerHTML = `
-                <td class="${getValueClass(r.call?.oi)}">${r.call?.oi}</td>
-                <td class="${getValueClass(r.call?.vol)}">${r.call?.vol}</td>
-                <td style="color:#aaa">${r.call?.premium}</td>
-                <td style="color:#4fc3f7">${r.call?.delta.toFixed(2)}</td>
-                <td style="color:var(--accent-gold)">${r.call?.gamma.toFixed(4)}</td>
-                <td class="col-strike">${strike.toFixed(1)}</td>
-                <td style="color:var(--accent-gold)">${r.put?.gamma.toFixed(4)}</td>
-                <td style="color:#f48fb1">${r.put?.delta.toFixed(2)}</td>
-                <td style="color:#aaa">${r.put?.premium}</td>
-                <td class="${getValueClass(r.put?.vol)}">${r.put?.vol}</td>
-                <td class="${getValueClass(r.put?.oi)}">${r.put?.oi}</td>
+                <td class="${getValueClass(c_oi)}">${Math.round(c_oi)}</td>
+                <td class="${getValueClass(c_vol)}">${Math.round(c_vol)}</td>
+                <td style="color:#aaa;">${c_prem}</td>
+                <td style="color:#4fc3f7;">${c_delta}</td>
+                <td style="color:#FFD700;">${c_gamma}</td>
+                
+                <td class="${strikeClass}">
+                    ${strikeHtml}
+                </td>
+                
+                <td style="color:#FFD700;">${p_gamma}</td>
+                <td style="color:#f48fb1;">${p_delta}</td>
+                <td style="color:#aaa;">${p_prem}</td>
+                <td class="${getValueClass(p_vol)}">${Math.round(p_vol)}</td>
+                <td class="${getValueClass(p_oi)}">${Math.round(p_oi)}</td>
             `;
-            if (isATM) tr.className = 'row-atm';
+
+            if (isATM) tr.classList.add('row-atm');
+            
             tbody.appendChild(tr);
         });
     }
 
-    // 🔥 ГРАФИКИ
-    function createCharts(data) {
-        const labels = data.map(r => r.strike);
-        const config = (ctx, label1, d1, label2, d2, type='bar') => new Chart(ctx, {
-            type: type,
-            data: { labels: labels, datasets: [
-                { label: label1, data: d1, backgroundColor: 'rgba(46, 125, 50, 0.7)', borderColor: '#4caf50' },
-                { label: label2, data: d2, backgroundColor: 'rgba(198, 40, 40, 0.7)', borderColor: '#f44336' }
-            ]},
-            options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { color: '#888' }}, y: { ticks: { color: '#888' }} } }
-        });
-
-        if (oiChart) oiChart.destroy();
-        oiChart = config(document.getElementById('oiChart'), 'Call OI', data.map(r => r.call?.oi), 'Put OI', data.map(r => -r.put?.oi));
-        
-        if (gammaChart) gammaChart.destroy();
-        gammaChart = config(document.getElementById('gammaChart'), 'Gamma Exposure', data.map(r => (r.call.oi*r.call.gamma - r.put.oi*r.put.gamma)*100), '', [], 'line');
-        
-        // По аналогии создаются остальные 6 графиков (Max Pain, Volume, IV Smile и т.д.)
-        // Код для краткости опущен, но логика идентична.
-    }
-
-    async function fetchHeavyData() {
-        try {
-            const endpoint = currentExpiry === '0dte' ? 'gold_heavy2.json' : 'gold_friday.json';
-            const res = await fetch(`${DB_ROOT}/${endpoint}?t=${Date.now()}`);
-            const data = await res.json();
-            if (!data) return;
-
-            document.getElementById('balance-price').innerText = '$' + (data.balance_price || '...');
-            document.getElementById('updated-time').innerText = data.updated_at_utc?.split(' ')[1] || '--:--';
-
-            cachedTableData = Array.isArray(data.data) ? data.data : Object.values(data.data);
-            
-            calculatePCR(cachedTableData);
-            calculateMaxPain(cachedTableData);
-            calculateGreeks(cachedTableData);
-            renderTable(cachedTableData);
-            createCharts(cachedTableData);
-        } catch (e) { console.error("Firebase Err:", e); }
-    }
-
-    // Listeners
-    document.getElementById('forward-input').addEventListener('input', (e) => {
-        forwardCorrection = parseFloat(e.target.value) || 0;
-        renderTable(cachedTableData);
-    });
-
-    document.querySelectorAll('.expiry-btn').forEach(b => b.addEventListener('click', (e) => {
-        document.querySelectorAll('.expiry-btn').forEach(x => x.classList.remove('active'));
-        e.target.classList.add('active');
-        currentExpiry = e.target.dataset.expiry;
-        fetchHeavyData();
-    }));
-
-    // Start
+    // ==========================================================================
+    // 🔥 ИНИЦИАЛИЗАЦИЯ
+    // ==========================================================================
+    
+    // 1. Подключаем WebSocket для быстрых данных (цена, аналитика)
     connectWebSocket();
+    
+    // 2. Загружаем тяжелые данные (таблица)
     fetchHeavyData();
+    
+    // 3. Обновляем тяжелые данные раз в 5 минут
     setInterval(fetchHeavyData, 300000);
+
 </script>
 </body>
 </html>
