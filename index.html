@@ -835,23 +835,29 @@
     let ivChart, deltaChart, gexChart, thetaChart;
     
     // ==========================================================================
-    // 🔥 WEBSOCKET ПОДКЛЮЧЕНИЕ (ИСПРАВЛЕНО)
+    // 🔥 WEBSOCKET ПОДКЛЮЧЕНИЕ (С ИНДИКАЦИЕЙ СТАТУСА)
     // ==========================================================================
     let ws;
     let reconnectInterval = 3000;
     
     function connectWebSocket() {
+        // Убедись, что адрес правильный (wss://...)
         const wsUrl = "wss://askhat777-semipalatinsk-core.hf.space/ws";
-        console.log(`🔌 Подключение к: ${wsUrl}`);
+        console.log(`🔌 Попытка подключения к: ${wsUrl}`);
         
         ws = new WebSocket(wsUrl);
         
+        // 🟢 КОГДА ПОДКЛЮЧИЛИСЬ
         ws.onopen = () => {
             console.log('✅ WebSocket успешно подключен!');
             const updateEl = document.getElementById('updated-time');
-            if(updateEl) updateEl.style.color = '#4caf50';
+            if(updateEl) {
+                // Прямо пишем статус ONLINE зеленым
+                updateEl.innerHTML = '<span style="color:#4caf50">● ONLINE (Waiting data...)</span>';
+            }
         };
         
+        // 📩 КОГДА ПРИШЛИ ДАННЫЕ
         ws.onmessage = (event) => {
             try {
                 const msg = JSON.parse(event.data);
@@ -863,7 +869,7 @@
                     const priceEl = document.getElementById('futures-price');
                     if (priceEl) {
                         priceEl.innerText = '$' + msg.data.price.toFixed(1);
-                        // Эффект мигания
+                        // Эффект мигания (белый -> золотой)
                         priceEl.style.color = '#fff';
                         setTimeout(() => priceEl.style.color = 'var(--accent-gold)', 200);
                     }
@@ -881,59 +887,71 @@
                 
                 // 3. АНАЛИТИКА (Вызов функции обновления)
                 if (msg.type === 'analytics') {
+                    console.log('📊 Analytics received');
                     updateAnalytics(msg.data);
                 }
 
             } catch (e) {
-                console.error("Ошибка WS:", e);
+                console.error("Ошибка обработки WS сообщения:", e);
             }
         };
         
+        // 🔴 КОГДА ОШИБКА
         ws.onerror = (error) => {
-            console.error('❌ WebSocket ошибка:', error);
+            console.error('❌ WebSocket ошибка (Скорее всего CORS или адрес):', error);
             const updateEl = document.getElementById('updated-time');
-            if(updateEl) updateEl.style.color = '#f44336';
+            if(updateEl) updateEl.innerHTML = '<span style="color:#f44336">● CONNECTION ERROR</span>';
         };
         
+        // 🔌 КОГДА ЗАКРЫЛОСЬ
         ws.onclose = () => {
             console.warn('🔌 WebSocket закрыт. Реконнект через 3 сек...');
+            const updateEl = document.getElementById('updated-time');
+            if(updateEl) updateEl.innerHTML = '<span style="color:#ff9800">● RECONNECTING...</span>';
             setTimeout(connectWebSocket, reconnectInterval);
         };
     }
 
     // ==========================================================================
-    // 🔥 ОБНОВЛЕНИЕ АНАЛИТИКИ (ДОБАВЛЕНО)
+    // 🔥 ОБНОВЛЕНИЕ АНАЛИТИКИ
     // ==========================================================================
     function updateAnalytics(analytics) {
         if (!analytics) return;
 
-        // Таймстемп
+        // Таймстемп - Показываем "LIVE"
         if (analytics.updated_at_utc) {
              const timeEl = document.getElementById('updated-time');
-             if (timeEl) timeEl.innerHTML = `<span style="color:#4caf50">LIVE</span> ${analytics.updated_at_utc}`;
+             if (timeEl) timeEl.innerHTML = `<span style="color:#4caf50">● LIVE</span> ${analytics.updated_at_utc}`;
         }
         
         // Expected Move
         if (analytics.expected_move) {
             const move = parseFloat(analytics.expected_move);
-            document.getElementById('exp-move-value').innerText = `±$${move.toFixed(2)}`;
+            const emEl = document.getElementById('exp-move-value');
+            if(emEl) emEl.innerText = `±$${move.toFixed(2)}`;
+            
             if (currentFuturesPrice > 0) {
                 const up = (currentFuturesPrice + move).toFixed(1);
                 const down = (currentFuturesPrice - move).toFixed(1);
-                document.getElementById('exp-move-range').innerText = `${down} — ${up}`;
+                const rangeEl = document.getElementById('exp-move-range');
+                if(rangeEl) rangeEl.innerText = `${down} — ${up}`;
             }
         }
         
         // Probabilities
         if (analytics.probabilities) {
-            document.getElementById('prob-call').innerText = analytics.probabilities.call_itm + '%';
-            document.getElementById('prob-put').innerText = analytics.probabilities.put_itm + '%';
+            const pCall = document.getElementById('prob-call');
+            const pPut = document.getElementById('prob-put');
+            if(pCall) pCall.innerText = analytics.probabilities.call_itm + '%';
+            if(pPut) pPut.innerText = analytics.probabilities.put_itm + '%';
         }
         
         // Greeks (Color/Charm)
         if (analytics.adv_metrics) {
-            document.getElementById('metric-color').innerText = analytics.adv_metrics.color ? analytics.adv_metrics.color.toFixed(4) : '0';
-            document.getElementById('metric-charm').innerText = analytics.adv_metrics.charm ? analytics.adv_metrics.charm.toFixed(4) : '0';
+            const mColor = document.getElementById('metric-color');
+            const mCharm = document.getElementById('metric-charm');
+            if(mColor) mColor.innerText = analytics.adv_metrics.color ? analytics.adv_metrics.color.toFixed(4) : '0';
+            if(mCharm) mCharm.innerText = analytics.adv_metrics.charm ? analytics.adv_metrics.charm.toFixed(4) : '0';
         }
         
         // Calendar
@@ -951,15 +969,20 @@
 
         // Zero Gamma
         if (analytics.zero_gamma) {
-            document.getElementById('zero-gamma-value').innerText = '$' + analytics.zero_gamma.strike;
-            const pos = analytics.zero_gamma.position === 'above' ? '🟢 Выше' : '🔴 Ниже';
-            document.getElementById('zero-gamma-label').innerText = `Цена ${pos} Zero Gamma`;
+            const zVal = document.getElementById('zero-gamma-value');
+            const zLabel = document.getElementById('zero-gamma-label');
+            if(zVal) zVal.innerText = '$' + analytics.zero_gamma.strike;
+            if(zLabel) {
+                const pos = analytics.zero_gamma.position === 'above' ? '🟢 Выше' : '🔴 Ниже';
+                zLabel.innerText = `Цена ${pos} Zero Gamma`;
+            }
         }
 
         // IV Skew
         if (analytics.iv_metrics) {
             const iv = analytics.iv_metrics;
-            document.getElementById('iv-skew-value').innerText = iv.iv_skew.toFixed(2);
+            const ivVal = document.getElementById('iv-skew-value');
+            if(ivVal) ivVal.innerText = iv.iv_skew.toFixed(2);
             const badge = document.getElementById('iv-sentiment');
             if (badge) {
                 badge.innerText = iv.sentiment.toUpperCase();
@@ -970,8 +993,12 @@
         // Squeeze Risk
         if (analytics.squeeze_risk) {
             const risk = analytics.squeeze_risk;
-            document.getElementById('squeeze-risk-level').innerText = risk.level;
-            document.getElementById('squeeze-risk-label').innerText = `Score: ${risk.score}% | ATM: $${risk.atm_strike}`;
+            const sLevel = document.getElementById('squeeze-risk-level');
+            const sLabel = document.getElementById('squeeze-risk-label');
+            
+            if(sLevel) sLevel.innerText = risk.level;
+            if(sLabel) sLabel.innerText = `Score: ${risk.score}% | ATM: $${risk.atm_strike}`;
+            
             const fill = document.getElementById('squeeze-risk-fill');
             if (fill) {
                 fill.style.width = risk.score + '%';
@@ -984,39 +1011,47 @@
         // Momentum
         if (analytics.momentum) {
             const mom = analytics.momentum;
-            document.getElementById('momentum-signal').innerText = mom.signal;
-            document.getElementById('momentum-label').innerText = `Strength: ${mom.strength}%`;
+            const mSig = document.getElementById('momentum-signal');
+            const mLab = document.getElementById('momentum-label');
+            if(mSig) mSig.innerText = mom.signal;
+            if(mLab) mLab.innerText = `Strength: ${mom.strength}%`;
         }
 
         // Vanna
         if (analytics.vanna_exposure) {
             const vanna = analytics.vanna_exposure;
-            document.getElementById('vanna-net').innerText = vanna.net_vanna.toFixed(0);
-            document.getElementById('vanna-label').innerText = `Call: ${vanna.call_vanna.toFixed(0)} | Put: ${vanna.put_vanna.toFixed(0)}`;
+            const vNet = document.getElementById('vanna-net');
+            const vLab = document.getElementById('vanna-label');
+            if(vNet) vNet.innerText = vanna.net_vanna.toFixed(0);
+            if(vLab) vLab.innerText = `Call: ${vanna.call_vanna.toFixed(0)} | Put: ${vanna.put_vanna.toFixed(0)}`;
         }
 
         // Delta Skew
         if (analytics.delta_metrics) {
-             document.getElementById('delta-skew-value').innerText = analytics.delta_metrics.delta_skew;
+             const dSkew = document.getElementById('delta-skew-value');
+             if(dSkew) dSkew.innerText = analytics.delta_metrics.delta_skew;
         }
 
         // Key Levels
         if (analytics.key_levels) {
             const levels = analytics.key_levels;
-            let html = '';
-            html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance (Calls):</div>';
-            if (levels.resistance) {
-                levels.resistance.forEach(s => {
-                    html += `<div class="level-item resistance"><span>$${s}</span></div>`;
-                });
+            const kCont = document.getElementById('key-levels-display');
+            if(kCont) {
+                let html = '';
+                html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance (Calls):</div>';
+                if (levels.resistance) {
+                    levels.resistance.forEach(s => {
+                        html += `<div class="level-item resistance"><span>$${s}</span></div>`;
+                    });
+                }
+                html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support (Puts):</div>';
+                if (levels.support) {
+                    levels.support.forEach(s => {
+                        html += `<div class="level-item support"><span>$${s}</span></div>`;
+                    });
+                }
+                kCont.innerHTML = html;
             }
-            html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support (Puts):</div>';
-            if (levels.support) {
-                levels.support.forEach(s => {
-                    html += `<div class="level-item support"><span>$${s}</span></div>`;
-                });
-            }
-            document.getElementById('key-levels-display').innerHTML = html;
         }
 
         // Alerts
@@ -1407,6 +1442,7 @@
             }
         });
     }
+
 
     // ==========================================================================
     // 🔥 РАСЧЕТЫ
@@ -1938,5 +1974,6 @@
 </script>
 </body>
 </html>
+
 
 
