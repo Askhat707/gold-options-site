@@ -834,55 +834,228 @@
     let oiChart, volumeChart, gammaChart, maxPainChart;
     let ivChart, deltaChart, gexChart, thetaChart;
     
-    // 🔥 WEBSOCKET ПОДКЛЮЧЕНИЕ
+    // ==========================================================================
+    // 🔥 WEBSOCKET ПОДКЛЮЧЕНИЕ (ИСПРАВЛЕНО)
+    // ==========================================================================
     let ws;
-    let reconnectInterval = 5000;
+    let reconnectInterval = 3000;
     
     function connectWebSocket() {
-        // Определяем URL WebSocket
         const wsUrl = "wss://askhat777-semipalatinsk-core.hf.space/ws";
+        console.log(`🔌 Подключение к: ${wsUrl}`);
         
         ws = new WebSocket(wsUrl);
         
         ws.onopen = () => {
-            console.log('✅ WebSocket подключен');
+            console.log('✅ WebSocket успешно подключен!');
+            const updateEl = document.getElementById('updated-time');
+            if(updateEl) updateEl.style.color = '#4caf50';
         };
         
         ws.onmessage = (event) => {
-            const msg = JSON.parse(event.data);
-            
-            // 🔥 ЦЕНА (ЛЕТАЕТ)
-            if (msg.type === 'price') {
-                currentFuturesPrice = msg.data.price;
-                document.getElementById('futures-price').innerText = '$' + msg.data.price.toFixed(1);
+            try {
+                const msg = JSON.parse(event.data);
                 
-                // ЭТА СТРОКА ЗАСТАВЛЯЕТ ТАБЛИЦУ ДВИГАТЬСЯ ЗА ЦЕНОЙ
-                if (cachedTableData.length > 0) renderTable(cachedTableData);
-            }
-            
-            // 🔥 ОБРАБОТКА СВЕЧЕЙ (на будущее)
-            if (msg.type === 'candle') {
-                console.log('🕯️ Новая свеча M1:', msg.data);
-                // Здесь можно добавить отрисовку графика свечей
-            }
-            
-            // 🔥 ОБРАБОТКА АНАЛИТИКИ
-            if (msg.type === 'analytics') {
-                updateAnalytics(msg.data);
+                // 1. ЦЕНА (Обновляем переменную и UI)
+                if (msg.type === 'price') {
+                    currentFuturesPrice = msg.data.price; // ВАЖНО: Обновляем глобальную переменную
+                    
+                    const priceEl = document.getElementById('futures-price');
+                    if (priceEl) {
+                        priceEl.innerText = '$' + msg.data.price.toFixed(1);
+                        // Эффект мигания
+                        priceEl.style.color = '#fff';
+                        setTimeout(() => priceEl.style.color = 'var(--accent-gold)', 200);
+                    }
+
+                    // Перерисовываем таблицу, чтобы она двигалась за ценой
+                    if (cachedTableData && cachedTableData.length > 0) {
+                        renderTable(cachedTableData);
+                    }
+                }
+                
+                // 2. СВЕЧИ (Логирование)
+                if (msg.type === 'candle') {
+                    // console.log('🕯️ Candle:', msg.data);
+                }
+                
+                // 3. АНАЛИТИКА (Вызов функции обновления)
+                if (msg.type === 'analytics') {
+                    updateAnalytics(msg.data);
+                }
+
+            } catch (e) {
+                console.error("Ошибка WS:", e);
             }
         };
         
         ws.onerror = (error) => {
             console.error('❌ WebSocket ошибка:', error);
+            const updateEl = document.getElementById('updated-time');
+            if(updateEl) updateEl.style.color = '#f44336';
         };
         
         ws.onclose = () => {
-            console.warn('🔌 WebSocket закрыт. Переподключение через 5 сек...');
+            console.warn('🔌 WebSocket закрыт. Реконнект через 3 сек...');
             setTimeout(connectWebSocket, reconnectInterval);
         };
     }
 
-    // DISCLAIMER
+    // ==========================================================================
+    // 🔥 ОБНОВЛЕНИЕ АНАЛИТИКИ (ДОБАВЛЕНО)
+    // ==========================================================================
+    function updateAnalytics(analytics) {
+        if (!analytics) return;
+
+        // Таймстемп
+        if (analytics.updated_at_utc) {
+             const timeEl = document.getElementById('updated-time');
+             if (timeEl) timeEl.innerHTML = `<span style="color:#4caf50">LIVE</span> ${analytics.updated_at_utc}`;
+        }
+        
+        // Expected Move
+        if (analytics.expected_move) {
+            const move = parseFloat(analytics.expected_move);
+            document.getElementById('exp-move-value').innerText = `±$${move.toFixed(2)}`;
+            if (currentFuturesPrice > 0) {
+                const up = (currentFuturesPrice + move).toFixed(1);
+                const down = (currentFuturesPrice - move).toFixed(1);
+                document.getElementById('exp-move-range').innerText = `${down} — ${up}`;
+            }
+        }
+        
+        // Probabilities
+        if (analytics.probabilities) {
+            document.getElementById('prob-call').innerText = analytics.probabilities.call_itm + '%';
+            document.getElementById('prob-put').innerText = analytics.probabilities.put_itm + '%';
+        }
+        
+        // Greeks (Color/Charm)
+        if (analytics.adv_metrics) {
+            document.getElementById('metric-color').innerText = analytics.adv_metrics.color ? analytics.adv_metrics.color.toFixed(4) : '0';
+            document.getElementById('metric-charm').innerText = analytics.adv_metrics.charm ? analytics.adv_metrics.charm.toFixed(4) : '0';
+        }
+        
+        // Calendar
+        if (analytics.calendar && Array.isArray(analytics.calendar)) {
+            const calContainer = document.getElementById('calendar-list');
+            if (calContainer) {
+                calContainer.innerHTML = analytics.calendar.map(item => `
+                    <div style="padding: 5px 0; border-bottom: 1px solid #333;">
+                        <span style="color: var(--accent-gold); font-weight: bold;">${item.time}</span>
+                        <span style="color: #ccc; margin-left: 10px;">${item.event}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Zero Gamma
+        if (analytics.zero_gamma) {
+            document.getElementById('zero-gamma-value').innerText = '$' + analytics.zero_gamma.strike;
+            const pos = analytics.zero_gamma.position === 'above' ? '🟢 Выше' : '🔴 Ниже';
+            document.getElementById('zero-gamma-label').innerText = `Цена ${pos} Zero Gamma`;
+        }
+
+        // IV Skew
+        if (analytics.iv_metrics) {
+            const iv = analytics.iv_metrics;
+            document.getElementById('iv-skew-value').innerText = iv.iv_skew.toFixed(2);
+            const badge = document.getElementById('iv-sentiment');
+            if (badge) {
+                badge.innerText = iv.sentiment.toUpperCase();
+                badge.className = 'sentiment-badge sentiment-' + iv.sentiment;
+            }
+        }
+
+        // Squeeze Risk
+        if (analytics.squeeze_risk) {
+            const risk = analytics.squeeze_risk;
+            document.getElementById('squeeze-risk-level').innerText = risk.level;
+            document.getElementById('squeeze-risk-label').innerText = `Score: ${risk.score}% | ATM: $${risk.atm_strike}`;
+            const fill = document.getElementById('squeeze-risk-fill');
+            if (fill) {
+                fill.style.width = risk.score + '%';
+                if (risk.score > 70) fill.className = 'risk-fill risk-high';
+                else if (risk.score > 40) fill.className = 'risk-fill risk-medium';
+                else fill.className = 'risk-fill risk-low';
+            }
+        }
+
+        // Momentum
+        if (analytics.momentum) {
+            const mom = analytics.momentum;
+            document.getElementById('momentum-signal').innerText = mom.signal;
+            document.getElementById('momentum-label').innerText = `Strength: ${mom.strength}%`;
+        }
+
+        // Vanna
+        if (analytics.vanna_exposure) {
+            const vanna = analytics.vanna_exposure;
+            document.getElementById('vanna-net').innerText = vanna.net_vanna.toFixed(0);
+            document.getElementById('vanna-label').innerText = `Call: ${vanna.call_vanna.toFixed(0)} | Put: ${vanna.put_vanna.toFixed(0)}`;
+        }
+
+        // Delta Skew
+        if (analytics.delta_metrics) {
+             document.getElementById('delta-skew-value').innerText = analytics.delta_metrics.delta_skew;
+        }
+
+        // Key Levels
+        if (analytics.key_levels) {
+            const levels = analytics.key_levels;
+            let html = '';
+            html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance (Calls):</div>';
+            if (levels.resistance) {
+                levels.resistance.forEach(s => {
+                    html += `<div class="level-item resistance"><span>$${s}</span></div>`;
+                });
+            }
+            html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support (Puts):</div>';
+            if (levels.support) {
+                levels.support.forEach(s => {
+                    html += `<div class="level-item support"><span>$${s}</span></div>`;
+                });
+            }
+            document.getElementById('key-levels-display').innerHTML = html;
+        }
+
+        // Alerts
+        generateAlerts(analytics);
+    }
+
+    function generateAlerts(analytics) {
+        const container = document.getElementById('alerts-container');
+        if (!container) return;
+        
+        let alerts = [];
+
+        if (analytics.squeeze_risk && analytics.squeeze_risk.score > 70) {
+            alerts.push({ type: 'danger', text: `🔥 ВЫСОКИЙ риск Gamma Squeeze! Score: ${analytics.squeeze_risk.score}%` });
+        }
+        if (analytics.iv_metrics && Math.abs(analytics.iv_metrics.iv_skew) > 3) {
+            alerts.push({ type: 'warning', text: `⚠️ Экстремальный IV Skew: ${analytics.iv_metrics.iv_skew.toFixed(2)}` });
+        }
+        if (analytics.momentum && analytics.momentum.strength > 70) {
+            alerts.push({ type: 'info', text: `📊 Сильный ${analytics.momentum.signal} импульс (${analytics.momentum.strength}%)` });
+        }
+        if (analytics.gex_profile) {
+            const walls = [...analytics.gex_profile.top_resistance, ...analytics.gex_profile.top_support];
+            const nearWall = walls.find(w => w.distance < 10);
+            if (nearWall) {
+                alerts.push({ type: 'warning', text: `🧱 Приближение к Gamma Wall: $${nearWall.strike} (${nearWall.distance.toFixed(1)} away)` });
+            }
+        }
+
+        if (alerts.length === 0) {
+            container.innerHTML = '<div class="alert alert-success">✅ Нормальные рыночные условия</div>';
+        } else {
+            container.innerHTML = alerts.map(a => `<div class="alert alert-${a.type}">${a.text}</div>`).join('');
+        }
+    }
+
+    // ==========================================================================
+    // HELPER FUNCTIONS
+    // ==========================================================================
     function openDisclaimer() {
         document.getElementById('disclaimerModal').style.display = 'block';
     }
@@ -910,7 +1083,7 @@
     }
 
     // ==========================================================================
-    // 🔥 СОЗДАНИЕ ГРАФИКОВ
+    // 🔥 СОЗДАНИЕ ГРАФИКОВ (ПОЛНЫЙ КОД)
     // ==========================================================================
 
     function createCharts(data) {
@@ -920,102 +1093,87 @@
         const callVol = data.map(r => r.call?.vol || 0);
         const putVol = data.map(r => r.put?.vol || 0);
 
-        // OI Distribution
-if (oiChart) oiChart.destroy();
-const ctxOI = document.getElementById('oiChart').getContext('2d');
-oiChart = new Chart(ctxOI, {
-    type: 'bar',
-    data: {
-        labels: strikes,
-        datasets: [{
-            label: 'Call OI',
-            data: callOI,
-            backgroundColor: 'rgba(46, 125, 50, 0.8)',
-            borderColor: 'rgba(46, 125, 50, 1)',
-            borderWidth: 1,
-            barPercentage: 0.9,
-            categoryPercentage: 1.0
-        }, {
-            label: 'Put OI',
-            data: putOI.map(v => -v),
-            backgroundColor: 'rgba(198, 40, 40, 0.8)',
-            borderColor: 'rgba(198, 40, 40, 1)',
-            borderWidth: 1,
-            barPercentage: 0.9,
-            categoryPercentage: 1.0
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            mode: 'index',
-            intersect: false
-        },
-        plugins: { 
-            legend: { labels: { color: '#fff' } } 
-        },
-        scales: {
-            x: { 
-                ticks: { color: '#888', maxRotation: 45 }, 
-                grid: { color: '#333' } 
+        // 1. OI Distribution
+        if (oiChart) oiChart.destroy();
+        const ctxOI = document.getElementById('oiChart').getContext('2d');
+        oiChart = new Chart(ctxOI, {
+            type: 'bar',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Call OI',
+                    data: callOI,
+                    backgroundColor: 'rgba(46, 125, 50, 0.8)',
+                    borderColor: 'rgba(46, 125, 50, 1)',
+                    borderWidth: 1,
+                    barPercentage: 0.9,
+                    categoryPercentage: 1.0
+                }, {
+                    label: 'Put OI',
+                    data: putOI.map(v => -v),
+                    backgroundColor: 'rgba(198, 40, 40, 0.8)',
+                    borderColor: 'rgba(198, 40, 40, 1)',
+                    borderWidth: 1,
+                    barPercentage: 0.9,
+                    categoryPercentage: 1.0
+                }]
             },
-            y: { 
-                ticks: { color: '#888' }, 
-                grid: { color: '#333' } 
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
             }
-        }
-    }
-});
-        // Volume Heatmap
-if (volumeChart) volumeChart.destroy();
-const ctxVol = document.getElementById('volumeChart').getContext('2d');
-volumeChart = new Chart(ctxVol, {
-    type: 'bar',
-    data: {
-        labels: strikes,
-        datasets: [{
-            label: 'Call Vol',
-            data: callVol,
-            backgroundColor: 'rgba(79, 195, 247, 0.7)',
-            borderColor: 'rgba(79, 195, 247, 1)',
-            borderWidth: 1,
-            barPercentage: 0.9,
-            categoryPercentage: 1.0
-        }, {
-            label: 'Put Vol',
-            data: putVol.map(v => -v),
-            backgroundColor: 'rgba(255, 138, 101, 0.7)',
-            borderColor: 'rgba(255, 138, 101, 1)',
-            borderWidth: 1,
-            barPercentage: 0.9,
-            categoryPercentage: 1.0
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            mode: 'index',
-            intersect: false
-        },
-        plugins: { 
-            legend: { labels: { color: '#fff' } } 
-        },
-        scales: {
-            x: { 
-                ticks: { color: '#888', maxRotation: 45 }, 
-                grid: { color: '#333' } 
-            },
-            y: { 
-                ticks: { color: '#888' }, 
-                grid: { color: '#333' } 
-            }
-        }
-    }
-});
+        });
 
-        // Gamma Exposure
+        // 2. Volume Heatmap
+        if (volumeChart) volumeChart.destroy();
+        const ctxVol = document.getElementById('volumeChart').getContext('2d');
+        volumeChart = new Chart(ctxVol, {
+            type: 'bar',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Call Vol',
+                    data: callVol,
+                    backgroundColor: 'rgba(79, 195, 247, 0.7)',
+                    borderColor: 'rgba(79, 195, 247, 1)',
+                    borderWidth: 1,
+                    barPercentage: 0.9,
+                    categoryPercentage: 1.0
+                }, {
+                    label: 'Put Vol',
+                    data: putVol.map(v => -v),
+                    backgroundColor: 'rgba(255, 138, 101, 0.7)',
+                    borderColor: 'rgba(255, 138, 101, 1)',
+                    borderWidth: 1,
+                    barPercentage: 0.9,
+                    categoryPercentage: 1.0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            }
+        });
+
+        // 3. Gamma Exposure
         const gammaData = data.map(r => {
             const strike = parseFloat(r.strike);
             const callGamma = r.call?.gamma || 0;
@@ -1052,14 +1210,13 @@ volumeChart = new Chart(ctxVol, {
             }
         });
 
-        // Max Pain
+        // 4. Max Pain
         const maxPainData = strikes.map(testStrike => {
             let totalLoss = 0;
             data.forEach(s => {
                 const strike = parseFloat(s.strike);
                 const callOI = s.call?.oi || 0;
                 const putOI = s.put?.oi || 0;
-                
                 if (testStrike > strike) {
                     totalLoss += (testStrike - strike) * callOI * 100;
                 }
@@ -1097,7 +1254,7 @@ volumeChart = new Chart(ctxVol, {
             }
         });
 
-        // 🔥 IV SMILE
+        // 5. IV Smile
         const callIV = data.map(r => r.call?.iv || 0);
         const putIV = data.map(r => r.put?.iv || 0);
 
@@ -1136,58 +1293,50 @@ volumeChart = new Chart(ctxVol, {
             }
         });
 
-        // 🔥 DELTA PROFILE
-const callDelta = data.map(r => (r.call?.delta || 0) * (r.call?.oi || 0));
-const putDelta = data.map(r => Math.abs(r.put?.delta || 0) * (r.put?.oi || 0));
+        // 6. Delta Profile
+        const callDelta = data.map(r => (r.call?.delta || 0) * (r.call?.oi || 0));
+        const putDelta = data.map(r => Math.abs(r.put?.delta || 0) * (r.put?.oi || 0));
 
-if (deltaChart) deltaChart.destroy();
-const ctxDelta = document.getElementById('deltaChart').getContext('2d');
-deltaChart = new Chart(ctxDelta, {
-    type: 'bar',
-    data: {
-        labels: strikes,
-        datasets: [{
-            label: 'Call Delta Exposure',
-            data: callDelta,
-            backgroundColor: 'rgba(76, 175, 80, 0.7)',
-            borderColor: 'rgba(76, 175, 80, 1)',
-            borderWidth: 1,
-            barPercentage: 0.9,
-            categoryPercentage: 1.0
-        }, {
-            label: 'Put Delta Exposure',
-            data: putDelta.map(v => -v),
-            backgroundColor: 'rgba(244, 67, 54, 0.7)',
-            borderColor: 'rgba(244, 67, 54, 1)',
-            borderWidth: 1,
-            barPercentage: 0.9,
-            categoryPercentage: 1.0
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            mode: 'index',
-            intersect: false
-        },
-        plugins: { 
-            legend: { labels: { color: '#fff' } } 
-        },
-        scales: {
-            x: { 
-                ticks: { color: '#888', maxRotation: 45 }, 
-                grid: { color: '#333' } 
+        if (deltaChart) deltaChart.destroy();
+        const ctxDelta = document.getElementById('deltaChart').getContext('2d');
+        deltaChart = new Chart(ctxDelta, {
+            type: 'bar',
+            data: {
+                labels: strikes,
+                datasets: [{
+                    label: 'Call Delta Exposure',
+                    data: callDelta,
+                    backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                    borderColor: 'rgba(76, 175, 80, 1)',
+                    borderWidth: 1,
+                    barPercentage: 0.9,
+                    categoryPercentage: 1.0
+                }, {
+                    label: 'Put Delta Exposure',
+                    data: putDelta.map(v => -v),
+                    backgroundColor: 'rgba(244, 67, 54, 0.7)',
+                    borderColor: 'rgba(244, 67, 54, 1)',
+                    borderWidth: 1,
+                    barPercentage: 0.9,
+                    categoryPercentage: 1.0
+                }]
             },
-            y: { 
-                ticks: { color: '#888' }, 
-                grid: { color: '#333' } 
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: { legend: { labels: { color: '#fff' } } },
+                scales: {
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
             }
-        }
-    }
-});
+        });
 
-        // 🔥 GEX PROFILE
+        // 7. GEX Profile
         if (gexChart) gexChart.destroy();
         const ctxGex = document.getElementById('gexChart').getContext('2d');
         gexChart = new Chart(ctxGex, {
@@ -1197,40 +1346,29 @@ deltaChart = new Chart(ctxDelta, {
                 datasets: [{
                     label: 'Net GEX',
                     data: gammaData,
-                    // Если > 0 (Коллы) — Зеленый. Если < 0 (Путы) — Красный.
                     backgroundColor: gammaData.map(v => v > 0 ? 'rgba(46, 125, 50, 0.8)' : 'rgba(198, 40, 40, 0.8)'),
                     borderColor: gammaData.map(v => v > 0 ? 'rgba(46, 125, 50, 1)' : 'rgba(198, 40, 40, 1)'),
                     borderWidth: 1,
-                    barPercentage: 0.9,      // Толщина самих столбцов
-                    categoryPercentage: 1.0  // Убирает пустые отступы между группами, делая столбцы еще шире
+                    barPercentage: 0.9,
+                    categoryPercentage: 1.0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: {
-                    mode: 'index', // Всплывашка срабатывает по всей вертикали страйка
+                    mode: 'index',
                     intersect: false
                 },
-                plugins: {
-                    legend: {
-                        labels: { color: '#fff' }
-                    }
-                },
+                plugins: { legend: { labels: { color: '#fff' } } },
                 scales: {
-                    x: {
-                        ticks: { color: '#888', maxRotation: 45 },
-                        grid: { color: '#333' }
-                    },
-                    y: {
-                        ticks: { color: '#888' },
-                        grid: { color: '#333' }
-                    }
+                    x: { ticks: { color: '#888', maxRotation: 45 }, grid: { color: '#333' } },
+                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
                 }
             }
         });
 
-        // 🔥 THETA DECAY
+        // 8. Theta Decay
         const callTheta = data.map(r => (r.call?.theta || 0) * (r.call?.oi || 0));
         const putTheta = data.map(r => (r.put?.theta || 0) * (r.put?.oi || 0));
 
@@ -1800,4 +1938,5 @@ deltaChart = new Chart(ctxDelta, {
 </script>
 </body>
 </html>
+
 
