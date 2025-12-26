@@ -1471,6 +1471,7 @@ if (analytics.probabilities) {
             }
 
             cachedTableData = Array.isArray(data.data) ? data.data : Object.values(data.data);
+            cachedTableData.sort((a, b) => parseFloat(a.strike) - parseFloat(b.strike));
 
             calculatePCR(cachedTableData);
             calculateMaxPain(cachedTableData);
@@ -1620,4 +1621,5 @@ if (analytics.probabilities) {
 </script>
 </body>
 </html>
+
 
