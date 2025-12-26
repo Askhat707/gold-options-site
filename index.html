@@ -7,10 +7,10 @@
             --card-bg: #1e1e1e;
             --text-color: #e0e0e0;
             --accent-gold: #FFD700;
-            --call-color: #2196F3;  /* 🔥 ИЗМЕНЕНО: Синий для CALL */
-            --put-color: #f44336;   /* 🔥 ИЗМЕНЕНО: Красный для PUT */
-            --call-color-light: #4caf50; /* Зеленый для дополнительных графиков CALL */
-            --put-color-light: #ff9800;  /* Оранжевый/желтый для PUT */
+            --call-color: #2196F3;
+            --put-color: #f44336;
+            --call-color-light: #4caf50;
+            --put-color-light: #ff9800;
             --strike-bg: #2c2c2c;
             --bullish: #4caf50;
             --bearish: #f44336;
@@ -949,7 +949,7 @@
             const normalizedCallVol = normalizeChartData(callVol);
             const normalizedPutVol = normalizeChartData(putVol);
 
-            // 1. OI Distribution
+            // 1. OI Distribution - с центральной нулевой линией
             if (oiChart) oiChart.destroy();
             const ctxOI = document.getElementById('oiChart').getContext('2d');
             oiChart = new Chart(ctxOI, {
@@ -959,7 +959,7 @@
                     datasets: [{
                         label: 'Call OI',
                         data: normalizedCallOI,
-                        backgroundColor: 'rgba(33, 150, 243, 0.8)', // Синий для коллов
+                        backgroundColor: 'rgba(33, 150, 243, 0.8)',
                         borderColor: 'rgba(33, 150, 243, 1)',
                         borderWidth: 1,
                         barPercentage: 0.8,
@@ -967,7 +967,7 @@
                     }, {
                         label: 'Put OI',
                         data: normalizedPutOI.map(v => -v),
-                        backgroundColor: 'rgba(255, 152, 0, 0.8)', // Оранжевый для путов
+                        backgroundColor: 'rgba(255, 152, 0, 0.8)',
                         borderColor: 'rgba(255, 152, 0, 1)',
                         borderWidth: 1,
                         barPercentage: 0.8,
@@ -1013,8 +1013,7 @@
                                 color: '#333',
                                 drawBorder: false
                             },
-                            offset: false,
-                            beginAtZero: true
+                            offset: false
                         },
                         y: { 
                             ticks: { 
@@ -1024,16 +1023,23 @@
                                 }
                             }, 
                             grid: { 
-                                color: '#333',
+                                color: function(context) {
+                                    if (context.tick.value === 0) {
+                                        return '#666';
+                                    }
+                                    return '#333';
+                                },
                                 drawBorder: false
                             },
-                            beginAtZero: true
+                            beginAtZero: false,
+                            min: -100,
+                            max: 100
                         }
                     }
                 }
             });
 
-            // 2. Volume Heatmap
+            // 2. Volume Heatmap - с центральной нулевой линией и путами вниз
             if (volumeChart) volumeChart.destroy();
             const ctxVol = document.getElementById('volumeChart').getContext('2d');
             volumeChart = new Chart(ctxVol, {
@@ -1043,15 +1049,15 @@
                     datasets: [{
                         label: 'Call Vol',
                         data: normalizedCallVol,
-                        backgroundColor: 'rgba(76, 175, 80, 0.7)', // Зеленый для коллов
+                        backgroundColor: 'rgba(76, 175, 80, 0.7)',
                         borderColor: 'rgba(76, 175, 80, 1)',
                         borderWidth: 1,
                         barPercentage: 0.8,
                         categoryPercentage: 0.9
                     }, {
                         label: 'Put Vol',
-                        data: normalizedPutVol,
-                        backgroundColor: 'rgba(244, 67, 54, 0.7)', // Красный для путов
+                        data: normalizedPutVol.map(v => -v),
+                        backgroundColor: 'rgba(244, 67, 54, 0.7)',
                         borderColor: 'rgba(244, 67, 54, 1)',
                         borderWidth: 1,
                         barPercentage: 0.8,
@@ -1097,18 +1103,27 @@
                                 color: '#333',
                                 drawBorder: false
                             },
-                            offset: false,
-                            beginAtZero: true
+                            offset: false
                         },
                         y: { 
                             ticks: { 
-                                color: '#888'
+                                color: '#888',
+                                callback: function(value) {
+                                    return Math.abs(value);
+                                }
                             }, 
                             grid: { 
-                                color: '#333',
+                                color: function(context) {
+                                    if (context.tick.value === 0) {
+                                        return '#666';
+                                    }
+                                    return '#333';
+                                },
                                 drawBorder: false
                             },
-                            beginAtZero: true
+                            beginAtZero: false,
+                            min: -100,
+                            max: 100
                         }
                     }
                 }
@@ -1171,8 +1186,7 @@
                                 color: '#333',
                                 drawBorder: false
                             },
-                            offset: false,
-                            beginAtZero: true
+                            offset: false
                         },
                         y: { 
                             ticks: { 
@@ -1255,8 +1269,7 @@
                                 color: '#333',
                                 drawBorder: false
                             },
-                            offset: false,
-                            beginAtZero: true
+                            offset: false
                         },
                         y: { 
                             ticks: { 
@@ -1336,8 +1349,7 @@
                                 color: '#333',
                                 drawBorder: false
                             },
-                            offset: false,
-                            beginAtZero: true
+                            offset: false
                         },
                         y: { 
                             ticks: { 
@@ -1361,7 +1373,7 @@
                 }
             });
 
-            // 6. Delta Profile
+            // 6. Delta Profile - с центральной нулевой линией
             const callDelta = data.map(r => (r.call?.delta || 0) * (r.call?.oi || 0) / 1000);
             const putDelta = data.map(r => Math.abs(r.put?.delta || 0) * (r.put?.oi || 0) / 1000);
 
@@ -1426,8 +1438,7 @@
                                 color: '#333',
                                 drawBorder: false
                             },
-                            offset: false,
-                            beginAtZero: true
+                            offset: false
                         },
                         y: { 
                             ticks: { 
@@ -1437,16 +1448,21 @@
                                 }
                             }, 
                             grid: { 
-                                color: '#333',
+                                color: function(context) {
+                                    if (context.tick.value === 0) {
+                                        return '#666';
+                                    }
+                                    return '#333';
+                                },
                                 drawBorder: false
                             },
-                            beginAtZero: true
+                            beginAtZero: false
                         }
                     }
                 }
             });
 
-            // 7. GEX Profile
+            // 7. GEX Profile - с центральной нулевой линией
             if (gexChart) gexChart.destroy();
             const ctxGex = document.getElementById('gexChart').getContext('2d');
             gexChart = new Chart(ctxGex, {
@@ -1497,8 +1513,7 @@
                                 color: '#333',
                                 drawBorder: false
                             },
-                            offset: false,
-                            beginAtZero: true
+                            offset: false
                         },
                         y: { 
                             ticks: { 
@@ -1508,7 +1523,12 @@
                                 }
                             }, 
                             grid: { 
-                                color: '#333',
+                                color: function(context) {
+                                    if (context.tick.value === 0) {
+                                        return '#666';
+                                    }
+                                    return '#333';
+                                },
                                 drawBorder: false
                             },
                             beginAtZero: false
@@ -1578,8 +1598,7 @@
                                 color: '#333',
                                 drawBorder: false
                             },
-                            offset: false,
-                            beginAtZero: true
+                            offset: false
                         },
                         y: { 
                             ticks: { 
@@ -1699,7 +1718,6 @@
             document.getElementById('total-theta').innerText = (totalTheta / 1000).toFixed(0) + 'K';
             document.getElementById('avg-iv').innerText = totalOI > 0 ? (totalCallIV / totalOI).toFixed(1) + '%' : '0%';
             
-            // Теперь этот ID существует и ошибки не будет
             const skew = totalCallDelta - totalPutDelta;
             document.getElementById('delta-skew-value').innerText = (skew / 1000).toFixed(0) + 'K';
         }
@@ -1724,19 +1742,22 @@
                 }
             }
             
-            // 🔥 ITM Probabilities
+            // 🔥 ITM Probabilities - ДЕЛИМ НА 100 если нужно
             if (analytics.probabilities) {
-                const callProb = analytics.probabilities.call_itm || 50;
-                const putProb = analytics.probabilities.put_itm || 50;
+                let callProb = analytics.probabilities.call_itm || 50;
+                let putProb = analytics.probabilities.put_itm || 50;
                 
-                // Корректируем если пришли некорректные значения
+                // Если значения больше 100, делим на 100
+                if (callProb > 100) callProb = callProb / 100;
+                if (putProb > 100) putProb = putProb / 100;
+                
+                // Корректируем диапазон
                 const validCallProb = Math.max(0, Math.min(100, callProb));
                 const validPutProb = Math.max(0, Math.min(100, putProb));
                 
                 document.getElementById('prob-call').innerText = validCallProb.toFixed(1) + '%';
                 document.getElementById('prob-put').innerText = validPutProb.toFixed(1) + '%';
             } else {
-                // Заглушка если данных нет
                 document.getElementById('prob-call').innerText = '50.0%';
                 document.getElementById('prob-put').innerText = '50.0%';
             }
@@ -1746,7 +1767,6 @@
                 const color = analytics.adv_metrics.color || 0;
                 const charm = analytics.adv_metrics.charm || 0;
                 
-                // Форматируем большие числа
                 document.getElementById('metric-color').innerText = 
                     Math.abs(color) > 1000 ? (color / 1000).toFixed(2) + 'K' : color.toFixed(2);
                 document.getElementById('metric-charm').innerText = 
@@ -1759,7 +1779,6 @@
                 const today = new Date().toLocaleDateString('ru-RU');
                 
                 calContainer.innerHTML = analytics.calendar.map(item => {
-                    // Проверяем актуальность события
                     const eventDate = item.date || today;
                     const isToday = eventDate === today;
                     
@@ -1772,7 +1791,6 @@
                     `;
                 }).join('');
             } else {
-                // Заглушка если календарь не пришел
                 const calContainer = document.getElementById('calendar-list');
                 const today = new Date().toLocaleDateString('ru-RU');
                 calContainer.innerHTML = `
@@ -1801,7 +1819,6 @@
             if (analytics.gex_profile) {
                 let html = '';
                 
-                // Сопротивление (Calls)
                 if (analytics.gex_profile.top_resistance && analytics.gex_profile.top_resistance.length > 0) {
                     html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance (Calls):</div>';
                     analytics.gex_profile.top_resistance.forEach(s => {
@@ -1812,7 +1829,6 @@
                     });
                 }
 
-                // Поддержка (Puts)
                 if (analytics.gex_profile.top_support && analytics.gex_profile.top_support.length > 0) {
                     html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support (Puts):</div>';
                     analytics.gex_profile.top_support.forEach(s => {
@@ -1938,7 +1954,7 @@
         });
 
         // ==========================================================================
-        // 🔥 FETCH DATA (ИСПРАВЛЕНО: Добавлена логика синхронизации цены)
+        // 🔥 FETCH DATA
         // ==========================================================================
         async function fetchHeavyData() {
             try {
@@ -1961,7 +1977,7 @@
                 // Конвертируем данные
                 cachedTableData = Array.isArray(data.data) ? data.data : Object.values(data.data);
 
-                // 🔥 МГНОВЕННЫЙ ЛОКАЛЬНЫЙ РАСЧЕТ (не ждем сервер)
+                // 🔥 МГНОВЕННЫЙ ЛОКАЛЬНЫЙ РАСЧЕТ
                 calculatePCR(cachedTableData);
                 calculateMaxPain(cachedTableData);
                 calculateGreeks(cachedTableData);
@@ -1987,7 +2003,7 @@
         }
 
         // ==========================================================================
-        // 🔥 TOP-5 (ОПТИМИЗИРОВАНО)
+        // 🔥 TOP-5
         // ==========================================================================
         function updateTop5(rows) {
             if (!rows || rows.length === 0) return;
@@ -2015,7 +2031,7 @@
         }
 
         // ==========================================================================
-        // 🔥 RENDER TABLE (ИСПРАВЛЕНО: Центрирование и фильтрация)
+        // 🔥 RENDER TABLE (ЦЕНТРИРОВАНИЕ ПО ЦЕНЕ)
         // ==========================================================================
         function renderTable(rows) {
             const tbody = document.getElementById('option-body');
@@ -2028,7 +2044,6 @@
             let closestIndex = 0;
             let minDiff = Infinity;
             
-            // Если цена все еще 0 (бывает при ошибке сокета), ставим центр на середину массива
             const targetPrice = currentFuturesPrice > 0 ? currentFuturesPrice : 2600; 
 
             rows.forEach((row, idx) => {
@@ -2040,7 +2055,7 @@
                 }
             });
 
-            // 2. Расчет диапазона видимости (Ограничиваем количество строк)
+            // 2. Расчет диапазона видимости
             const halfRange = Math.floor(displayStrikeCount / 2);
             let startIdx = Math.max(0, closestIndex - halfRange);
             let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
@@ -2109,10 +2124,10 @@
         }
 
         // ==========================================================================
-        // 🔥 ИНИЦИАЛИЗАЦИЯ (СТРОГИЙ ПОРЯДОК)
+        // 🔥 ИНИЦИАЛИЗАЦИЯ
         // ==========================================================================
         
-        // 1. Сначала запускаем WebSocket (авторизация внутри функции)
+        // 1. Сначала запускаем WebSocket
         connectWebSocket();
         
         // 2. Сразу загружаем данные из Firebase
@@ -2124,5 +2139,3 @@
     </script>
     </body>
 </html>
-
-
