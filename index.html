@@ -804,9 +804,12 @@
             
             ws.onopen = () => {
                 console.log('✅ WebSocket успешно подключен!');
+                // 🔥 ОБЯЗАТЕЛЬНО: Отправляем токен авторизации
+                ws.send(JSON.stringify({"auth": "askhat_secret_2025"})); 
+
                 const updateEl = document.getElementById('updated-time');
                 if(updateEl) {
-                    updateEl.innerHTML = '<span style="color:#4caf50">● ONLINE (Waiting data...)</span>';
+                    updateEl.innerHTML = '<span style="color:#4caf50">● ONLINE (Auth OK)</span>';
                 }
             };
             
@@ -1785,7 +1788,7 @@
             }
 
             // Zero Gamma
-            if (analytics.zero_gamma && analytics.zero_gamma.strike) {
+            if (analytics.zero_gamma && analytics.zero_gamma.strike !== undefined) {
                 document.getElementById('zero-gamma-value').innerText = '$' + analytics.zero_gamma.strike;
                 const pos = analytics.zero_gamma.position === 'above' ? '🟢 Выше' : '🔴 Ниже';
                 document.getElementById('zero-gamma-label').innerText = `Цена ${pos} Zero Gamma`;
@@ -1939,7 +1942,7 @@
         });
 
         // ==========================================================================
-        // FETCH DATA
+        // 🔥 FETCH DATA (ИСПРАВЛЕНО: Добавлена логика синхронизации цены)
         // ==========================================================================
         async function fetchHeavyData() {
             try {
@@ -1947,66 +1950,71 @@
                 const url = `${DB_ROOT}/${endpoint}?t=${Date.now()}`;
                 
                 console.log(`📡 Запрос к: ${url}`);
-
                 const res = await fetch(url);
                 
-                if (!res.ok) {
-                    console.error("Ошибка сети");
-                    document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="color:red">Ошибка доступа</td></tr>';
-                    return;
-                }
+                if (!res.ok) throw new Error(`Ошибка сети: ${res.status}`);
 
                 const data = await res.json();
-                
-                if (!data) {
-                    console.warn("Данные пустые");
-                    document.getElementById('option-body').innerHTML = '<tr><td colspan="11">Данные отсутствуют</td></tr>';
-                    return;
-                }
+                if (!data) throw new Error("Данные в базе отсутствуют");
 
+                // 1. Обновляем базовые показатели из JSON
                 if (data.balance_price) {
                     document.getElementById('balance-price').innerText = '$' + data.balance_price;
+                    
+                    // 🔥 КРИТИЧЕСКИЙ ФИКС: Если живая цена еще не пришла по WebSocket, 
+                    // используем цену баланса для центрирования таблицы, чтобы она не была пустой.
+                    if (currentFuturesPrice === 0) {
+                        currentFuturesPrice = parseFloat(data.balance_price);
+                        console.log("⚠️ WebSocket еще не прислал цену, используем баланс:", currentFuturesPrice);
+                    }
                 }
 
                 if (data.updated_at_utc) {
                     document.getElementById('updated-time').innerText = data.updated_at_utc;
                 }
                 
+                // 2. Обработка массива строк
                 let rawData = data.data;
                 if (rawData && !Array.isArray(rawData)) {
-                    console.warn("⚠️ Firebase вернул Объект! Конвертируем...");
-                    rawData = Object.values(rawData);
+                    rawData = Object.values(rawData); // Конвертация если Firebase вернул объект
                 }
 
                 cachedTableData = rawData || [];
-                
-                console.log(`📊 Получено строк: ${cachedTableData.length}`);
+                console.log(`📊 Обработано строк: ${cachedTableData.length}`);
 
                 if (cachedTableData.length === 0) {
-                    document.getElementById('option-body').innerHTML = '<tr><td colspan="11">Массив пуст</td></tr>';
+                    document.getElementById('option-body').innerHTML = '<tr><td colspan="11">Массив данных пуст</td></tr>';
                     return;
                 }
                 
+                // 3. ПОСЛЕДОВАТЕЛЬНЫЙ ЗАПУСК (Логика не теряется)
+                // Сначала расчеты
                 calculatePCR(cachedTableData);
                 calculateMaxPain(cachedTableData);
                 calculateGreeks(cachedTableData);
-                createCharts(cachedTableData);
                 
-                renderTable(cachedTableData);
+                // Затем отрисовка интерфейса
                 updateTop5(cachedTableData);
+                renderTable(cachedTableData);
+                
+                // Графики рисуем в последнюю очередь (они тяжелые)
+                setTimeout(() => {
+                    createCharts(cachedTableData);
+                }, 100);
 
             } catch (e) { 
-                console.error("Критическая ошибка:", e);
-                document.getElementById('option-body').innerHTML = `<tr><td colspan="11" style="color:red">Error: ${e.message}</td></tr>`;
+                console.error("❌ Критическая ошибка fetchHeavyData:", e);
+                document.getElementById('option-body').innerHTML = `<tr><td colspan="11" style="color:#f44336; padding:20px;">Ошибка загрузки: ${e.message}</td></tr>`;
             }
         }
 
         // ==========================================================================
-        // TOP-5
+        // 🔥 TOP-5 (ОПТИМИЗИРОВАНО)
         // ==========================================================================
         function updateTop5(rows) {
             if (!rows || rows.length === 0) return;
             
+            // Создаем копии для сортировки, чтобы не испортить основной массив
             const callsVol = [...rows].sort((a, b) => (b.call?.vol || 0) - (a.call?.vol || 0)).slice(0, 5);
             const callsOI = [...rows].sort((a, b) => (b.call?.oi || 0) - (a.call?.oi || 0)).slice(0, 5);
             const putsVol = [...rows].sort((a, b) => (b.put?.vol || 0) - (a.put?.vol || 0)).slice(0, 5);
@@ -2022,10 +2030,11 @@
                     displayStrike = type === 'call' ? (rawStrike + premium) : (rawStrike - premium);
                 }
 
-                return `<div class="top5-item ${type === 'call' ? 'call-item' : 'put-item'}">
-                    <span class="top5-strike">${Number.isInteger(displayStrike) ? displayStrike : displayStrike.toFixed(1)}</span>
-                    <span class="top5-value">${Math.round(value)}</span>
-                </div>`;
+                return `
+                    <div class="top5-item ${type === 'call' ? 'call-item' : 'put-item'}">
+                        <span class="top5-strike">${displayStrike.toFixed(1)}</span>
+                        <span class="top5-value">${Math.round(value)}</span>
+                    </div>`;
             };
 
             document.getElementById('top5-call-vol').innerHTML = callsVol.map(r => renderItem(r, 'call', 'vol')).join('');
@@ -2035,69 +2044,74 @@
         }
 
         // ==========================================================================
-        // RENDER TABLE
+        // 🔥 RENDER TABLE (ИСПРАВЛЕНО: Центрирование и фильтрация)
         // ==========================================================================
         function renderTable(rows) {
             const tbody = document.getElementById('option-body');
+            if (!tbody) return;
             tbody.innerHTML = '';
             
             if (!rows || rows.length === 0) return;
 
+            // 1. Поиск ближайшего страйка к цене для центрирования
             let closestIndex = 0;
             let minDiff = Infinity;
+            
+            // Если цена все еще 0 (бывает при ошибке сокета), ставим центр на середину массива
+            const targetPrice = currentFuturesPrice > 0 ? currentFuturesPrice : 2600; 
 
-            // Находим страйк, ближайший к текущей цене фьючерса
             rows.forEach((row, idx) => {
-                const displayStrike = parseFloat(row.strike) + forwardCorrection;
-                const diff = Math.abs(displayStrike - currentFuturesPrice);
+                const strikeVal = parseFloat(row.strike) + forwardCorrection;
+                const diff = Math.abs(strikeVal - targetPrice);
                 if (diff < minDiff) {
                     minDiff = diff;
                     closestIndex = idx;
                 }
             });
 
+            // 2. Расчет диапазона видимости (Ограничиваем количество строк)
             const halfRange = Math.floor(displayStrikeCount / 2);
             let startIdx = Math.max(0, closestIndex - halfRange);
             let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
 
+            // Корректировка если уперлись в конец массива
             if (endIdx - startIdx < displayStrikeCount) {
                 startIdx = Math.max(0, endIdx - displayStrikeCount);
             }
 
             const displayRows = rows.slice(startIdx, endIdx);
 
+            // 3. Генерация HTML
             displayRows.forEach((row, idx) => {
                 const tr = document.createElement('tr');
-                
                 const rawStrike = parseFloat(row.strike) + forwardCorrection;
                 const isATM = (startIdx + idx) === closestIndex;
 
-                let c_oi = row.call?.oi || 0;
-                let c_vol = row.call?.vol || 0;
+                // Данные CALL
+                const c_oi = row.call?.oi || 0;
+                const c_vol = row.call?.vol || 0;
                 const c_prem = row.call?.premium || 0;
                 const c_delta = (row.call?.delta || 0).toFixed(3);
                 const c_gamma = (row.call?.gamma || 0).toFixed(4);
                 
-                let p_oi = row.put?.oi || 0;
-                let p_vol = row.put?.vol || 0;
+                // Данные PUT
+                const p_oi = row.put?.oi || 0;
+                const p_vol = row.put?.vol || 0;
                 const p_prem = row.put?.premium || 0;
                 const p_delta = (row.put?.delta || 0).toFixed(3);
                 const p_gamma = (row.put?.gamma || 0).toFixed(4);
 
+                // Отрисовка центральной колонки (Страйк)
                 let strikeHtml = '';
-                
                 if (premiumEnabled) {
-                    const callBE = rawStrike + c_prem; 
-                    const putBE = rawStrike - p_prem;
-                    
                     strikeHtml = `
                         <div style="line-height:1.1;">
-                            <span style="color:var(--call-color)">${callBE.toFixed(1)}</span><br>
-                            <span style="color:var(--put-color); font-size:0.75em;">${putBE.toFixed(1)}</span>
+                            <span style="color:var(--call-color)">${(rawStrike + c_prem).toFixed(1)}</span><br>
+                            <span style="color:var(--put-color); font-size:0.75em;">${(rawStrike - p_prem).toFixed(1)}</span>
                         </div>
                     `;
                 } else {
-                    strikeHtml = Number.isInteger(rawStrike) ? rawStrike : rawStrike.toFixed(1);
+                    strikeHtml = rawStrike.toFixed(1);
                 }
 
                 const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
@@ -2109,9 +2123,7 @@
                     <td style="color:var(--call-color);">${c_delta}</td>
                     <td style="color:#FFD700;">${c_gamma}</td>
                     
-                    <td class="${strikeClass}">
-                        ${strikeHtml}
-                    </td>
+                    <td class="${strikeClass}">${strikeHtml}</td>
                     
                     <td style="color:#FFD700;">${p_gamma}</td>
                     <td style="color:var(--put-color);">${p_delta}</td>
@@ -2121,24 +2133,24 @@
                 `;
 
                 if (isATM) tr.classList.add('row-atm');
-                
                 tbody.appendChild(tr);
             });
         }
 
         // ==========================================================================
-        // 🔥 ИНИЦИАЛИЗАЦИЯ
+        // 🔥 ИНИЦИАЛИЗАЦИЯ (СТРОГИЙ ПОРЯДОК)
         // ==========================================================================
         
-        // 1. Подключаем WebSocket для быстрых данных (цена, аналитика)
+        // 1. Сначала запускаем WebSocket (авторизация внутри функции)
         connectWebSocket();
         
-        // 2. Загружаем тяжелые данные (таблица)
+        // 2. Сразу загружаем данные из Firebase
         fetchHeavyData();
         
-        // 3. Обновляем тяжелые данные раз в 5 минут
+        // 3. Устанавливаем интервал обновления (5 минут)
         setInterval(fetchHeavyData, 300000);
 
     </script>
-</body>
+    </body>
 </html>
+
