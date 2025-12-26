@@ -1499,6 +1499,9 @@ if (analytics.probabilities) {
     // ==========================================================================
     // TOP-5
     // ==========================================================================
+    // ==========================================================================
+    // TOP-5 (ИСПРАВЛЕННЫЙ С УЧЕТОМ ПРЕМИЙ)
+    // ==========================================================================
     function updateTop5(rows) {
         if (!rows || rows.length === 0) return;
         
@@ -1508,11 +1511,22 @@ if (analytics.probabilities) {
 
         const render = (items, type, metric) => {
             return items.map(r => {
-                const s = parseFloat(r.strike) + forwardCorrection;
+                const rawStrike = parseFloat(r.strike) + forwardCorrection;
+                const prem = r[type]?.premium || 0;
+                
+                // ЛОГИКА ИЗМЕНЕНИЯ ЗНАЧЕНИЯ:
+                // Если включены премии: для коллов Strike + Prem, для путов Strike - Prem
+                let displayValue;
+                if (premiumEnabled) {
+                    displayValue = type === 'call' ? (rawStrike + prem) : (rawStrike - prem);
+                } else {
+                    displayValue = rawStrike;
+                }
+
                 const val = r[type]?.[metric] || 0;
                 return `
                     <div class="top5-item ${type === 'call' ? 'call-item' : 'put-item'}">
-                        <span class="top5-strike">${s.toFixed(1)}</span>
+                        <span class="top5-strike">${displayValue.toFixed(1)}</span>
                         <span class="top5-value">${Math.round(val)}</span>
                     </div>`;
             }).join('');
@@ -1621,5 +1635,6 @@ if (analytics.probabilities) {
 </script>
 </body>
 </html>
+
 
 
