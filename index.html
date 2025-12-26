@@ -1365,39 +1365,48 @@ if (analytics.probabilities) {
         const container = document.getElementById('alerts-container');
         let alerts = [];
 
-        if (analytics.zero_gamma && analytics.zero_gamma.strike) {
-            const distance = Math.abs(currentFuturesPrice - analytics.zero_gamma.strike);
-            if (distance < 10) {
-                alerts.push({
-                    type: 'warning',
-                    text: `⚡ Близко к Zero Gamma: $${analytics.zero_gamma.strike}`
-                });
-            }
-        }
+        // 1. Проверка уровней GEX Walls (Сопротивления и Поддержки)
+        if (analytics.gex_profile && currentFuturesPrice > 0) {
+            // Собираем все уровни в один массив для проверки
+            const walls = [
+                ...(analytics.gex_profile.top_resistance || []).map(w => ({...w, type: 'RES'})),
+                ...(analytics.gex_profile.top_support || []).map(w => ({...w, type: 'SUP'}))
+            ];
 
-        if (analytics.gex_profile) {
-            const walls = [...(analytics.gex_profile.top_resistance || []), ...(analytics.gex_profile.top_support || [])];
-            const nearWall = walls.find(w => w.distance < 5);
-            
-            if (nearWall) {
-                alerts.push({
-                    type: 'info',
-                    text: `🧱 GEX Wall: $${nearWall.strike}`
-                });
-            }
-        }
+            walls.forEach(wall => {
+                const strike = parseFloat(wall.strike);
+                const distance = Math.abs(currentFuturesPrice - strike);
 
-        if (analytics.vanna_exposure && Math.abs(analytics.vanna_exposure.net_vanna) > 10000) {
-            const direction = analytics.vanna_exposure.net_vanna > 0 ? 'бычьей' : 'медвежьей';
-            alerts.push({
-                type: analytics.vanna_exposure.net_vanna > 0 ? 'info' : 'danger',
-                text: `🌀 Высокая Vanna (${direction})`
+                // Если до уровня 10 пунктов или меньше
+                if (distance <= 10) {
+                    const typeText = wall.type === 'RES' ? '🧱 Сопротивление (Call Wall)' : '🧱 Поддержка (Put Wall)';
+                    alerts.push({
+                        type: wall.type === 'RES' ? 'warning' : 'danger',
+                        text: `${typeText}: $${strike} | Осталось: <span style="font-weight:bold; color:#fff;">${distance.toFixed(1)} пт.</span>`
+                    });
+                }
             });
         }
 
+        // 2. Проверка Zero Gamma (если очень близко)
+        if (analytics.zero_gamma && analytics.zero_gamma.strike && currentFuturesPrice > 0) {
+            const zgStrike = parseFloat(analytics.zero_gamma.strike);
+            const zgDistance = Math.abs(currentFuturesPrice - zgStrike);
+            if (zgDistance < 5) {
+                alerts.push({
+                    type: 'info',
+                    text: `⚡ В зоне Zero Gamma ($${zgStrike})! Дистанция: ${zgDistance.toFixed(1)} пт.`
+                });
+            }
+        }
+
+        // 3. Вывод алертов
         if (alerts.length === 0) {
-            container.innerHTML = '<div class="alert alert-success">✅ Нормальные условия</div>';
+            // Если ничего критичного нет, показываем спокойный статус
+            container.innerHTML = '<div class="alert alert-success" style="opacity: 0.8;">✅ Ценовых угроз в радиусе 10пт не обнаружено</div>';
         } else {
+            // Сортируем алерты, чтобы самый близкий был сверху
+            // (это не обязательно, но удобно)
             container.innerHTML = alerts.map(a => 
                 `<div class="alert alert-${a.type}">${a.text}</div>`
             ).join('');
@@ -1635,6 +1644,7 @@ if (analytics.probabilities) {
 </script>
 </body>
 </html>
+
 
 
 
