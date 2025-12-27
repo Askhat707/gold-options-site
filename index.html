@@ -10,2251 +10,1022 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
-        :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --accent-gold: #FFD700;
-            --call-color: #2196F3;
-            --put-color: #f44336;
-            --call-color-light: #4caf50;
-            --put-color-light: #ff9800;
-            --strike-bg: #2c2c2c;
-            --bullish: #4caf50;
-            --bearish: #f44336;
-            --neutral: #9e9e9e;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        header {
-            background: #333;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .menu {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-            padding: 0;
-            margin: 0;
-        }
-
-        .menu a:hover {
-            color: var(--accent-gold);
-        }
-
-        .tg-link-small {
-            background: #24A1DE;
-            padding: 5px 12px;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.8em;
-            color: white;
-        }
-
-        .tg-link-small:hover {
-            background: #1d8cbd;
-            transform: translateY(-1px);
-        }
-
-        .hero {
-            background: linear-gradient(135deg, #000000 0%, #434343 100%);
-            padding: 40px 20px;
-            text-align: center;
-            color: #fff;
-        }
-
-        .hero h1 {
-            margin: 0 0 5px 0;
-            font-size: 2em;
-            font-weight: 800;
-            color: var(--accent-gold);
-        }
-
-        .subtitle {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            opacity: 0.8;
-        }
-
-        .hero-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn-telegram {
-            background: #24A1DE;
-            color: white;
-        }
-
-        .btn-telegram:hover {
-            background: #1d8cbd;
-            transform: translateY(-2px);
-        }
-
-        .live-data {
-            padding: 20px;
-            background: #000;
-        }
-
-        .warning-block {
-            text-align: center;
-            margin-bottom: 20px;
-            border: 1px solid #b71c1c;
-            background: rgba(183, 28, 28, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .warning-title {
-            color: #e57373;
-            font-size: 1em;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-
-        .warning-text {
-            color: #ccc;
-            font-size: 0.9em;
-            margin: 0;
-        }
-
-        .alerts-container {
-            max-width: 1200px;
-            margin: 0 auto 20px auto;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .alert {
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.9em;
-            border-left: 4px solid;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .alert-warning {
-            background: rgba(255, 152, 0, 0.1);
-            border-color: #ff9800;
-            color: #ffb74d;
-        }
-
-        .alert-danger {
-            background: rgba(244, 67, 54, 0.1);
-            border-color: #f44336;
-            color: #ef5350;
-        }
-
-        .alert-info {
-            background: rgba(33, 150, 243, 0.1);
-            border-color: #2196f3;
-            color: #42a5f5;
-        }
-
-        .alert-success {
-            background: rgba(76, 175, 80, 0.1);
-            border-color: #4caf50;
-            color: #66bb6a;
-        }
-
-        .data-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .data-card {
-            background: #222;
-            padding: 10px;
-            border-radius: 8px;
-            min-width: 140px;
-            text-align: center;
-            border: 1px solid #333;
-        }
-
-        .big-number {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: var(--accent-gold);
-            margin: 5px 0;
-        }
-
-        .small-text {
-            color: #888;
-            font-size: 0.75em;
-        }
-
-        .pcr-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5px;
-        }
-
-        .pcr-item div:first-child {
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .pcr-item div:last-child {
-            font-size: 0.7em;
-            color: #888;
-        }
-
-        .analytics-grid {
-            max-width: 1200px;
-            margin: 0 auto 20px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-        }
-
-        .analytics-card {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-            border: 1px solid #444;
-            border-radius: 10px;
-            padding: 20px;
-            position: relative;
-        }
-
-        .analytics-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--accent-gold);
-            border-top-left-radius: 10px;
-            border-bottom-left-radius: 10px;
-        }
-
-        .analytics-title {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 10;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: var(--accent-gold);
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .analytics-help {
-            position: relative;
-            display: inline-block;
-            cursor: help;
-            margin-left: 8px;
-            font-size: 1.1em;
-            color: var(--accent-gold);
-            z-index: 20;
-        }
-
-        .analytics-annotation {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            bottom: 140%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 260px;
-            background: rgba(15, 15, 15, 0.98);
-            border: 1px solid var(--accent-gold);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-            border-radius: 8px;
-            padding: 12px 15px;
-            color: #eee;
-            font-size: 0.85rem;
-            font-weight: normal;
-            line-height: 1.4;
-            text-align: left;
-            white-space: normal;
-            transition: all 0.2s ease-in-out;
-            pointer-events: none;
-            z-index: 99999;
-        }
-
-        .analytics-annotation::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -6px;
-            border-width: 6px;
-            border-style: solid;
-            border-color: var(--accent-gold) transparent transparent transparent;
-        }
-
-        .analytics-help:hover .analytics-annotation {
-            visibility: visible;
-            opacity: 1;
-            bottom: 125%;
-        }
-
-        .analytics-value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #fff;
-            text-align: center;
-            margin: 10px 0;
-            text-shadow: 0 0 10px rgba(255,255,255,0.1);
-        }
-
-        .analytics-label {
-            color: #888;
-            font-size: 0.85em;
-            text-align: center;
-        }
-
-        .level-item {
-            background: #222;
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin: 5px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 3px solid transparent;
-        }
-
-        .level-item.support {
-            border-left-color: var(--put-color);
-        }
-
-        .level-item.resistance {
-            border-left-color: var(--call-color);
-        }
-
-        .level-strike {
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .charts-container {
-            max-width: 1200px;
-            margin: 0 auto 30px auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .chart-box {
-            background: #1a1a1a;
-            border: 1px solid #444;
-            padding: 20px;
-            border-radius: 10px;
-            position: relative;
-            overflow: visible !important;
-            z-index: 1;
-        }
-
-        .chart-title {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 10;
-            font-size: 1.1em;
-            font-weight: bold;
-            color: var(--accent-gold);
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .chart-help {
-            position: relative;
-            display: inline-block;
-            cursor: help;
-            margin-left: 8px;
-            font-size: 1.1em;
-            color: var(--accent-gold);
-            z-index: 20;
-        }
-
-        .chart-annotation {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            bottom: 140%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 260px;
-            background: rgba(15, 15, 15, 0.98);
-            border: 1px solid var(--accent-gold);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-            border-radius: 8px;
-            padding: 12px 15px;
-            color: #eee;
-            font-size: 0.85rem;
-            font-weight: normal;
-            line-height: 1.4;
-            text-align: left;
-            white-space: normal;
-            transition: all 0.2s ease-in-out;
-            pointer-events: none;
-            z-index: 99999;
-        }
-
-        .chart-annotation::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -6px;
-            border-width: 6px;
-            border-style: solid;
-            border-color: var(--accent-gold) transparent transparent transparent;
-        }
-
-        .chart-help:hover .chart-annotation {
-            visibility: visible;
-            opacity: 1;
-            bottom: 125%;
-        }
-
-        .chart-wrapper {
-            position: relative;
-            height: 300px;
-        }
-
-        .control-panel {
-            max-width: 1000px;
-            margin: 0 auto 20px auto;
-            background: #1a1a1a;
-            border: 1px solid #444;
-            padding: 20px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .expiry-toggle, .calculator-panel, .strike-filter {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .expiry-toggle {
-            background: #2a2a2a;
-            padding: 15px;
-            border: 1px solid var(--accent-gold);
-            border-radius: 8px;
-        }
-
-        .calculator-panel {
-            background: #2a2a2a;
-            border: 1px solid var(--accent-gold);
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        .expiry-btn, .filter-btn {
-            background: #333;
-            color: #aaa;
-            border: 1px solid #555;
-            padding: 8px 16px;
-            border-radius: 5px;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-
-        .expiry-btn:hover, .filter-btn:hover {
-            background: #444;
-        }
-
-        .expiry-btn.active, .filter-btn.active {
-            background: var(--accent-gold);
-            color: #000;
-            border-color: var(--accent-gold);
-            font-weight: bold;
-        }
-
-        .calc-input {
-            background: #111;
-            border: 1px solid #555;
-            color: var(--accent-gold);
-            padding: 10px;
-            border-radius: 5px;
-            width: 100px;
-            font-size: 1.2em;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .premium-btn {
-            background: #d32f2f;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .premium-btn:hover {
-            background: #f44336;
-        }
-
-        .premium-btn.active {
-            background: #4caf50;
-        }
-
-        .top5-container {
-            max-width: 1000px;
-            margin: 0 auto 20px auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .top5-box {
-            background: #1a1a1a;
-            border: 1px solid #444;
-            padding: 15px;
-            border-radius: 10px;
-        }
-
-        .top5-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: var(--accent-gold);
-            margin-bottom: 10px;
-            text-align: center;
-            border-bottom: 2px solid #333;
-            padding-bottom: 8px;
-        }
-
-        .top5-item {
-            background: #222;
-            padding: 8px 12px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 3px solid transparent;
-            margin-bottom: 5px;
-        }
-
-        .top5-item.call-item {
-            border-left-color: var(--call-color);
-        }
-
-        .top5-item.put-item {
-            border-left-color: var(--put-color);
-        }
-
-        .top5-strike {
-            font-weight: bold;
-            color: #fff;
-            font-size: 1.1em;
-            min-width: 70px;
-        }
-
-        .top5-value {
-            color: var(--accent-gold);
-            font-weight: bold;
-            font-size: 1em;
-        }
-
-        .levels-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: #1a1a1a;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #333;
-        }
-
-        .table-header-info {
-            background: #2c2c2c;
-            padding: 8px 20px;
-            text-align: center;
-            color: #fff;
-            font-size: 0.9em;
-            border-bottom: 1px solid #444;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: center;
-            font-size: 0.85em;
-        }
-
-        thead {
-            background: #111;
-            color: #aaa;
-            font-size: 0.9em;
-            position: sticky;
-            top: 0;
-            z-index: 5;
-        }
-
-        th {
-            padding: 8px 4px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 6px 4px;
-            border-bottom: 1px solid #2a2a2a;
-        }
-
-        .col-strike {
-            background: #252525;
-            color: #fff;
-            font-weight: bold;
-            font-size: 1.1em;
-            border-left: 1px solid #333;
-            border-right: 1px solid #333;
-            width: 80px;
-        }
-
-        .row-atm td {
-            background: rgba(255, 215, 0, 0.1);
-            border-top: 1px solid var(--accent-gold);
-            border-bottom: 1px solid var(--accent-gold);
-        }
-
-        .forward-active {
-            color: var(--accent-gold) !important;
-            text-decoration: underline;
-        }
-
-        .val-0 { color: #333; }
-        .val-1 { color: #666; }
-        .val-2 { color: #999; }
-        .val-3 { color: #ccc; font-weight: 500; }
-        .val-4 { color: #fff; font-weight: bold; }
-        .val-5 { color: #4fc3f7; font-weight: bold; font-size: 1.05em; }
-        .val-6 { color: #FFD700; font-weight: bold; font-size: 1.1em; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
-        .val-7 { background: #b71c1c; color: #fff; font-weight: bold; padding: 4px; border-radius: 4px; }
-
-        footer {
-            background: #111;
-            padding: 20px;
-            text-align: center;
-            color: #666;
-            font-size: 0.8em;
-        }
-
-        .expiry-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .expiry-button {
-            background: #333;
-            color: #aaa;
-            border: 1px solid #555;
-            padding: 10px 20px;
-            border-radius: 5px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .expiry-button:hover {
-            background: #444;
-        }
-
-        .expiry-button.active {
-            background: var(--accent-gold);
-            color: #000;
-            border-color: var(--accent-gold);
-            font-weight: bold;
-        }
-
-        @media (max-width: 768px) {
-            .menu { display: none; }
-            .hero h1 { font-size: 1.8em; }
-            .calculator-panel, .strike-filter, .expiry-toggle { flex-direction: column; }
-            .top5-container, .analytics-grid, .charts-container { grid-template-columns: 1fr; }
-            .chart-annotation, .analytics-annotation { width: 250px; left: 50%; bottom: 150%; }
-        }
+        /* ... */
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo"><span>📊</span> Gold Options</div>
-        <nav>
-            <ul class="menu">
-                <li><a href="#analytics">Аналитика</a></li>
-                <li><a href="#charts">Графики</a></li>
-                <li><a href="#greeks">Greeks</a></li>
-                <li><a href="#top5">ТОП-5</a></li>
-                <li class="tg-menu-item">
-                    <a href="https://t.me/+-tmtq_FUl2NhMjVi" target="_blank" class="tg-link-small">
-                        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.891 8.146l-1.703 8.026c-.128.564-.463.702-.937.437l-2.592-1.911-1.251 1.203c-.138.138-.254.254-.518.254l.186-2.637 4.8-4.336c.209-.186-.045-.289-.323-.104l-5.932 3.735-2.556-.799c-.555-.174-.567-.555.116-.822l9.989-3.85c.463-.174.867.104.721.799z"/></svg>
-                        Telegram
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </header>
+    <!-- ... -->
 
-    <section class="hero">
-        <h1>Gold Analytics Pro</h1>
-        <p class="subtitle">Max Pain • Gamma Walls • Greeks Analytics • Real-time Data</p>
-        
-        <div class="hero-buttons">
-            <a href="https://t.me/+-tmtq_FUl2NhMjVi" target="_blank" class="btn btn-telegram">
-                <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.891 8.146l-1.703 8.026c-.128.564-.463.702-.937.437l-2.592-1.911-1.251 1.203c-.138.138-.254.254-.518.254l.186-2.637 4.8-4.336c.209-.186-.045-.289-.323-.104l-5.932 3.735-2.556-.799c-.555-.174-.567-.555.116-.822l9.989-3.85c.463-.174.867.104.721.799z"/></svg>
-                Наш канал
-            </a>
-        </div>
-    </section>
-
-    <section class="live-data">
-        
-        <div class="warning-block">
-            <div class="warning-title">⚠ СТАТУС ДАННЫХ</div>
-            <p class="warning-text" id="connectionStatus">Подключение к серверу...</p>
-        </div>
-
-        <div id="alerts-container" class="alerts-container">
-            <div class="alert alert-info">⏳ Инициализация...</div>
-        </div>
-        
-        <div class="data-container">
-            <div class="data-card">
-                <div class="small-text">Цена (Live)</div>
-                <div class="big-number" id="futures-price">...</div>
-            </div>
-            
-            <div class="data-card" style="min-width: 180px;">
-                <div class="pcr-grid">
-                    <div class="pcr-item">
-                        <div id="pcr-oi">...</div>
-                        <div>PCR (OI)</div>
-                    </div>
-                    <div class="pcr-item">
-                        <div id="pcr-vol">...</div>
-                        <div>PCR (Vol)</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="data-card">
-                <div class="small-text">Баланс</div>
-                <div class="big-number" id="balance-price">...</div>
-            </div>
-            <div class="data-card" style="min-width: 200px;">
-                <div class="small-text" style="color: var(--accent-gold); font-weight: bold; line-height: 1.2;">
-                    ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ<br>ДАННЫХ ПО UTC
-                </div>
-                <div class="big-number" id="updated-time" style="font-size: 1.1em; margin-top: 5px;">--.--.---- --:--:--</div>
-            </div>
-        </div>
-
-        <div id="analytics" class="analytics-grid">
-            <div class="analytics-card">
-                <div class="analytics-title">🎯 Max Pain</div>
-                <div class="analytics-value" id="max-pain-value">-</div>
-                <div class="analytics-label">Точка максимальной боли</div>
-            </div>
-            
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    📏 Expected Move (±1σ)
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            <strong>Ожидаемое движение:</strong> Диапазон (68% вероятности), в котором цена останется до экспирации. Рассчитано на основе IV.
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="exp-move-value" style="color: var(--accent-gold);">-</div>
-                <div class="analytics-label" id="exp-move-range">Загрузка диапазона...</div>
-            </div>
-            
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    🎯 ITM Probability
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Вероятность того, что цена окажется "в деньгах" к моменту экспирации. Основано на Дельте ATM опционов.
-                        </span>
-                    </span>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                    <div style="text-align: center;">
-                        <div style="color: var(--call-color); font-weight: bold; font-size: 1.2em;" id="prob-call">-</div>
-                        <div style="font-size: 0.7em; color: #888;">CALL ITM</div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="color: var(--put-color); font-weight: bold; font-size: 1.2em;" id="prob-put">-</div>
-                        <div style="font-size: 0.7em; color: #888;">PUT ITM</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    🌀 Advanced Greeks
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            <strong>Color:</strong> Изменение Гаммы во времени. <br><strong>Charm:</strong> Скорость распада Дельты.
-                        </span>
-                    </span>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 5px;">
-                    <div class="level-item" style="border: none; background: rgba(255,255,255,0.05);">
-                        <span style="font-size: 0.8em; color: #888;">Color (Γ Decay):</span>
-                        <span id="metric-color" style="font-weight: bold;">-</span>
-</div>
-<div class="level-item" style="border: none; background: rgba(255,255,255,0.05);">
-<span style="font-size: 0.8em; color: #888;">Charm (Δ Decay):</span>
-<span id="metric-charm" style="font-weight: bold;">-</span>
-</div>
-</div>
-</div>
-        <div class="analytics-card">
-            <div class="analytics-title">📅 Economic Calendar</div>
-            <div id="calendar-list" style="margin-top: 10px; font-size: 0.85em;">
-                <div class="analytics-label">Загрузка событий...</div>
-            </div>
-        </div>
-
-        <div class="analytics-card">
-            <div class="analytics-title">⚡ Zero Gamma Level</div>
-            <div class="analytics-value" id="zero-gamma-value">-</div>
-            <div class="analytics-label" id="zero-gamma-label">Загрузка...</div>
-        </div>
-
-        <div class="analytics-card">
-            <div class="analytics-title">🌀 Vanna Exposure</div>
-            <div class="analytics-value" id="vanna-net">-</div>
-            <div class="analytics-label" id="vanna-label">Загрузка...</div>
-        </div>
-
-        <div class="analytics-card">
-            <div class="analytics-title">🧱 GEX Walls (Res/Sup)</div>
-            <div id="key-levels-display" style="margin-top: 10px;">
-                <div class="analytics-label">Загрузка...</div>
-            </div>
-        </div>
+    <div class="expiry-buttons" id="dynamicExpiryButtons">
+        <!-- Динамически генерируется -->
     </div>
 
-    <div id="charts" class="charts-container">
-        <div class="chart-box">
-            <div class="chart-title">
-                📊 OI Distribution (Call vs Put)
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        <strong>Как читать:</strong> Синий (Calls) вверх = Сопротивление. Оранжевый (Puts) вниз = Поддержка.
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="oiChart"></canvas>
-            </div>
-        </div>
+    <!-- ... -->
 
-        <div class="chart-box">
-            <div class="chart-title">
-                📈 Volume Heatmap
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        <strong>Как читать:</strong> Зеленый (Calls) вверх = активная защита сопротивления. Красный (Puts) вниз = активная защита поддержки.
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="volumeChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                ⚡ Gamma Exposure (GEX)
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        <strong>Как читать:</strong> Положительная Gamma = сопротивление. Отрицательная = поддержка.
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="gammaChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                🎯 Max Pain Curve
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        <strong>Как читать:</strong> Минимум на графике = Max Pain. Цена стремится к этой точке к экспирации.
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="maxPainChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                ⌈ IV Smile
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        <strong>Как читать:</strong> "Улыбка" = рынок ждет сильное движение.
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="ivChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                ⚖️ Delta Profile
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        <strong>Как читать:</strong> Delta показывает направленность позиций.
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="deltaChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                🔥 GEX Profile
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        <strong>Как читать:</strong> Зеленые столбцы = сопротивление. Красные = поддержка.
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="gexChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                ⏱️ Theta Decay
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        <strong>Как читать:</strong> Theta = временной распад опционов.
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="thetaChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <div id="greeks" style="max-width: 1200px; margin: 0 auto 30px auto;">
-        <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px;">🎓 Greeks Analytics</h2>
-    
-        <div class="analytics-grid">
-            <div class="analytics-card">
-                <div class="analytics-title">⚖️ Delta Skew</div>
-                <div class="analytics-value" id="delta-skew-value">-</div>
-                <div class="analytics-label">Call Delta - Put Delta</div>
-            </div>
-        
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Δ Total Call Delta
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Delta Коллов — это совокупное сопротивление.
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="total-call-delta">-</div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Δ Total Put Delta
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Delta Путов — это совокупная поддержка.
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="total-put-delta">-</div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Γ Total Gamma
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Gamma = ускорение Delta. Высокая Gamma = резкие движения цены.
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="total-gamma">-</div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    ν Total Vega
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Vega = чувствительность к волатильности.
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="total-vega">-</div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Θ Total Theta
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Theta = временной распад. Отрицательная = покупатели теряют деньги.
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="total-theta">-</div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    📊 Avg IV
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            IV = подразумеваемая волатильность. Высокая IV (>30%) = дорогие опционы.
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="avg-iv">-</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="control-panel">
-    <div class="expiry-toggle">
-        <span class="filter-label">Экспирация:</span>
-        <button class="expiry-btn active" data-expiry="0dte">INTRADAY</button>
-        <button class="expiry-btn" data-expiry="friday">FRIDAY</button>
-    </div>
-
-    <div class="calculator-panel">
-        <label style="color:#fff; font-weight:bold;">Forward (Форвард):</label>
-        <input type="number" id="forward-input" class="calc-input" placeholder="0" step="0.5" value="0">
-        
-        <label style="color:#fff; font-weight:bold;">Расчет премий:</label>
-        <button class="premium-btn" id="premium-toggle">Вкл. премии</button>
-        <span style="color: #888; font-size: 0.85em;">(Call+Prem, Put-Prem)</span>
-    </div>
-
-    <div class="strike-filter">
-        <span class="filter-label">Показать страйков:</span>
-        <button class="filter-btn" data-count="50">50</button>
-        <button class="filter-btn active" data-count="75">75</button>
-        <button class="filter-btn" data-count="100">100</button>
-        <button class="filter-btn" data-count="125">125</button>
-        <button class="filter-btn" data-count="150">150</button>
-    </div>
-</div>
-
-<div id="top5" class="top5-container">
-    <div class="top5-box">
-        <div class="top5-title">🟢 CALLS - ТОП-5</div>
-        <div class="top5-grid">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div>
-                    <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По Volume</div>
-                    <div id="top5-call-vol"></div>
-                </div>
-                <div>
-                    <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По OI</div>
-                    <div id="top5-call-oi"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="top5-box">
-        <div class="top5-title">🔴 PUTS - ТОП-5</div>
-        <div class="top5-grid">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div>
-                    <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По Volume</div>
-                    <div id="top5-put-vol"></div>
-                </div>
-                <div>
-                    <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По OI</div>
-                    <div id="top5-put-oi"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="levels-container">
-    <div class="table-header-info">
-        <span id="table-expiry-label">INTRADAY</span>
-        <span style="color:#888;">Full Analytics Active</span>
-    </div>
-    
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th colspan="5" style="border-bottom: 2px solid var(--call-color);">CALLS</th>
-                    <th style="background:#222;"></th>
-                    <th colspan="5" style="border-bottom: 2px solid var(--put-color);">PUTS</th>
-                </tr>
-                <tr>
-                    <th>OI</th><th>Vol</th><th>Prem</th><th>Δ</th><th>Γ</th>
-                    <th style="background:#333; color:#fff;">STRIKE</th>
-                    <th>Γ</th><th>Δ</th><th>Prem</th><th>Vol</th><th>OI</th>
-                </tr>
-            </thead>
-            <tbody id="option-body">
-                <tr><td colspan="11" style="padding: 20px;">⏳ Загрузка...</td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="expiry-buttons" id="dynamicExpiryButtons">
-    <!-- Динамически генерируется -->
-</div>
-
-<footer>
-    <p>&copy; 2025 Gold Options Pro Analytics. Все данные предоставляются "как есть" без гарантий.</p>
-</footer>
-
-<script>
-    // ============================================================================
-    // FIREBASE CONFIG
-    // ============================================================================
-    const firebaseConfig = {
-        apiKey: "AIzaSyDcNzTlV-pE3PVfH76mKtxQ-0MgH5wxC0c",
-        authDomain: "cmeparser.firebaseapp.com",
-        databaseURL: "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "cmeparser",
-        storageBucket: "cmeparser.appspot.com",
-        messagingSenderId: "397819706532",
-        appId: "1:397819706532:web:7f3fa7c9a06b5a3a3e1b6f"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // ============================================================================
-    // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
-    // ============================================================================
-    const DB_ROOT = "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app";
-    
-    let allData = {};
-    let currentFuturesPrice = 2600;
-    let cachedTableData = [];
-    let forwardCorrection = 0;
-    let displayStrikeCount = 75;
-    let currentExpiry = '0dte';
-    let premiumEnabled = false;
-
-    let oiChart, volumeChart, gammaChart, maxPainChart;
-    let ivChart, deltaChart, gexChart, thetaChart;
-
-    // ============================================================================
-    // 🔥 WEBSOCKET
-    // ============================================================================
-    let ws;
-    let reconnectInterval = 3000;
-    
-    function connectWebSocket() {
-        const wsUrl = "wss://askhat777-gold-relay.hf.space/ws";
-        console.log(`🔌 Подключение к: ${wsUrl}`);
-        
-        ws = new WebSocket(wsUrl);
-        
-        ws.onopen = () => {
-            console.log('✅ WebSocket подключен!');
-            
-            const updateEl = document.getElementById('updated-time');
-            if(updateEl) {
-                updateEl.innerHTML = '<span style="color:#4caf50">● ONLINE</span>';
-            }
-            
-            const warnEl = document.querySelector('.warning-block .warning-text');
-            warnEl.innerHTML = '<span style="color:#4caf50; font-weight:bold;">🟢 LIVE CONNECTION</span>';
+    <script>
+        // ============================================================================
+        // FIREBASE CONFIG
+        // ============================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcNzTlV-pE3PVfH76mKtxQ-0MgH5wxC0c",
+            authDomain: "cmeparser.firebaseapp.com",
+            databaseURL: "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "cmeparser",
+            storageBucket: "cmeparser.appspot.com",
+            messagingSenderId: "397819706532",
+            appId: "1:397819706532:web:7f3fa7c9a06b5a3a3e1b6f"
         };
-        
-        ws.onmessage = (event) => {
-            try {
-                const msg = JSON.parse(event.data);
-                console.log('📩 WS получено:', msg.type);
-                
-                // 🔥 ЦЕНА
-                if (msg.type === 'price') {
-                    currentFuturesPrice = parseFloat(msg.data.price);
-                    
-                    const priceEl = document.getElementById('futures-price');
-                    if (priceEl) {
-                        priceEl.innerText = '$' + msg.data.price.toFixed(1);
-                        priceEl.style.color = '#fff';
-                        setTimeout(() => priceEl.style.color = 'var(--accent-gold)', 200);
-                    }
-                    
-                    console.log('✅ Цена обновлена:', currentFuturesPrice);
 
-                    // Перерисовка таблицы
-                    if (cachedTableData && cachedTableData.length > 0) {
-                        renderTable(cachedTableData);
-                    }
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ============================================================================
+        // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+        // ============================================================================
+        const DB_ROOT = "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app";
+        
+        let allData = {};
+        let currentFuturesPrice = 2600;
+        let cachedTableData = [];
+        let forwardCorrection = 0;
+        let displayStrikeCount = 75;
+        let currentExpiry = 'dte_1';
+        let premiumEnabled = false;
+
+        let oiChart, volumeChart, gammaChart, maxPainChart;
+        let ivChart, deltaChart, gexChart, thetaChart;
+
+        // ============================================================================
+        // 🔥 WEBSOCKET
+        // ============================================================================
+        let ws;
+        let reconnectInterval = 3000;
+        
+        function connectWebSocket() {
+            const wsUrl = "wss://askhat777-gold-relay.hf.space/ws";
+            console.log(`🔌 Подключение к: ${wsUrl}`);
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                console.log('✅ WebSocket подключен!');
+                
+                const updateEl = document.getElementById('updated-time');
+                if(updateEl) {
+                    updateEl.innerHTML = '<span style="color:#4caf50">● ONLINE</span>';
                 }
                 
-                // 🔥 АНАЛИТИКА
-                if (msg.type === 'analytics') {
-                    console.log('📊 Analytics данные:', msg.data);
-                    updateAnalyticsFromWS(msg.data);
+                const warnEl = document.querySelector('.warning-block .warning-text');
+                warnEl.innerHTML = '<span style="color:#4caf50; font-weight:bold;">🟢 LIVE CONNECTION</span>';
+            };
+            
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    console.log('📩 WS получено:', msg.type);
+                    
+                    // 🔥 ЦЕНА
+                    if (msg.type === 'price') {
+                        currentFuturesPrice = parseFloat(msg.data.price);
+                        
+                        const priceEl = document.getElementById('futures-price');
+                        if (priceEl) {
+                            priceEl.innerText = '$' + msg.data.price.toFixed(1);
+                            priceEl.style.color = '#fff';
+                            setTimeout(() => priceEl.style.color = 'var(--accent-gold)', 200);
+                        }
+                        
+                        console.log('✅ Цена обновлена:', currentFuturesPrice);
+
+                        // Перерисовка таблицы
+                        if (cachedTableData && cachedTableData.length > 0) {
+                            renderTable(cachedTableData);
+                        }
+                    }
+                    
+                    // 🔥 АНАЛИТИКА
+                    if (msg.type === 'analytics') {
+                        console.log('📊 Analytics данные:', msg.data);
+                        updateAnalyticsFromWS(msg.data);
+                    }
+
+                } catch (e) {
+                    console.error("❌ Ошибка парсинга WS:", e, event.data);
                 }
+            };
+            
+            ws.onerror = (error) => {
+                console.error('❌ WS ошибка:', error);
+                const updateEl = document.getElementById('updated-time');
+                if(updateEl) updateEl.innerHTML = '<span style="color:#f44336">● ERROR</span>';
+            };
+            
+            ws.onclose = () => {
+                console.warn('🔌 WS закрыт. Реконнект...');
+                const updateEl = document.getElementById('updated-time');
+                if(updateEl) updateEl.innerHTML = '<span style="color:#ff9800">● RECONNECTING...</span>';
+                setTimeout(connectWebSocket, reconnectInterval);
+            };
+        }
 
-            } catch (e) {
-                console.error("❌ Ошибка парсинга WS:", e, event.data);
-            }
-        };
-        
-        ws.onerror = (error) => {
-            console.error('❌ WS ошибка:', error);
-            const updateEl = document.getElementById('updated-time');
-            if(updateEl) updateEl.innerHTML = '<span style="color:#f44336">● ERROR</span>';
-        };
-        
-        ws.onclose = () => {
-            console.warn('🔌 WS закрыт. Реконнект...');
-            const updateEl = document.getElementById('updated-time');
-            if(updateEl) updateEl.innerHTML = '<span style="color:#ff9800">● RECONNECTING...</span>';
-            setTimeout(connectWebSocket, reconnectInterval);
-        };
-    }
+        // ============================================================================
+        // HELPERS
+        // ============================================================================
+        function getValueClass(value) {
+            if (value === 0) return 'val-0';
+            if (value < 50) return 'val-1';
+            if (value < 100) return 'val-2';
+            if (value < 500) return 'val-3';
+            if (value < 1000) return 'val-4';
+            if (value < 2000) return 'val-5';
+            if (value < 5000) return 'val-6';
+            return 'val-7';
+        }
 
-    // ============================================================================
-    // HELPERS
-    // ============================================================================
-    function getValueClass(value) {
-        if (value === 0) return 'val-0';
-        if (value < 50) return 'val-1';
-        if (value < 100) return 'val-2';
-        if (value < 500) return 'val-3';
-        if (value < 1000) return 'val-4';
-        if (value < 2000) return 'val-5';
-        if (value < 5000) return 'val-6';
-        return 'val-7';
-    }
+        // ============================================================================
+        // 🔥 ЗАГРУЗКА ДОСТУПНЫХ DTE ИЗ FIREBASE
+        // ============================================================================
+        async function loadAvailableDTEs() {
+            console.log('🔍 Ищем доступные DTE...');
+            
+            db.ref('dte_').once('value', (snapshot) => {
+                const dteData = snapshot.val();
+                const dteKeys = Object.keys(dteData);
 
-    // ============================================================================
-    // 🔥 ЗАГРУЗКА ДОСТУПНЫХ DTE ИЗ FIREBASE
-    // ============================================================================
-    async function loadAvailableDTEs() {
-        console.log('🔍 Ищем доступные DTE...');
-        
-        const dteNodes = ['dte_1', 'dte_2', 'dte_3', 'dte_4', 'dte_5', 'dte_6', 'dte_7', 'dte_9'];
-        const available = {};
-        const dteLabels = {
-            'dte_1': 'INTRADAY',
-            'dte_2': 'FRIDAY',
-            'dte_3': '3DTE',
-            'dte_4': '4DTE',
-            'dte_5': '5DTE',
-            'dte_6': '6DTE',
-            'dte_7': '7DTE',
-            'dte_9': '9DTE'
-        };
-
-        for (const dteKey of dteNodes) {
-            try {
-                const snapshot = await db.ref(dteKey).once('value');
-                const data = snapshot.val();
-
-                if (data && Array.isArray(data) && data.length > 0) {
-                    available[dteKey] = data;
+                dteKeys.forEach((dteKey) => {
+                    const data = dteData[dteKey];
                     allData[dteKey] = data;
-                    console.log(`✅ ${dteKey} (${dteLabels[dteKey]}): ${data.length} strikes`);
-                } else if (data && typeof data === 'object' && Object.keys(data).length > 0) {
-                    const arr = Object.values(data);
-                    available[dteKey] = arr;
-                    allData[dteKey] = arr;
-                    console.log(`✅ ${dteKey} (${dteLabels[dteKey]}): ${arr.length} strikes`);
+                    console.log(`✅ ${dteKey}: ${data.length} strikes`);
+                });
+
+                renderDynamicExpiryButtons(allData);
+            });
+        }
+
+        // ============================================================================
+        // 🔥 РЕНДЕР ДИНАМИЧЕСКИХ КНОПОК
+        // ============================================================================
+        function renderDynamicExpiryButtons(data) {
+            const container = document.getElementById('dynamicExpiryButtons');
+            container.innerHTML = '';
+
+            const dteKeys = Object.keys(data);
+            let currentIndex = 0;
+
+            function renderButton() {
+                if (currentIndex >= dteKeys.length) {
+                    currentIndex = 0;
                 }
-            } catch (e) {
-                console.log(`⚠️ ${dteKey} недоступен`);
+
+                const dteKey = dteKeys[currentIndex];
+                const label = `DTE ${currentIndex + 1}`;
+                const btn = document.createElement('button');
+                btn.className = `expiry-button ${currentExpiry === dteKey ? 'active' : ''}`;
+                btn.dataset.expiry = dteKey;
+                btn.textContent = label;
+                btn.onclick = () => switchExpiry(dteKey);
+                container.appendChild(btn);
+
+                currentIndex++;
+                setTimeout(renderButton, 1000);
+            }
+
+            renderButton();
+        }
+
+        // ============================================================================
+        // 🔥 ПЕРЕКЛЮЧЕНИЕ ЭКСПИРАЦИИ
+        // ============================================================================
+        function switchExpiry(dteKey) {
+            if (!allData[dteKey]) {
+                console.error('❌ Нет данных для:', dteKey);
+                return;
+            }
+
+            currentExpiry = dteKey;
+            const data = allData[dteKey];
+
+            // Обновляем активные кнопки
+            document.querySelectorAll('.expiry-button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.expiry === dteKey);
+            });
+
+            // Обновляем заголовок таблицы
+            document.getElementById('table-expiry-label').textContent = `DTE ${dteKeys.indexOf(dteKey) + 1}`;
+
+            // Рендерим всё
+            renderTable(data);
+            calculateAllMetrics(data);
+            updateTop5(data);
+            createCharts(data);
+
+            console.log(`✅ Переключились на ${dteKey}`);
+        }
+
+        // ============================================================================
+        // 🔥 РЕНДЕР ТАБЛИЦЫ
+        // ============================================================================
+        function renderTable(rows) {
+            const tbody = document.getElementById('option-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            if (!rows || rows.length === 0) return;
+
+            cachedTableData = rows;
+
+            let closestIndex = 0;
+            let minDiff = Infinity;
+            
+            const targetPrice = currentFuturesPrice > 0 ? currentFuturesPrice : 2600;
+
+            rows.forEach((row, idx) => {
+                const strikeVal = parseFloat(row.s) + forwardCorrection;
+                const diff = Math.abs(strikeVal - targetPrice);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestIndex = idx;
+                }
+            });
+
+            const halfRange = Math.floor(displayStrikeCount / 2);
+            let startIdx = Math.max(0, closestIndex - halfRange);
+            let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
+
+            if (endIdx - startIdx < displayStrikeCount) {
+                startIdx = Math.max(0, endIdx - displayStrikeCount);
+            }
+
+            const displayRows = rows.slice(startIdx, endIdx);
+
+            displayRows.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                const rawStrike = parseFloat(row.s) + forwardCorrection;
+                const isATM = (startIdx + idx) === closestIndex;
+
+                const c_oi = row.c?.oi || 0;
+                const c_vol = row.c?.vol || 0;
+                const c_prem = row.c?.pr || 0;
+                const c_delta = (row.c?.d || 0).toFixed(3);
+                const c_gamma = (row.c?.g || 0).toFixed(6);
+                
+                const p_oi = row.p?.oi || 0;
+                const p_vol = row.p?.vol || 0;
+                const p_prem = row.p?.pr || 0;
+                const p_delta = (row.p?.d || 0).toFixed(3);
+                const p_gamma = (row.p?.g || 0).toFixed(6);
+
+                let strikeHtml = '';
+                if (premiumEnabled) {
+                    strikeHtml = `
+                        <div style="line-height:1.1;">
+                            <span style="color:var(--call-color)">${(rawStrike + c_prem).toFixed(1)}</span><br>
+                            <span style="color:var(--put-color); font-size:0.75em;">${(rawStrike - p_prem).toFixed(1)}</span>
+                        </div>
+                    `;
+                } else {
+                    strikeHtml = rawStrike.toFixed(1);
+                }
+
+                const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
+
+                tr.innerHTML = `
+                    <td class="${getValueClass(c_oi)}">${Math.round(c_oi)}</td>
+                    <td class="${getValueClass(c_vol)}">${Math.round(c_vol)}</td>
+                    <td style="color:#aaa;">${c_prem.toFixed(1)}</td>
+                    <td style="color:var(--call-color);">${c_delta}</td>
+                    <td style="color:#FFD700;">${c_gamma}</td>
+                    
+                    <td class="${strikeClass}">${strikeHtml}</td>
+                    
+                    <td style="color:#FFD700;">${p_gamma}</td>
+                    <td style="color:var(--put-color);">${p_delta}</td>
+                    <td style="color:#aaa;">${p_prem.toFixed(1)}</td>
+                    <td class="${getValueClass(p_vol)}">${Math.round(p_vol)}</td>
+                    <td class="${getValueClass(p_oi)}">${Math.round(p_oi)}</td>
+                `;
+
+                if (isATM) tr.classList.add('row-atm');
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ============================================================================
+        // 🔥 РАСЧЕТ ВСЕХ МЕТРИК
+        // ============================================================================
+        function calculateAllMetrics(records) {
+            if (!records || records.length === 0) return;
+
+            const price = currentFuturesPrice > 0 ? currentFuturesPrice : 2600;
+
+            // MAX PAIN
+            calculateMaxPain(records);
+
+            // PCR
+            calculatePCR(records);
+
+            // GREEKS
+            calculateGreeks(records);
+
+            // ITM PROBABILITIES
+            const atmRow = records.reduce((prev, curr) => {
+                const pDiff = Math.abs(parseFloat(prev.s) - price);
+                const cDiff = Math.abs(parseFloat(curr.s) - price);
+                return cDiff < pDiff ? curr : prev;
+            });
+            if (atmRow) {
+                document.getElementById('prob-call').textContent = (Math.abs(atmRow.c?.d || 0.5) * 100).toFixed(1) + '%';
+                document.getElementById('prob-put').textContent = (Math.abs(atmRow.p?.d || 0.5) * 100).toFixed(1) + '%';
+            }
+
+            // BALANCE
+            let balance = price;
+            let totalWeight = 0;
+            let weightedSum = 0;
+            records.forEach(row => {
+                const strike = parseFloat(row.s);
+                const cWeight = (row.c?.oi || 0) * (row.c?.pr || 0);
+                const pWeight = (row.p?.oi || 0) * (row.p?.pr || 0);
+                if (cWeight > 0) {
+                    weightedSum += (strike + (row.c?.pr || 0)) * cWeight;
+                    totalWeight += cWeight;
+                }
+                if (pWeight > 0) {
+                    weightedSum += (strike - (row.p?.pr || 0)) * pWeight;
+                    totalWeight += pWeight;
+                }
+            });
+            if (totalWeight > 0) balance = weightedSum / totalWeight;
+            document.getElementById('balance-price').textContent = '$' + balance.toFixed(1);
+        }
+
+        function calculateMaxPain(data) {
+            if (!data || data.length === 0) return;
+            
+            let maxPain = null;
+            let minLoss = Infinity;
+
+            data.forEach(testRow => {
+                const testStrike = parseFloat(testRow.s);
+                let totalLoss = 0;
+
+                data.forEach(row => {
+                    const strike = parseFloat(row.s);
+                    const ts = parseFloat(testStrike);
+                    const cOI = row.c?.oi || 0;
+                    const pOI = row.p?.oi || 0;
+                    if (ts > strike) totalLoss += (ts - strike) * cOI * 100;
+                    if (ts < strike) totalLoss += (strike - ts) * pOI * 100;
+                });
+
+                if (totalLoss < minLoss) {
+                    minLoss = totalLoss;
+                    maxPain = testStrike;
+                }
+            });
+
+            document.getElementById('max-pain-value').innerText = maxPain ? '$' + maxPain.toFixed(1) : '-';
+        }
+
+        function calculatePCR(rows) {
+            if (!rows || rows.length === 0) return;
+            
+            let totalPutOI = 0, totalCallOI = 0;
+            let totalPutVol = 0, totalCallVol = 0;
+
+            rows.forEach(r => {
+                if(r.p) {
+                    totalPutOI += (r.p.oi || 0);
+                    totalPutVol += (r.p.vol || 0);
+                }
+                if(r.c) {
+                    totalCallOI += (r.c.oi || 0);
+                    totalCallVol += (r.c.vol || 0);
+                }
+            });
+            
+            let pcrOI = totalCallOI > 0 ? (totalPutOI / totalCallOI).toFixed(2) : "0.00";
+            let pcrVol = totalCallVol > 0 ? (totalPutVol / totalCallVol).toFixed(2) : "0.00";
+            document.getElementById('pcr-oi').innerText = pcrOI;
+            document.getElementById('pcr-vol').innerText = pcrVol;
+            
+            colorPCR('pcr-oi', parseFloat(pcrOI));
+            colorPCR('pcr-vol', parseFloat(pcrVol));
+        }
+
+        function colorPCR(elementId, value) {
+            const el = document.getElementById(elementId);
+            if(value > 1.0) el.style.color = "#f44336";
+            else if(value < 0.7) el.style.color = "#4caf50";
+            else el.style.color = "#fff";
+        }
+
+        function calculateGreeks(data) {
+            if (!data || data.length === 0) return;
+            
+            let totalCallDelta = 0, totalPutDelta = 0;
+            let totalGamma = 0, totalVega = 0, totalTheta = 0;
+            let totalCallIV = 0, totalOI = 0;
+
+            data.forEach(r => {
+                const cOI = r.c?.oi || 0;
+                const pOI = r.p?.oi || 0;
+                totalCallDelta += (r.c?.d || 0) * cOI;
+                totalPutDelta += Math.abs(r.p?.d || 0) * pOI;
+                totalGamma += ((r.c?.g || 0) * cOI) + ((r.p?.g || 0) * pOI);
+                totalVega += ((r.c?.v || 0) * cOI) + ((r.p?.v || 0) * pOI);
+                totalTheta += ((r.c?.t || 0) * cOI) + ((r.p?.t || 0) * pOI);
+                if(r.c?.iv > 0) { totalCallIV += r.c.iv * cOI; totalOI += cOI; }
+            });
+
+            document.getElementById('total-call-delta').innerText = (totalCallDelta / 1000).toFixed(0) + 'K';
+            document.getElementById('total-put-delta').innerText = (totalPutDelta / 1000).toFixed(0) + 'K';
+            document.getElementById('total-gamma').innerText = (totalGamma / 1000).toFixed(1) + 'K';
+            document.getElementById('total-vega').innerText = (totalVega / 1000).toFixed(0) + 'K';
+            document.getElementById('total-theta').innerText = (totalTheta / 1000).toFixed(0) + 'K';
+            document.getElementById('avg-iv').innerText = totalOI > 0 ? (totalCallIV / totalOI).toFixed(1) + '%' : '0%';
+            
+             const skew = totalCallDelta - totalPutDelta;
+            document.getElementById('delta-skew-value').innerText = (skew / 1000).toFixed(0) + 'K';
+        }
+
+        // ============================================================================
+        // 🔥 TOP-5
+        // ============================================================================
+        function updateTop5(rows) {
+            if (!rows || rows.length === 0) return;
+            
+            const getTop = (arr, type, metric) => {
+                return [...arr].sort((a, b) => (b[type]?.[metric] || 0) - (a[type]?.[metric] || 0)).slice(0, 5);
+            };
+
+            const render = (items, type, metric) => {
+                return items.map(r => {
+                    const rawStrike = parseFloat(r.s) + forwardCorrection;
+                    const prem = r[type]?.pr || 0;
+                    
+                    let displayValue;
+                    if (premiumEnabled) {
+                        displayValue = type === 'c' ? (rawStrike + prem) : (rawStrike - prem);
+                    } else {
+                        displayValue = rawStrike;
+                    }
+
+                    const val = r[type]?.[metric] || 0;
+                    return `
+                        <div class="top5-item ${type === 'c' ? 'call-item' : 'put-item'}">
+                            <span class="top5-strike">${displayValue.toFixed(1)}</span>
+                            <span class="top5-value">${Math.round(val)}</span>
+                        </div>`;
+                }).join('');
+            };
+
+            document.getElementById('top5-call-vol').innerHTML = render(getTop(rows, 'c', 'vol'), 'c', 'vol');
+            document.getElementById('top5-call-oi').innerHTML = render(getTop(rows, 'c', 'oi'), 'c', 'oi');
+            document.getElementById('top5-put-vol').innerHTML = render(getTop(rows, 'p', 'vol'), 'p', 'vol');
+            document.getElementById('top5-put-oi').innerHTML = render(getTop(rows, 'p', 'oi'), 'p', 'oi');
+        }
+
+        // ============================================================================
+        // 🔥 СОЗДАНИЕ ГРАФИКОВ
+        // ============================================================================
+        function createCharts(data) {
+            if (!data || data.length === 0) return;
+
+            const strikes = data.map(r => parseFloat(r.s).toFixed(1));
+            const callOI = data.map(r => r.c?.oi || 0);
+            const putOI = data.map(r => r.p?.oi || 0);
+            const callVol = data.map(r => r.c?.vol || 0);
+            const putVol = data.map(r => r.p?.vol || 0);
+            const callDelta = data.map(r => (r.c?.d || 0) * (r.c?.oi || 0) / 1000);
+            const putDelta = data.map(r => Math.abs(r.p?.d || 0) * (r.p?.oi || 0) / 1000);
+            const callTheta = data.map(r => (r.c?.t || 0) * (r.c?.oi || 0) / 1000);
+            const putTheta = data.map(r => (r.p?.t || 0) * (r.p?.oi || 0) / 1000);
+
+            const gammaData = data.map(r => {
+                const strike = parseFloat(r.s);
+                const cGamma = (r.c?.g || 0) * (r.c?.oi || 0) * strike * 100;
+                const pGamma = (r.p?.g || 0) * (r.p?.oi || 0) * strike * 100;
+                return (cGamma - pGamma) / 1000000;
+            });
+
+            const maxOI = Math.max(...callOI, ...putOI);
+            const maxVol = Math.max(...callVol, ...putVol);
+
+            // 1. OI Chart
+            if (oiChart) oiChart.destroy();
+            const ctxOI = document.getElementById('oiChart').getContext('2d');
+            oiChart = new Chart(ctxOI, {
+                type: 'bar',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call OI',
+                        data: callOI,
+                        backgroundColor: 'rgba(33, 150, 243, 0.8)',
+                        borderWidth: 0
+                    }, {
+                        label: 'Put OI',
+                        data: putOI.map(v => -v),
+                        backgroundColor: 'rgba(255, 152, 0, 0.8)',
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#888', maxTicksLimit: 15 },
+                            grid: { color: '#333', drawBorder: false }
+                        },
+                        y: { 
+                            min: -maxOI,
+                            max: maxOI,
+                            ticks: { 
+                                color: '#888',
+                                callback: function(value) {
+                                    return Math.abs(value);
+                                }
+                            }, 
+                            grid: { 
+                                color: function(context) {
+                                    return context.tick.value === 0 ? '#FFD700' : '#333';
+                                },
+                                lineWidth: function(context) {
+                                    return context.tick.value === 0 ? 3 : 1;
+                                },
+                                drawBorder: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. Volume Chart
+            if (volumeChart) volumeChart.destroy();
+            const ctxVol = document.getElementById('volumeChart').getContext('2d');
+            volumeChart = new Chart(ctxVol, {
+                type: 'bar',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call Vol',
+                        data: callVol,
+                        backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                        borderWidth: 0
+                    }, {
+                        label: 'Put Vol',
+                        data: putVol.map(v => -v),
+                        backgroundColor: 'rgba(244, 67, 54, 0.7)',
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#888', maxTicksLimit: 15 },
+                            grid: { color: '#333', drawBorder: false }
+                        },
+                        y: { 
+                            min: -maxVol,
+                            max: maxVol,
+                            ticks: { 
+                                color: '#888',
+                                callback: function(value) {
+                                    return Math.abs(value);
+                                }
+                            }, 
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+
+            // 3. Gamma Chart
+            if (gammaChart) gammaChart.destroy();
+            const ctxGamma = document.getElementById('gammaChart').getContext('2d');
+            gammaChart = new Chart(ctxGamma, {
+                type: 'line',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Net GEX',
+                        data: gammaData,
+                        backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                        borderColor: 'rgba(255, 215, 0, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: {
+                        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
+                        y: { 
+                            ticks: { color: '#888' }, 
+                            grid: { 
+                                color: function(context) {
+                                    return context.tick.value === 0 ? '#FFD700' : '#333';
+                                },
+                                lineWidth: function(context) {
+                                    return context.tick.value === 0 ? 3 : 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 4. Max Pain Chart
+            const maxPainData = strikes.map((testStrike, testIdx) => {
+                let totalLoss = 0;
+                data.forEach((row, idx) => {
+                    const strike = parseFloat(row.s);
+                    const ts = parseFloat(strikes[testIdx]);
+                    const cOI = row.c?.oi || 0;
+                    const pOI = row.p?.oi || 0;
+                    if (ts > strike) totalLoss += (ts - strike) * cOI * 100;
+                    if (ts < strike) totalLoss += (strike - ts) * pOI * 100;
+                });
+                return totalLoss / 1000000;
+            });
+
+            if (maxPainChart) maxPainChart.destroy();
+            const ctxMaxPain = document.getElementById('maxPainChart').getContext('2d');
+            maxPainChart = new Chart(ctxMaxPain, {
+                type: 'line',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Total Loss (M)',
+                        data: maxPainData,
+                        backgroundColor: 'rgba(183, 28, 28, 0.2)',
+                        borderColor: 'rgba(183, 28, 28, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: {
+                        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
+                        y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                    }
+                }
+            });
+
+            // 5. IV Smile
+            const callIV = data.map(r => r.c?.iv || 0);
+            const putIV = data.map(r => r.p?.iv || 0);
+
+            if (ivChart) ivChart.destroy();
+            const ctxIV = document.getElementById('ivChart').getContext('2d');
+            ivChart = new Chart(ctxIV, {
+                type: 'line',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call IV',
+                        data: callIV,
+                        borderColor: '#2196F3',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }, {
+                        label: 'Put IV',
+                        data: putIV,
+                        borderColor: '#f44336',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: {
+                        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
+                        y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                    }
+                }
+            });
+
+            // 6. Delta Profile
+            if (deltaChart) deltaChart.destroy();
+            const ctxDelta = document.getElementById('deltaChart').getContext('2d');
+            deltaChart = new Chart(ctxDelta, {
+                type: 'bar',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call Delta',
+                        data: callDelta,
+                        backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                        borderWidth: 0
+                    }, {
+                        label: 'Put Delta',
+                        data: putDelta.map(v => -v),
+                        backgroundColor: 'rgba(244, 67, 54, 0.7)',
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: {
+                        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
+                        y: { 
+                            ticks: { 
+                                color: '#888',
+                                callback: function(value) {
+                                    return Math.abs(value) + 'K';
+                                }
+                            }, 
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+
+            // 7. GEX Profile
+            if (gexChart) gexChart.destroy();
+            const ctxGex = document.getElementById('gexChart').getContext('2d');
+            gexChart = new Chart(ctxGex, {
+                type: 'bar',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Net GEX',
+                        data: gammaData,
+                        backgroundColor: gammaData.map(v => 
+                            v > 0 ? 'rgba(76, 175, 80, 0.8)' : 'rgba(244, 67, 54, 0.8)'
+                        ),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: {
+                        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
+                        y: { 
+                            ticks: { color: '#888' }, 
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+
+            // 8. Theta Decay
+            if (thetaChart) thetaChart.destroy();
+            const ctxTheta = document.getElementById('thetaChart').getContext('2d');
+            thetaChart = new Chart(ctxTheta, {
+                type: 'line',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call Theta',
+                        data: callTheta,
+                        borderColor: '#4caf50',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }, {
+                        label: 'Put Theta',
+                        data: putTheta,
+                        borderColor: '#f44336',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } } },
+                    scales: {
+                        x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
+                        y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                    }
+                }
+            });
+        }
+
+        // ============================================================================
+        // 🔥 ОБНОВЛЕНИЕ АНАЛИТИКИ ИЗ WEBSOCKET
+        // ============================================================================
+        function updateAnalyticsFromWS(analytics) {
+            if (!analytics) return;
+
+            // Expected Move
+            if (analytics.em) {
+                const move = parseFloat(analytics.em);
+                document.getElementById('exp-move-value').innerText = `±$${move.toFixed(2)}`;
+                
+                if (currentFuturesPrice > 0) {
+                    const up = (currentFuturesPrice + move).toFixed(1);
+                    const down = (currentFuturesPrice - move).toFixed(1);
+                    document.getElementById('exp-move-range').innerText = `${down} — ${up}`;
+                }
+            }
+
+            // ITM Probabilities
+            if (analytics.p) {
+                let callProb = parseFloat(analytics.p.c) || 50;
+                let putProb = parseFloat(analytics.p.p) || 50;
+                
+                callProb = Math.max(0, Math.min(100, callProb));
+                putProb = Math.max(0, Math.min(100, putProb));
+                
+                document.getElementById('prob-call').innerText = callProb.toFixed(1) + '%';
+                document.getElementById('prob-put').innerText = putProb.toFixed(1) + '%';
+            }
+
+            // Advanced Greeks
+            if (analytics.am) {
+                const color = analytics.am.c || 0;
+                const charm = analytics.am.ch || 0;
+                
+                document.getElementById('metric-color').innerText = 
+                    (color / 1000).toFixed(3) + 'K';
+                document.getElementById('metric-charm').innerText = 
+                    (charm / 1000).toFixed(3) + 'K';
+            }
+
+            // Zero Gamma
+            if (analytics.zg && analytics.zg.s !== undefined) {
+                document.getElementById('zero-gamma-value').innerText = '$' + parseFloat(analytics.zg.s).toFixed(1);
+                const pos = analytics.zg.p === 'a' ? '🟢 Выше' : '🔴 Ниже';
+                document.getElementById('zero-gamma-label').innerText = `Цена ${pos} Zero Gamma`;
+            }
+
+            // Vanna
+            if (analytics.v) {
+                document.getElementById('vanna-net').innerText = analytics.v.n_v.toFixed(0);
+                document.getElementById('vanna-label').innerText = `Call: ${analytics.v.c_v.toFixed(0)} | Put: ${analytics.v.p_v.toFixed(0)}`;
+            }
+
+            // GEX Walls
+            if (analytics.gex) {
+                let html = '';
+                
+                if (analytics.gex.r && analytics.gex.r.length > 0) {
+                    html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance:</div>';
+                    analytics.gex.r.forEach(w => {
+                        html += `<div class="level-item resistance">
+                            <span>$${parseFloat(w.s).toFixed(1)}</span>
+                            <span style="color:#888;">${(w.n_g/1000000).toFixed(1)}M</span>
+                        </div>`;
+                    });
+                }
+
+                if (analytics.gex.s && analytics.gex.s.length > 0) {
+                    html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support:</div>';
+                    analytics.gex.s.forEach(w => {
+                        html += `<div class="level-item support">
+                            <span>$${parseFloat(w.s).toFixed(1)}</span>
+                            <span style="color:#888;">${(w.n_g/1000000).toFixed(1)}M</span>
+                        </div>`;
+                    });
+                }
+                
+                if (html === '') {
+                    html = '<div class="analytics-label">Нет значимых GEX уровней</div>';
+                }
+                
+                document.getElementById('key-levels-display').innerHTML = html;
+            }
+
+            // Updated Time
+            if (analytics.u) {
+                document.getElementById('updated-time').innerText = analytics.u;
+            }
+
+            // Balance
+            if (analytics.b) {
+                document.getElementById('balance-price').innerText = '$' + parseFloat(analytics.b).toFixed(1);
+            }
+
+            // Alerts
+            generateAlerts(analytics);
+        }
+
+        function generateAlerts(analytics) {
+            const container = document.getElementById('alerts-container');
+            let alerts = [];
+
+            // Проверка GEX Walls
+            if (analytics.gex && currentFuturesPrice > 0) {
+                const walls = [
+                    ...(analytics.gex.r || []).map(w => ({...w, type: 'RES'})),
+                    ...(analytics.gex.s || []).map(w => ({...w, type: 'SUP'}))
+                ];
+
+                walls.forEach(wall => {
+                    const strike = parseFloat(wall.s);
+                    const distance = Math.abs(currentFuturesPrice - strike);
+
+                    if (distance <= 10) {
+                        const typeText = wall.type === 'RES' ? '🧱 Сопротивление' : '🧱 Поддержка';
+                        alerts.push({
+                            type: wall.type === 'RES' ? 'warning' : 'danger',
+                            text: `${typeText}: $${strike.toFixed(1)} | Осталось: <span style="font-weight:bold;">${distance.toFixed(1)} пт.</span>`
+                        });
+                    }
+                });
+            }
+
+            // Проверка Zero Gamma
+            if (analytics.zg && analytics.zg.s && currentFuturesPrice > 0) {
+                const zgStrike = parseFloat(analytics.zg.s);
+                const zgDistance = Math.abs(currentFuturesPrice - zgStrike);
+                if (zgDistance < 5) {
+                    alerts.push({
+                        type: 'info',
+                        text: `⚡ Рядом Zero Gamma ($${zgStrike.toFixed(1)})! Дистанция: ${zgDistance.toFixed(1)} пт.`
+                    });
+                }
+            }
+
+            if (alerts.length === 0) {
+                container.innerHTML = '<div class="alert alert-success" style="opacity: 0.8;">✅ Ценовых угроз в радиусе 10пт не обнаружено</div>';
+            } else {
+                container.innerHTML = alerts.map(a => 
+                    `<div class="alert alert-${a.type}">${a.text}</div>`
+                ).join('');
             }
         }
 
-        renderDynamicExpiryButtons(available, dteLabels);
-
-        if (Object.keys(available).length > 0) {
-            const firstDTE = Object.keys(available)[0];
-            switchExpiry(firstDTE, dteLabels[firstDTE]);
-        } else {
-            document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="color:red;">❌ Нет данных в Firebase</td></tr>';
-        }
-    }
-
-    // ============================================================================
-    // 🔥 РЕНДЕР ДИНАМИЧЕСКИХ КНОПОК
-    // ============================================================================
-    function renderDynamicExpiryButtons(available, labels) {
-        const container = document.getElementById('dynamicExpiryButtons');
-        container.innerHTML = '';
-
-        Object.keys(available).forEach(dteKey => {
-            const btn = document.createElement('button');
-            btn.className = `expiry-button ${currentExpiry === dteKey ? 'active' : ''}`;
-            btn.dataset.expiry = dteKey;
-            btn.textContent = labels[dteKey];
-            btn.onclick = () => switchExpiry(dteKey, labels[dteKey]);
-            container.appendChild(btn);
+        // ============================================================================
+        // УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕМ
+        // ============================================================================
+        document.getElementById('forward-input').addEventListener('input', function(e) {
+            const val = parseFloat(e.target.value);
+            forwardCorrection = isNaN(val) ? 0 : val;
+            if (cachedTableData.length > 0) {
+                renderTable(cachedTableData);
+                updateTop5(cachedTableData);
+            }
         });
-    }
 
-    // ============================================================================
-    // 🔥 ПЕРЕКЛЮЧЕНИЕ ЭКСПИРАЦИИ
-    // ============================================================================
-    function switchExpiry(dteKey, label) {
-        if (!allData[dteKey]) {
-            console.error('❌ Нет данных для:', dteKey);
-            return;
-        }
+        document.getElementById('premium-toggle').addEventListener('click', function() {
+            premiumEnabled = !premiumEnabled;
+            this.textContent = premiumEnabled ? 'Откл. премии' : 'Вкл. премии';
+            this.classList.toggle('active');
+            if (cachedTableData.length > 0) {
+                renderTable(cachedTableData);
+                updateTop5(cachedTableData);
+            }
+        });
 
-        currentExpiry = dteKey;
-        const data = allData[dteKey];
-
-        // Обновляем активные кнопки
-        document.querySelectorAll('.expiry-button').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.expiry === dteKey);
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                displayStrikeCount = parseInt(this.dataset.count);
+                if (cachedTableData.length > 0) renderTable(cachedTableData);
+            });
         });
 
         document.querySelectorAll('.expiry-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.expiry === dteKey);
-        });
-
-        // Обновляем заголовок таблицы
-        document.getElementById('table-expiry-label').textContent = label;
-
-        // Рендерим всё
-        renderTable(data);
-        calculateAllMetrics(data);
-        updateTop5(data);
-        createCharts(data);
-
-        console.log(`✅ Переключились на ${label}`);
-    }
-
-    // ============================================================================
-    // 🔥 РЕНДЕР ТАБЛИЦЫ
-    // ============================================================================
-    function renderTable(rows) {
-        const tbody = document.getElementById('option-body');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        
-        if (!rows || rows.length === 0) return;
-
-        cachedTableData = rows;
-
-        let closestIndex = 0;
-        let minDiff = Infinity;
-        
-        const targetPrice = currentFuturesPrice > 0 ? currentFuturesPrice : 2600;
-
-        rows.forEach((row, idx) => {
-            const strikeVal = parseFloat(row.s) + forwardCorrection;
-            const diff = Math.abs(strikeVal - targetPrice);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closestIndex = idx;
-            }
-        });
-
-        const halfRange = Math.floor(displayStrikeCount / 2);
-        let startIdx = Math.max(0, closestIndex - halfRange);
-        let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
-
-        if (endIdx - startIdx < displayStrikeCount) {
-            startIdx = Math.max(0, endIdx - displayStrikeCount);
-        }
-
-        const displayRows = rows.slice(startIdx, endIdx);
-
-        displayRows.forEach((row, idx) => {
-            const tr = document.createElement('tr');
-            const rawStrike = parseFloat(row.s) + forwardCorrection;
-            const isATM = (startIdx + idx) === closestIndex;
-
-            const c_oi = row.c?.oi || 0;
-            const c_vol = row.c?.vol || 0;
-            const c_prem = row.c?.pr || 0;
-            const c_delta = (row.c?.d || 0).toFixed(3);
-            const c_gamma = (row.c?.g || 0).toFixed(6);
-            
-            const p_oi = row.p?.oi || 0;
-            const p_vol = row.p?.vol || 0;
-            const p_prem = row.p?.pr || 0;
-            const p_delta = (row.p?.d || 0).toFixed(3);
-            const p_gamma = (row.p?.g || 0).toFixed(6);
-
-            let strikeHtml = '';
-            if (premiumEnabled) {
-                strikeHtml = `
-                    <div style="line-height:1.1;">
-                        <span style="color:var(--call-color)">${(rawStrike + c_prem).toFixed(1)}</span><br>
-                        <span style="color:var(--put-color); font-size:0.75em;">${(rawStrike - p_prem).toFixed(1)}</span>
-                    </div>
-                `;
-            } else {
-                strikeHtml = rawStrike.toFixed(1);
-            }
-
-            const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
-
-            tr.innerHTML = `
-                <td class="${getValueClass(c_oi)}">${Math.round(c_oi)}</td>
-                <td class="${getValueClass(c_vol)}">${Math.round(c_vol)}</td>
-                <td style="color:#aaa;">${c_prem.toFixed(1)}</td>
-                <td style="color:var(--call-color);">${c_delta}</td>
-                <td style="color:#FFD700;">${c_gamma}</td>
-                
-                <td class="${strikeClass}">${strikeHtml}</td>
-                
-                <td style="color:#FFD700;">${p_gamma}</td>
-                <td style="color:var(--put-color);">${p_delta}</td>
-                <td style="color:#aaa;">${p_prem.toFixed(1)}</td>
-                <td class="${getValueClass(p_vol)}">${Math.round(p_vol)}</td>
-                <td class="${getValueClass(p_oi)}">${Math.round(p_oi)}</td>
-            `;
-
-            if (isATM) tr.classList.add('row-atm');
-            tbody.appendChild(tr);
-        });
-    }
-
-    // ============================================================================
-    // 🔥 РАСЧЕТ ВСЕХ МЕТРИК
-    // ============================================================================
-    function calculateAllMetrics(records) {
-        if (!records || records.length === 0) return;
-
-        const price = currentFuturesPrice > 0 ? currentFuturesPrice : 2600;
-
-        // MAX PAIN
-        calculateMaxPain(records);
-
-        // PCR
-        calculatePCR(records);
-
-        // GREEKS
-        calculateGreeks(records);
-
-        // ITM PROBABILITIES
-        const atmRow = records.reduce((prev, curr) => {
-            const pDiff = Math.abs(parseFloat(prev.s) - price);
-            const cDiff = Math.abs(parseFloat(curr.s) - price);
-            return cDiff < pDiff ? curr : prev;
-        });
-        if (atmRow) {
-            document.getElementById('prob-call').textContent = (Math.abs(atmRow.c?.d || 0.5) * 100).toFixed(1) + '%';
-            document.getElementById('prob-put').textContent = (Math.abs(atmRow.p?.d || 0.5) * 100).toFixed(1) + '%';
-        }
-
-        // BALANCE
-        let balance = price;
-        let totalWeight = 0;
-        let weightedSum = 0;
-        records.forEach(row => {
-            const strike = parseFloat(row.s);
-            const cWeight = (row.c?.oi || 0) * (row.c?.pr || 0);
-            const pWeight = (row.p?.oi || 0) * (row.p?.pr || 0);
-            if (cWeight > 0) {
-                weightedSum += (strike + (row.c?.pr || 0)) * cWeight;
-                totalWeight += cWeight;
-            }
-            if (pWeight > 0) {
-                weightedSum += (strike - (row.p?.pr || 0)) * pWeight;
-                totalWeight += pWeight;
-            }
-        });
-        if (totalWeight > 0) balance = weightedSum / totalWeight;
-        document.getElementById('balance-price').textContent = '$' + balance.toFixed(1);
-    }
-
-    function calculateMaxPain(data) {
-        if (!data || data.length === 0) return;
-        
-        let maxPain = null;
-        let minLoss = Infinity;
-
-        data.forEach(testRow => {
-            const testStrike = parseFloat(testRow.s);
-            let totalLoss = 0;
-
-            data.forEach(row => {
-                const strike = parseFloat(row.s);
-                const cOI = row.c?.oi || 0;
-                const pOI = row.p?.oi || 0;
-                if (testStrike > strike) {
-                    totalLoss += (testStrike - strike) * cOI * 100;
-                }
-                if (testStrike < strike) {
-                    totalLoss += (strike - testStrike) * pOI * 100;
-                }
+            btn.addEventListener('click', function() {
+                const dteKey = this.dataset.expiry;
+                switchExpiry(dteKey);
             });
-
-            if (totalLoss < minLoss) {
-                minLoss = totalLoss;
-                maxPain = testStrike;
-            }
         });
 
-        document.getElementById('max-pain-value').innerText = maxPain ? '$' + maxPain.toFixed(1) : '-';
-    }
-
-    function calculatePCR(rows) {
-        if (!rows || rows.length === 0) return;
-        
-        let totalPutOI = 0, totalCallOI = 0;
-        let totalPutVol = 0, totalCallVol = 0;
-
-        rows.forEach(r => {
-            if(r.p) {
-                totalPutOI += (r.p.oi || 0);
-                totalPutVol += (r.p.vol || 0);
-            }
-            if(r.c) {
-                totalCallOI += (r.c.oi || 0);
-                totalCallVol += (r.c.vol || 0);
-            }
+        // ============================================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ============================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Инициализация приложения...');
+            loadAvailableDTEs();
+            connectWebSocket();
         });
-        
-        let pcrOI = totalCallOI > 0 ? (totalPutOI / totalCallOI).toFixed(2) : "0.00";
-        let pcrVol = totalCallVol > 0 ? (totalPutVol / totalCallVol).toFixed(2) : "0.00";
-        document.getElementById('pcr-oi').innerText = pcrOI;
-        document.getElementById('pcr-vol').innerText = pcrVol;
-        
-        colorPCR('pcr-oi', parseFloat(pcrOI));
-        colorPCR('pcr-vol', parseFloat(pcrVol));
-    }
-
-    function colorPCR(elementId, value) {
-        const el = document.getElementById(elementId);
-        if(value > 1.0) el.style.color = "#f44336";
-        else if(value < 0.7) el.style.color = "#4caf50";
-        else el.style.color = "#fff";
-    }
-
-    function calculateGreeks(data) {
-        if (!data || data.length === 0) return;
-        
-        let totalCallDelta = 0, totalPutDelta = 0;
-        let totalGamma = 0, totalVega = 0, totalTheta = 0;
-        let totalCallIV = 0, totalOI = 0;
-
-        data.forEach(r => {
-            const cOI = r.c?.oi || 0;
-            const pOI = r.p?.oi || 0;
-            totalCallDelta += (r.c?.d || 0) * cOI;
-            totalPutDelta += Math.abs(r.p?.d || 0) * pOI;
-            totalGamma += ((r.c?.g || 0) * cOI) + ((r.p?.g || 0) * pOI);
-            totalVega += ((r.c?.v || 0) * cOI) + ((r.p?.v || 0) * pOI);
-            totalTheta += ((r.c?.t || 0) * cOI) + ((r.p?.t || 0) * pOI);
-            if(r.c?.iv > 0) { totalCallIV += r.c.iv * cOI; totalOI += cOI; }
-        });
-
-        document.getElementById('total-call-delta').innerText = (totalCallDelta / 1000).toFixed(0) + 'K';
-        document.getElementById('total-put-delta').innerText = (totalPutDelta / 1000).toFixed(0) + 'K';
-        document.getElementById('total-gamma').innerText = (totalGamma / 1000).toFixed(1) + 'K';
-        document.getElementById('total-vega').innerText = (totalVega / 1000).toFixed(0) + 'K';
-        document.getElementById('total-theta').innerText = (totalTheta / 1000).toFixed(0) + 'K';
-        document.getElementById('avg-iv').innerText = totalOI > 0 ? (totalCallIV / totalOI).toFixed(1) + '%' : '0%';
-        
-        const skew = totalCallDelta - totalPutDelta;
-        document.getElementById('delta-skew-value').innerText = (skew / 1000).toFixed(0) + 'K';
-    }
-
-    // ============================================================================
-    // 🔥 TOP-5
-    // ============================================================================
-    function updateTop5(rows) {
-        if (!rows || rows.length === 0) return;
-        
-        const getTop = (arr, type, metric) => {
-            return [...arr].sort((a, b) => (b[type]?.[metric] || 0) - (a[type]?.[metric] || 0)).slice(0, 5);
-        };
-
-        const render = (items, type, metric) => {
-            return items.map(r => {
-                const rawStrike = parseFloat(r.s) + forwardCorrection;
-                const prem = r[type]?.pr || 0;
-                
-                let displayValue;
-                if (premiumEnabled) {
-                    displayValue = type === 'c' ? (rawStrike + prem) : (rawStrike - prem);
-                } else {
-                    displayValue = rawStrike;
-                }
-
-                const val = r[type]?.[metric] || 0;
-                return `
-                    <div class="top5-item ${type === 'c' ? 'call-item' : 'put-item'}">
-                        <span class="top5-strike">${displayValue.toFixed(1)}</span>
-                        <span class="top5-value">${Math.round(val)}</span>
-                    </div>`;
-            }).join('');
-        };
-
-        document.getElementById('top5-call-vol').innerHTML = render(getTop(rows, 'c', 'vol'), 'c', 'vol');
-        document.getElementById('top5-call-oi').innerHTML = render(getTop(rows, 'c', 'oi'), 'c', 'oi');
-        document.getElementById('top5-put-vol').innerHTML = render(getTop(rows, 'p', 'vol'), 'p', 'vol');
-        document.getElementById('top5-put-oi').innerHTML = render(getTop(rows, 'p', 'oi'), 'p', 'oi');
-    }
-
-    // ============================================================================
-    // 🔥 СОЗДАНИЕ ГРАФИКОВ
-    // ============================================================================
-    function createCharts(data) {
-        if (!data || data.length === 0) return;
-
-        const strikes = data.map(r => parseFloat(r.s).toFixed(1));
-        const callOI = data.map(r => r.c?.oi || 0);
-        const putOI = data.map(r => r.p?.oi || 0);
-        const callVol = data.map(r => r.c?.vol || 0);
-        const putVol = data.map(r => r.p?.vol || 0);
-        const callDelta = data.map(r => (r.c?.d || 0) * (r.c?.oi || 0) / 1000);
-        const putDelta = data.map(r => Math.abs(r.p?.d || 0) * (r.p?.oi || 0) / 1000);
-        const callTheta = data.map(r => (r.c?.t || 0) * (r.c?.oi || 0) / 1000);
-        const putTheta = data.map(r => (r.p?.t || 0) * (r.p?.oi || 0) / 1000);
-
-        const gammaData = data.map(r => {
-            const strike = parseFloat(r.s);
-            const cGamma = (r.c?.g || 0) * (r.c?.oi || 0) * strike * 100;
-            const pGamma = (r.p?.g || 0) * (r.p?.oi || 0) * strike * 100;
-            return (cGamma - pGamma) / 1000000;
-        });
-
-        const maxOI = Math.max(...callOI, ...putOI);
-        const maxVol = Math.max(...callVol, ...putVol);
-
-        // 1. OI Chart
-        if (oiChart) oiChart.destroy();
-        const ctxOI = document.getElementById('oiChart').getContext('2d');
-        oiChart = new Chart(ctxOI, {
-            type: 'bar',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Call OI',
-                    data: callOI,
-                    backgroundColor: 'rgba(33, 150, 243, 0.8)',
-                    borderWidth: 0
-                }, {
-                    label: 'Put OI',
-                    data: putOI.map(v => -v),
-                    backgroundColor: 'rgba(255, 152, 0, 0.8)',
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { 
-                        ticks: { color: '#888', maxTicksLimit: 15 },
-                        grid: { color: '#333', drawBorder: false }
-                    },
-                    y: { 
-                        min: -maxOI,
-                        max: maxOI,
-                        ticks: { 
-                            color: '#888',
-                            callback: function(value) {
-                                return Math.abs(value);
-                            }
-                        }, 
-                        grid: { 
-                            color: function(context) {
-                                return context.tick.value === 0 ? '#FFD700' : '#333';
-                            },
-                            lineWidth: function(context) {
-                                return context.tick.value === 0 ? 3 : 1;
-                            },
-                            drawBorder: false
-                        }
-                    }
-                }
-            }
-        });
-
-        // 2. Volume Chart
-        if (volumeChart) volumeChart.destroy();
-        const ctxVol = document.getElementById('volumeChart').getContext('2d');
-        volumeChart = new Chart(ctxVol, {
-            type: 'bar',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Call Vol',
-                    data: callVol,
-                    backgroundColor: 'rgba(76, 175, 80, 0.7)',
-                    borderWidth: 0
-                }, {
-                    label: 'Put Vol',
-                    data: putVol.map(v => -v),
-                    backgroundColor: 'rgba(244, 67, 54, 0.7)',
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { 
-                        ticks: { color: '#888', maxTicksLimit: 15 },
-                        grid: { color: '#333', drawBorder: false }
-                    },
-                    y: { 
-                        min: -maxVol,
-                        max: maxVol,
-                        ticks: { 
-                            color: '#888',
-                            callback: function(value) {
-                                return Math.abs(value);
-                            }
-                        }, 
-                        grid: { color: '#333' }
-                    }
-                }
-            }
-        });
-
-        // 3. Gamma Chart
-        if (gammaChart) gammaChart.destroy();
-        const ctxGamma = document.getElementById('gammaChart').getContext('2d');
-        gammaChart = new Chart(ctxGamma, {
-            type: 'line',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Net GEX',
-                    data: gammaData,
-                    backgroundColor: 'rgba(255, 215, 0, 0.2)',
-                    borderColor: 'rgba(255, 215, 0, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
-                    y: { 
-                        ticks: { color: '#888' }, 
-                        grid: { 
-                            color: function(context) {
-                                return context.tick.value === 0 ? '#FFD700' : '#333';
-                            },
-                            lineWidth: function(context) {
-                                return context.tick.value === 0 ? 3 : 1;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // 4. Max Pain Chart
-        const maxPainData = strikes.map((testStrike, testIdx) => {
-            let totalLoss = 0;
-            data.forEach((row, idx) => {
-                const strike = parseFloat(row.s);
-                const ts = parseFloat(strikes[testIdx]);
-                const cOI = row.c?.oi || 0;
-                const pOI = row.p?.oi || 0;
-                if (ts > strike) totalLoss += (ts - strike) * cOI * 100;
-                if (ts < strike) totalLoss += (strike - ts) * pOI * 100;
-            });
-            return totalLoss / 1000000;
-        });
-
-        if (maxPainChart) maxPainChart.destroy();
-        const ctxMaxPain = document.getElementById('maxPainChart').getContext('2d');
-        maxPainChart = new Chart(ctxMaxPain, {
-            type: 'line',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Total Loss (M)',
-                    data: maxPainData,
-                    backgroundColor: 'rgba(183, 28, 28, 0.2)',
-                    borderColor: 'rgba(183, 28, 28, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
-                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
-                }
-            }
-        });
-
-        // 5. IV Smile
-        const callIV = data.map(r => r.c?.iv || 0);
-        const putIV = data.map(r => r.p?.iv || 0);
-
-        if (ivChart) ivChart.destroy();
-        const ctxIV = document.getElementById('ivChart').getContext('2d');
-        ivChart = new Chart(ctxIV, {
-            type: 'line',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Call IV',
-                    data: callIV,
-                    borderColor: '#2196F3',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.4,
-                    pointRadius: 0
-                }, {
-                    label: 'Put IV',
-                    data: putIV,
-                    borderColor: '#f44336',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
-                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
-                }
-            }
-        });
-
-        // 6. Delta Profile
-        if (deltaChart) deltaChart.destroy();
-        const ctxDelta = document.getElementById('deltaChart').getContext('2d');
-        deltaChart = new Chart(ctxDelta, {
-            type: 'bar',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Call Delta',
-                    data: callDelta,
-                    backgroundColor: 'rgba(76, 175, 80, 0.7)',
-                    borderWidth: 0
-                }, {
-                    label: 'Put Delta',
-                    data: putDelta.map(v => -v),
-                    backgroundColor: 'rgba(244, 67, 54, 0.7)',
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
-                    y: { 
-                        ticks: { 
-                            color: '#888',
-                            callback: function(value) {
-                                return Math.abs(value) + 'K';
-                            }
-                        }, 
-                        grid: { color: '#333' }
-                    }
-                }
-            }
-        });
-
-        // 7. GEX Profile
-        if (gexChart) gexChart.destroy();
-        const ctxGex = document.getElementById('gexChart').getContext('2d');
-        gexChart = new Chart(ctxGex, {
-            type: 'bar',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Net GEX',
-                    data: gammaData,
-                    backgroundColor: gammaData.map(v => 
-                        v > 0 ? 'rgba(76, 175, 80, 0.8)' : 'rgba(244, 67, 54, 0.8)'
-                    ),
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
-                    y: { 
-                        ticks: { color: '#888' }, 
-                        grid: { color: '#333' }
-                    }
-                }
-            }
-        });
-
-        // 8. Theta Decay
-        if (thetaChart) thetaChart.destroy();
-        const ctxTheta = document.getElementById('thetaChart').getContext('2d');
-        thetaChart = new Chart(ctxTheta, {
-            type: 'line',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Call Theta',
-                    data: callTheta,
-                    borderColor: '#4caf50',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.4,
-                    pointRadius: 0
-                }, {
-                    label: 'Put Theta',
-                    data: putTheta,
-                    borderColor: '#f44336',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888', maxTicksLimit: 15 }, grid: { color: '#333' } },
-                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
-                }
-            }
-        });
-    }
-
-    // ============================================================================
-    // 🔥 ОБНОВЛЕНИЕ АНАЛИТИКИ ИЗ WEBSOCKET
-    // ============================================================================
-    function updateAnalyticsFromWS(analytics) {
-        if (!analytics) return;
-
-        // Expected Move
-        if (analytics.em) {
-            const move = parseFloat(analytics.em);
-            document.getElementById('exp-move-value').innerText = `±$${move.toFixed(2)}`;
-            
-            if (currentFuturesPrice > 0) {
-                const up = (currentFuturesPrice + move).toFixed(1);
-                const down = (currentFuturesPrice - move).toFixed(1);
-                document.getElementById('exp-move-range').innerText = `${down} — ${up}`;
-            }
-        }
-
-        // ITM Probabilities
-        if (analytics.p) {
-            let callProb = parseFloat(analytics.p.c) || 50;
-            let putProb = parseFloat(analytics.p.p) || 50;
-            
-            callProb = Math.max(0, Math.min(100, callProb));
-            putProb = Math.max(0, Math.min(100, putProb));
-            
-            document.getElementById('prob-call').innerText = callProb.toFixed(1) + '%';
-            document.getElementById('prob-put').innerText = putProb.toFixed(1) + '%';
-        }
-
-        // Advanced Greeks
-        if (analytics.am) {
-            const color = analytics.am.c || 0;
-            const charm = analytics.am.ch || 0;
-            
-            document.getElementById('metric-color').innerText = 
-                (color / 1000).toFixed(3) + 'K';
-            document.getElementById('metric-charm').innerText = 
-                (charm / 1000).toFixed(3) + 'K';
-        }
-
-        // Zero Gamma
-        if (analytics.zg && analytics.zg.s !== undefined) {
-            document.getElementById('zero-gamma-value').innerText = '$' + parseFloat(analytics.zg.s).toFixed(1);
-            const pos = analytics.zg.p === 'a' ? '🟢 Выше' : '🔴 Ниже';
-            document.getElementById('zero-gamma-label').innerText = `Цена ${pos} Zero Gamma`;
-        }
-
-        // Vanna
-        if (analytics.v) {
-            document.getElementById('vanna-net').innerText = analytics.v.n_v.toFixed(0);
-            document.getElementById('vanna-label').innerText = `Call: ${analytics.v.c_v.toFixed(0)} | Put: ${analytics.v.p_v.toFixed(0)}`;
-        }
-
-        // GEX Walls
-        if (analytics.gex) {
-            let html = '';
-            
-            if (analytics.gex.r && analytics.gex.r.length > 0) {
-                html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance:</div>';
-                analytics.gex.r.forEach(w => {
-                    html += `<div class="level-item resistance">
-                        <span>$${parseFloat(w.s).toFixed(1)}</span>
-                        <span style="color:#888;">${(w.n_g/1000000).toFixed(1)}M</span>
-                    </div>`;
-                });
-            }
-
-            if (analytics.gex.s && analytics.gex.s.length > 0) {
-                html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support:</div>';
-                analytics.gex.s.forEach(w => {
-                    html += `<div class="level-item support">
-                        <span>$${parseFloat(w.s).toFixed(1)}</span>
-                        <span style="color:#888;">${(w.n_g/1000000).toFixed(1)}M</span>
-                    </div>`;
-                });
-            }
-            
-            if (html === '') {
-                html = '<div class="analytics-label">Нет значимых GEX уровней</div>';
-            }
-            
-            document.getElementById('key-levels-display').innerHTML = html;
-        }
-
-        // Updated Time
-        if (analytics.u) {
-            document.getElementById('updated-time').innerText = analytics.u;
-        }
-
-        // Balance
-        if (analytics.b) {
-            document.getElementById('balance-price').innerText = '$' + parseFloat(analytics.b).toFixed(1);
-        }
-
-        // Alerts
-        generateAlerts(analytics);
-    }
-
-    function generateAlerts(analytics) {
-        const container = document.getElementById('alerts-container');
-        let alerts = [];
-
-        // Проверка GEX Walls
-        if (analytics.gex && currentFuturesPrice > 0) {
-            const walls = [
-                ...(analytics.gex.r || []).map(w => ({...w, type: 'RES'})),
-                ...(analytics.gex.s || []).map(w => ({...w, type: 'SUP'}))
-            ];
-
-            walls.forEach(wall => {
-                const strike = parseFloat(wall.s);
-                const distance = Math.abs(currentFuturesPrice - strike);
-
-                if (distance <= 10) {
-                    const typeText = wall.type === 'RES' ? '🧱 Сопротивление' : '🧱 Поддержка';
-                    alerts.push({
-                        type: wall.type === 'RES' ? 'warning' : 'danger',
-                        text: `${typeText}: $${strike.toFixed(1)} | Осталось: <span style="font-weight:bold;">${distance.toFixed(1)} пт.</span>`
-                    });
-                }
-            });
-        }
-
-        // Проверка Zero Gamma
-        if (analytics.zg && analytics.zg.s && currentFuturesPrice > 0) {
-            const zgStrike = parseFloat(analytics.zg.s);
-            const zgDistance = Math.abs(currentFuturesPrice - zgStrike);
-            if (zgDistance < 5) {
-                alerts.push({
-                    type: 'info',
-                    text: `⚡ Рядом Zero Gamma ($${zgStrike.toFixed(1)})! Дистанция: ${zgDistance.toFixed(1)} пт.`
-                });
-            }
-        }
-
-        if (alerts.length === 0) {
-            container.innerHTML = '<div class="alert alert-success" style="opacity: 0.8;">✅ Ценовых угроз в радиусе 10пт не обнаружено</div>';
-        } else {
-            container.innerHTML = alerts.map(a => 
-                `<div class="alert alert-${a.type}">${a.text}</div>`
-            ).join('');
-        }
-    }
-
-    // ============================================================================
-    // УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЕМ
-    // ============================================================================
-    document.getElementById('forward-input').addEventListener('input', function(e) {
-        const val = parseFloat(e.target.value);
-        forwardCorrection = isNaN(val) ? 0 : val;
-        if (cachedTableData.length > 0) {
-            renderTable(cachedTableData);
-            updateTop5(cachedTableData);
-        }
-    });
-
-    document.getElementById('premium-toggle').addEventListener('click', function() {
-        premiumEnabled = !premiumEnabled;
-        this.textContent = premiumEnabled ? 'Откл. премии' : 'Вкл. премии';
-        this.classList.toggle('active');
-        if (cachedTableData.length > 0) {
-            renderTable(cachedTableData);
-            updateTop5(cachedTableData);
-        }
-    });
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            displayStrikeCount = parseInt(this.dataset.count);
-            if (cachedTableData.length > 0) renderTable(cachedTableData);
-        });
-    });
-
-    document.querySelectorAll('.expiry-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const dteKey = this.dataset.expiry;
-            const labels = {
-                '0dte': 'INTRADAY',
-                'friday': 'FRIDAY'
-            };
-            switchExpiry(dteKey, labels[dteKey]);
-        });
-    });
-
-    // ============================================================================
-    // ИНИЦИАЛИЗАЦИЯ
-    // ============================================================================
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('🚀 Инициализация приложения...');
-        loadAvailableDTEs();
-        connectWebSocket();
-    });
-
-</script>
+    </script>
 </body>
 </html>
-
-
-
-
