@@ -1269,7 +1269,7 @@
     // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
     // ============================================================================
     let allData = {};
-    let dteList = [];
+    let dteList = []; // Будет хранить объекты: { key: 'dte_0', index: 0 }
     let currentDTEIndex = 0;
     let currentFuturesPrice = 2600;
     let cachedTableData = [];
@@ -1281,6 +1281,7 @@
     let ivChart, deltaChart, gexChart, thetaChart;
 
     let rotateTimer = null;
+    let visualCountdownTimer = null;
     let rotateCountdown = 60;
 
     // ============================================================================
@@ -1313,8 +1314,11 @@
                     if (priceEl) {
                         priceEl.innerText = '$' + msg.data.price.toFixed(1);
                     }
+                    // Если есть данные в таблице, перерисовываем с новой ценой
                     if (cachedTableData && cachedTableData.length > 0) {
                         renderTable(cachedTableData);
+                        // Опционально: можно обновлять метрики, но графики лучше не дергать каждую секунду
+                        calculateAllMetrics(cachedTableData); 
                     }
                 }
                 
@@ -1348,59 +1352,51 @@
     }
 
     // ============================================================================
-    // 🔥 ЗАГРУЗКА ДОСТУПНЫХ DTE ИЗ FIREBASE
+    // 🔥 ЗАГРУЗКА ДОСТУПНЫХ DTE (ИСПРАВЛЕНО ПОД ПРАВИЛА)
     // ============================================================================
     async function loadAvailableDTEs() {
-        console.log('🔍 Ищем доступные DTE...');
+        console.log('🔍 Сканирование доступных DTE...');
+        const btnContainer = document.getElementById('dynamicExpiryButtons');
+        if(btnContainer) btnContainer.innerHTML = '<span style="color:#aaa; font-size:0.9em;">Поиск данных...</span>';
         
-        try {
-            const dteNodes = await db.ref().once('value');
-            const available = [];
+        dteList = [];
+        const promises = [];
 
-            dteNodes.forEach((childSnapshot) => {
-                const dteKey = childSnapshot.key;
-                const data = childSnapshot.val();
-
-                if (dteKey === 'admin' || dteKey === 'app_config') {
-                    return;
-                }
-
-                if (data && (Array.isArray(data) || typeof data === 'object') && Object.keys(data).length > 0) {
-                    const arr = Array.isArray(data) ? data : Object.values(data);
-                    if (arr.length > 0) {
-                        available.push({ key: dteKey, data: arr });
-                        allData[dteKey] = arr;
-                        console.log(`✅ ${dteKey}: ${arr.length} страйков`);
+        // Поскольку читать корень нельзя, мы проверяем каждый ключ от dte_0 до dte_30 отдельно
+        // limitToFirst(1) позволяет проверить существование, не скачивая мегабайты данных
+        for (let i = 0; i <= 30; i++) {
+            const key = `dte_${i}`;
+            const p = db.ref(key).limitToFirst(1).once('value')
+                .then(snapshot => {
+                    if (snapshot.exists()) {
+                        dteList.push({ key: key, index: i });
                     }
-                }
-            });
+                })
+                .catch(() => { /* Игнорируем ошибки доступа, просто нет ключа */ });
+            promises.push(p);
+        }
 
-            // Сортируем по числовому значению (0DTE, 1DTE, 2DTE)
-            dteList = available.sort((a, b) => {
-                const aNum = parseInt(a.key.match(/\d+/)?.[0] || 999);
-                const bNum = parseInt(b.key.match(/\d+/)?.[0] || 999);
-                return aNum - bNum;
-            });
+        await Promise.all(promises);
 
-            console.log('📋 Список DTE:', dteList.map(d => d.key));
+        // Сортируем по индексу (0, 1, 2...)
+        dteList.sort((a, b) => a.index - b.index);
 
+        console.log(`📋 Найдено ${dteList.length} экспираций`);
+
+        if (dteList.length > 0) {
             renderDynamicExpiryButtons();
-
-            if (dteList.length > 0) {
-                currentDTEIndex = 0;
-                loadDTE(0);
-                startAutoRotate();
-            } else {
-                document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="color:red;">❌ Нет данных в Firebase</td></tr>';
-            }
-        } catch (error) {
-            console.error('❌ Ошибка при загрузке DTE:', error);
-            document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="color:red;">❌ Ошибка подключения</td></tr>';
+            currentDTEIndex = 0;
+            // Загружаем первый доступный день
+            loadDTE(0);
+            startAutoRotate();
+        } else {
+            if(btnContainer) btnContainer.innerHTML = '<span style="color:red;">Данные не найдены</span>';
+            document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="color:red;">❌ Нет данных в базе</td></tr>';
         }
     }
 
     // ============================================================================
-    // 🔥 РЕНДЕР ДИНАМИЧЕСКИХ КНОПОК
+    // 🔥 РЕНДЕР КНОПОК
     // ============================================================================
     function renderDynamicExpiryButtons() {
         const container = document.getElementById('dynamicExpiryButtons');
@@ -1411,12 +1407,11 @@
         dteList.forEach((item, index) => {
             const btn = document.createElement('button');
             btn.className = `expiry-button ${index === 0 ? 'active' : ''}`;
-            btn.dataset.expiry = item.key;
-            btn.textContent = item.key;
+            btn.textContent = item.key; // Название кнопки, например "dte_2"
             btn.onclick = () => {
                 currentDTEIndex = index;
                 loadDTE(index);
-                resetAutoRotate();
+                resetAutoRotate(); // При ручном клике сбрасываем таймер
             };
             container.appendChild(btn);
         });
@@ -1425,64 +1420,115 @@
     // ============================================================================
     // 🔥 ЗАГРУЗКА КОНКРЕТНОГО DTE
     // ============================================================================
-    function loadDTE(index) {
-        if (index >= dteList.length) {
-            currentDTEIndex = 0;
-            index = 0;
-        }
+    async function loadDTE(index) {
+        if (dteList.length === 0) return;
+        
+        // Защита от выхода за границы массива
+        if (index >= dteList.length) index = 0;
+        currentDTEIndex = index;
 
         const item = dteList[index];
-        console.log(`📊 Загружаем ${item.key}`);
+        const dteKey = item.key;
+        
+        console.log(`📊 Загружаем ${dteKey}`);
 
-        // Обновляем активную кнопку
+        // Обновляем визуально активную кнопку
         document.querySelectorAll('.expiry-button').forEach((btn, i) => {
             btn.classList.toggle('active', i === index);
         });
 
-        document.getElementById('table-expiry-label').textContent = item.key;
-        document.getElementById('currentDTE').textContent = item.key;
+        // Обновляем тексты
+        const labelEl = document.getElementById('table-expiry-label');
+        if(labelEl) labelEl.textContent = dteKey;
+        
+        const infoEl = document.getElementById('currentDTE');
+        if(infoEl) infoEl.textContent = dteKey;
 
-        renderTable(item.data);
-        calculateAllMetrics(item.data);
-        updateTop5(item.data);
-        createCharts(item.data);
+        // Если данные уже были загружены ранее - показываем сразу
+        if (allData[dteKey]) {
+            processData(allData[dteKey]);
+        } else {
+            // Показываем лоадер в таблице
+            document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="padding:20px;">📡 Загрузка данных...</td></tr>';
+        }
+
+        try {
+            // Запрашиваем полные данные для этого дня
+            const snapshot = await db.ref(dteKey).once('value');
+            const rawData = snapshot.val();
+            
+            // Преобразуем в массив, если Firebase вернул объект
+            let dataArr = [];
+            if (Array.isArray(rawData)) {
+                dataArr = rawData;
+            } else if (rawData && typeof rawData === 'object') {
+                dataArr = Object.values(rawData);
+            }
+
+            if (dataArr.length > 0) {
+                allData[dteKey] = dataArr; // Кэшируем
+                processData(dataArr);
+                
+                // Обновляем время обновления
+                const date = new Date();
+                document.getElementById('updated-time').textContent = 
+                    date.toISOString().replace('T', ' ').substring(0, 19);
+            } else {
+                 document.getElementById('option-body').innerHTML = '<tr><td colspan="11">Пустые данные</td></tr>';
+            }
+        } catch (error) {
+            console.error('❌ Ошибка при загрузке DTE:', error);
+        }
+    }
+
+    function processData(data) {
+        cachedTableData = data;
+        renderTable(data);
+        calculateAllMetrics(data);
+        updateTop5(data);
+        createCharts(data);
     }
 
     // ============================================================================
-    // 🔥 АВТО-РОТАЦИЯ ДАННЫХ
+    // 🔥 АВТО-РОТАЦИЯ ДАННЫХ И ТАЙМЕР
     // ============================================================================
     function startAutoRotate() {
-        console.log('⚙️ Запущена авто-ротация DTE...');
-        updateRotateTimer();
+        // Очищаем старые интервалы чтобы не двоилось
+        if (rotateTimer) clearInterval(rotateTimer);
+        if (visualCountdownTimer) clearInterval(visualCountdownTimer);
 
+        rotateCountdown = 60;
+        updateTimerDisplay();
+
+        console.log('⚙️ Таймер запущен');
+
+        // 1. Визуальный обратный отсчет (каждую секунду)
+        visualCountdownTimer = setInterval(() => {
+            rotateCountdown--;
+            if (rotateCountdown < 0) rotateCountdown = 60;
+            updateTimerDisplay();
+        }, 1000);
+
+        // 2. Фактическое переключение данных (каждые 60 секунд)
         rotateTimer = setInterval(() => {
             currentDTEIndex++;
             if (currentDTEIndex >= dteList.length) {
                 currentDTEIndex = 0;
             }
             loadDTE(currentDTEIndex);
-            updateRotateTimer();
-        }, 60000); // 60 секунд
+            rotateCountdown = 60; // Сброс визуального счетчика
+        }, 60000);
     }
 
-    function updateRotateTimer() {
-        rotateCountdown = 60;
+    function updateTimerDisplay() {
         const timerEl = document.getElementById('rotate-timer');
-        
-        const countdown = setInterval(() => {
-            if (timerEl) {
-                timerEl.innerText = rotateCountdown + 's';
-            }
-            rotateCountdown--;
-            if (rotateCountdown < 0) {
-                clearInterval(countdown);
-            }
-        }, 1000);
+        if (timerEl) {
+            timerEl.innerText = rotateCountdown + 's';
+        }
     }
 
     function resetAutoRotate() {
-        console.log('🔄 Сброс авто-ротации');
-        clearInterval(rotateTimer);
+        console.log('🔄 Сброс таймера авто-ротации');
         startAutoRotate();
     }
 
@@ -2000,3 +2046,4 @@ window.addEventListener('load', () => {
 </script>
 </body>
 </html>
+
