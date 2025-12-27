@@ -907,290 +907,287 @@
                 <div class="analytics-title">
                     🌀 Advanced Greeks
                     <span class="analytics-help">❓
-                    <span class="analytics-annotation">
-                        Color и Charm
-                    </span>
+                <span class="analytics-annotation">
+                    Color и Charm
                 </span>
+            </span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 5px; font-size: 0.8em;">
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #888;">Color:</span>
+                <span id="metric-color" style="font-weight: bold; color: #FFD700;">-</span>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 5px; font-size: 0.8em;">
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="color: #888;">Color:</span>
-                    <span id="metric-color" style="font-weight: bold; color: #FFD700;">-</span>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="color: #888;">Charm:</span>
-                    <span id="metric-charm" style="font-weight: bold; color: #FFD700;">-</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="analytics-card">
-            <div class="analytics-title">📅 Calendar</div>
-            <div id="calendar-list" style="margin-top: 10px; font-size: 0.75em;">
-                <div class="analytics-label">Загрузка...</div>
-            </div>
-        </div>
-
-        <div class="analytics-card">
-            <div class="analytics-title">⚡ Zero Gamma</div>
-            <div class="analytics-value" id="zero-gamma-value">-</div>
-            <div class="analytics-label" id="zero-gamma-label">Загрузка...</div>
-        </div>
-
-        <div class="analytics-card">
-            <div class="analytics-title">🌀 Vanna</div>
-            <div class="analytics-value" id="vanna-net">-</div>
-            <div class="analytics-label" id="vanna-label">Загрузка...</div>
-        </div>
-
-        <div class="analytics-card">
-            <div class="analytics-title">🧱 GEX Walls</div>
-            <div id="key-levels-display" style="margin-top: 10px;">
-                <div class="analytics-label">Загрузка...</div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #888;">Charm:</span>
+                <span id="metric-charm" style="font-weight: bold; color: #FFD700;">-</span>
             </div>
         </div>
     </div>
 
-    <div id="charts" class="charts-container">
-        <div class="chart-box">
-            <div class="chart-title">
-                📊 OI Distribution
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        Calls vs Puts
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="oiChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                📈 Volume Heatmap
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        Зеленый/Красный
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="volumeChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                ⚡ Gamma Exposure
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        Net Gamma
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="gammaChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                🎯 Max Pain Curve
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        Loss Function
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="maxPainChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                ⌈ IV Smile
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        IV по страйкам
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="ivChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                ⚖️ Delta Profile
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        Направленность
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="deltaChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                🔥 GEX Profile
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        Гамма профиль
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="gexChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-box">
-            <div class="chart-title">
-                ⏱️ Theta Decay
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        Временной распад
-                    </span>
-                </span>
-            </div>
-            <div class="chart-wrapper">
-                <canvas id="thetaChart"></canvas>
-            </div>
+    <div class="analytics-card">
+        <div class="analytics-title">📅 Calendar</div>
+        <div id="calendar-list" style="margin-top: 10px; font-size: 0.75em;">
+            <div class="analytics-label">Загрузка...</div>
         </div>
     </div>
 
-    <div id="greeks" style="max-width: 1200px; margin: 0 auto 30px auto;">
-        <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px;">🎓 Greeks</h2>
-    
-        <div class="analytics-grid">
-            <div class="analytics-card">
-                <div class="analytics-title">⚖️ Delta Skew</div>
-                <div class="analytics-value" id="delta-skew-value">-</div>
-                <div class="analytics-label">Call - Put</div>
-            </div>
-        
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Δ Call Delta
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Сопротивление
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="total-call-delta">-</div>
-            </div>
+    <div class="analytics-card">
+        <div class="analytics-title">⚡ Zero Gamma</div>
+        <div class="analytics-value" id="zero-gamma-value">-</div>
+        <div class="analytics-label" id="zero-gamma-label">Загрузка...</div>
+    </div>
 
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Δ Put Delta
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Поддержка
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="total-put-delta">-</div>
-            </div>
+    <div class="analytics-card">
+        <div class="analytics-title">🌀 Vanna</div>
+        <div class="analytics-value" id="vanna-net">-</div>
+        <div class="analytics-label" id="vanna-label">Загрузка...</div>
+    </div>
 
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Γ Gamma
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Ускорение Delta
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="total-gamma">-</div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    ν Vega
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Волатильность
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="total-vega">-</div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Θ Theta
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Распад времени
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="total-theta">-</div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    📊 Avg IV
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Средняя IV
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="avg-iv">-</div>
-            </div>
-
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    ⏰ Auto Rotate
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Ротация данных
-                        </span>
-                    </span>
-                </div>
-                <div class="analytics-value" id="rotate-timer">60s</div>
-            </div>
+    <div class="analytics-card">
+        <div class="analytics-title">🧱 GEX Walls</div>
+        <div id="key-levels-display" style="margin-top: 10px;">
+            <div class="analytics-label">Загрузка...</div>
         </div>
-    </div>
-</section>
-
-<div class="control-panel">
-    <div class="expiry-toggle">
-        <span class="filter-label">Экспирация (авторотация):</span>
-        <div id="dynamicExpiryButtons" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
-    </div>
-
-    <div class="auto-rotate-info">
-        ⚙️ Данные автоматически обновляются каждую минуту • Текущий DTE: <span id="currentDTE" style="color: #4caf50;">LOADING...</span>
-    </div>
-
-    <div class="calculator-panel">
-        <label style="color:#fff; font-weight:bold;">Forward:</label>
-        <input type="number" id="forward-input" class="calc-input" placeholder="0" step="0.5" value="0">
-        
-        <label style="color:#fff; font-weight:bold;">Премии:</label>
-        <button class="premium-btn" id="premium-toggle">Вкл.</button>
-        <span style="color: #888; font-size: 0.85em;">(C+P, P-P)</span>
-    </div>
-
-    <div class="strike-filter">
-        <span class="filter-label">Страйков:</span>
-        <button class="filter-btn" data-count="50">50</button>
-        <button class="filter-btn active" data-count="75">75</button>
-        <button class="filter-btn" data-count="100">100</button>
-        <button class="filter-btn" data-count="125">125</button>
-        <button class="filter-btn" data-count="150">150</button>
     </div>
 </div>
 
+<div id="charts" class="charts-container">
+    <div class="chart-box">
+        <div class="chart-title">
+            📊 OI Distribution
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    Calls vs Puts
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="oiChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">
+            📈 Volume Heatmap
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    Зеленый/Красный
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="volumeChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">
+            ⚡ Gamma Exposure
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    Net Gamma
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="gammaChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">
+            🎯 Max Pain Curve
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    Loss Function
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="maxPainChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">
+            ⌈ IV Smile
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    IV по страйкам
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="ivChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">
+            ⚖️ Delta Profile
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    Направленность
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="deltaChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">
+            🔥 GEX Profile
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    Гамма профиль
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="gexChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <div class="chart-title">
+            ⏱️ Theta Decay
+            <span class="chart-help">❓
+                <span class="chart-annotation">
+                    Временной распад
+                </span>
+            </span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="thetaChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div id="greeks" style="max-width: 1200px; margin: 0 auto 30px auto;">
+    <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px;">🎓 Greeks</h2>
+
+    <div class="analytics-grid">
+        <div class="analytics-card">
+            <div class="analytics-title">⚖️ Delta Skew</div>
+            <div class="analytics-value" id="delta-skew-value">-</div>
+            <div class="analytics-label">Call - Put</div>
+        </div>
+    
+        <div class="analytics-card">
+            <div class="analytics-title">
+                Δ Call Delta
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        Сопротивление
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="total-call-delta">-</div>
+        </div>
+
+        <div class="analytics-card">
+            <div class="analytics-title">
+                Δ Put Delta
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        Поддержка
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="total-put-delta">-</div>
+        </div>
+
+        <div class="analytics-card">
+            <div class="analytics-title">
+                Γ Gamma
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        Ускорение Delta
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="total-gamma">-</div>
+        </div>
+
+        <div class="analytics-card">
+            <div class="analytics-title">
+                ν Vega
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        Волатильность
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="total-vega">-</div>
+        </div>
+
+        <div class="analytics-card">
+            <div class="analytics-title">
+                Θ Theta
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        Распад времени
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="total-theta">-</div>
+        </div>
+
+        <div class="analytics-card">
+            <div class="analytics-title">
+                📊 Avg IV
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        Средняя IV
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="avg-iv">-</div>
+        </div>
+
+        <div class="analytics-card">
+            <div class="analytics-title">
+                ⏰ Auto Rotate
+                <span class="analytics-help">❓
+                    <span class="analytics-annotation">
+                        Ротация данных
+                    </span>
+                </span>
+            </div>
+            <div class="analytics-value" id="rotate-timer">60s</div>
+        </div>
+    </div>
+</div>
+</section>
+<div class="control-panel">
+    <div class="expiry-toggle">
+        <span class="filter-label" style="color: #fff; font-weight: bold;">Экспирация (DTE):</span>
+        <div id="dynamicExpiryButtons" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
+    </div>
+<div class="auto-rotate-info">
+    ⚙️ Данные обновляются каждую минуту • Текущий DTE: <span id="currentDTE" style="color: #4caf50;">LOADING...</span>
+</div>
+
+<div class="calculator-panel">
+    <label style="color:#fff; font-weight:bold;">Forward:</label>
+    <input type="number" id="forward-input" class="calc-input" placeholder="0" step="0.5" value="0">
+    
+    <label style="color:#fff; font-weight:bold;">Премии:</label>
+    <button class="premium-btn" id="premium-toggle">Вкл.</button>
+    <span style="color: #888; font-size: 0.85em;">(C+P, P-P)</span>
+</div>
+
+<div class="strike-filter">
+    <span class="filter-label" style="color: #fff; font-weight: bold;">Страйков:</span>
+    <button class="filter-btn" data-count="50">50</button>
+    <button class="filter-btn active" data-count="75">75</button>
+    <button class="filter-btn" data-count="100">100</button>
+    <button class="filter-btn" data-count="125">125</button>
+    <button class="filter-btn" data-count="150">150</button>
+</div>
+</div>
 <div id="top5" class="top5-container">
     <div class="top5-box">
         <div class="top5-title">🟢 CALLS - ТОП-5</div>
@@ -1207,55 +1204,50 @@
             </div>
         </div>
     </div>
-
-    <div class="top5-box">
-        <div class="top5-title">🔴 PUTS - ТОП-5</div>
-        <div class="top5-grid">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div>
-                    <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По Vol</div>
-                    <div id="top5-put-vol"></div>
-                </div>
-                <div>
-                    <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По OI</div>
-                    <div id="top5-put-oi"></div>
-                </div>
+<div class="top5-box">
+    <div class="top5-title">🔴 PUTS - ТОП-5</div>
+    <div class="top5-grid">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+                <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По Vol</div>
+                <div id="top5-put-vol"></div>
+            </div>
+            <div>
+                <div style="color: #888; font-size: 0.85em; margin-bottom: 8px; text-align: center;">По OI</div>
+                <div id="top5-put-oi"></div>
             </div>
         </div>
     </div>
 </div>
-
+</div>
 <div class="levels-container">
     <div class="table-header-info">
         <span id="table-expiry-label">LOADING...</span>
         <span style="color:#888;">Full Analytics Active</span>
     </div>
-    
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th colspan="5" style="border-bottom: 2px solid var(--call-color);">CALLS</th>
-                    <th style="background:#222;"></th>
-                    <th colspan="5" style="border-bottom: 2px solid var(--put-color);">PUTS</th>
-                </tr>
-                <tr>
-                    <th>OI</th><th>Vol</th><th>Prem</th><th>Δ</th><th>Γ</th>
-                    <th style="background:#333; color:#fff;">STRIKE</th>
-                    <th>Γ</th><th>Δ</th><th>Prem</th><th>Vol</th><th>OI</th>
-                </tr>
-            </thead>
-            <tbody id="option-body">
-                <tr><td colspan="11" style="padding: 20px;">⏳ Загрузка...</td></tr>
-            </tbody>
-        </table>
-    </div>
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th colspan="5" style="border-bottom: 2px solid var(--call-color);">CALLS</th>
+                <th style="background:#222;"></th>
+                <th colspan="5" style="border-bottom: 2px solid var(--put-color);">PUTS</th>
+            </tr>
+            <tr>
+                <th>OI</th><th>Vol</th><th>Prem</th><th>Δ</th><th>Γ</th>
+                <th style="background:#333; color:#fff;">STRIKE</th>
+                <th>Γ</th><th>Δ</th><th>Prem</th><th>Vol</th><th>OI</th>
+            </tr>
+        </thead>
+        <tbody id="option-body">
+            <tr><td colspan="11" style="padding: 20px;">⏳ Загрузка...</td></tr>
+        </tbody>
+    </table>
 </div>
-
+</div>
 <footer>
     <p>&copy; 2025 Gold Options Pro Analytics. Все данные предоставляются "как есть".</p>
 </footer>
-
 <script>
     // ============================================================================
     // FIREBASE CONFIG
@@ -1277,19 +1269,19 @@
     // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
     // ============================================================================
     let allData = {};
-    let dteList = []; // Отсортированный список DTE
-    let currentDTEIndex = 0; // Индекс текущего DTE в списке
+    let dteList = [];
+    let currentDTEIndex = 0;
     let currentFuturesPrice = 2600;
     let cachedTableData = [];
     let forwardCorrection = 0;
     let displayStrikeCount = 75;
     let premiumEnabled = false;
-    let rotateInterval = 60000; // 60 секунд
-    let rotateTimer = null;
-    let rotateCountdown = 60;
 
     let oiChart, volumeChart, gammaChart, maxPainChart;
     let ivChart, deltaChart, gexChart, thetaChart;
+
+    let rotateTimer = null;
+    let rotateCountdown = 60;
 
     // ============================================================================
     // 🔥 WEBSOCKET
@@ -1306,7 +1298,9 @@
         ws.onopen = () => {
             console.log('✅ WebSocket подключен!');
             const warnEl = document.querySelector('.warning-block .warning-text');
-            warnEl.innerHTML = '<span style="color:#4caf50; font-weight:bold;">🟢 LIVE CONNECTION</span>';
+            if (warnEl) {
+                warnEl.innerHTML = '<span style="color:#4caf50; font-weight:bold;">🟢 LIVE CONNECTION</span>';
+            }
         };
         
         ws.onmessage = (event) => {
@@ -1334,7 +1328,7 @@
         };
         
         ws.onclose = () => {
-            console.warn('🔌 WS закрыт. Реконнект...');
+            console.warn('🔌 WS закрыт. Реконнект через 3 сек...');
             setTimeout(connectWebSocket, reconnectInterval);
         };
     }
@@ -1359,44 +1353,49 @@
     async function loadAvailableDTEs() {
         console.log('🔍 Ищем доступные DTE...');
         
-        const dteNodes = await db.ref().once('value');
-        const available = [];
+        try {
+            const dteNodes = await db.ref().once('value');
+            const available = [];
 
-        dteNodes.forEach((childSnapshot) => {
-            const dteKey = childSnapshot.key;
-            const data = childSnapshot.val();
+            dteNodes.forEach((childSnapshot) => {
+                const dteKey = childSnapshot.key;
+                const data = childSnapshot.val();
 
-            if (dteKey === 'admin' || dteKey === 'app_config') {
-                return;
-            }
-
-            if (data && (Array.isArray(data) || typeof data === 'object') && Object.keys(data).length > 0) {
-                const arr = Array.isArray(data) ? data : Object.values(data);
-                if (arr.length > 0) {
-                    available.push({ key: dteKey, data: arr });
-                    allData[dteKey] = arr;
-                    console.log(`✅ ${dteKey}: ${arr.length} страйков`);
+                if (dteKey === 'admin' || dteKey === 'app_config') {
+                    return;
                 }
+
+                if (data && (Array.isArray(data) || typeof data === 'object') && Object.keys(data).length > 0) {
+                    const arr = Array.isArray(data) ? data : Object.values(data);
+                    if (arr.length > 0) {
+                        available.push({ key: dteKey, data: arr });
+                        allData[dteKey] = arr;
+                        console.log(`✅ ${dteKey}: ${arr.length} страйков`);
+                    }
+                }
+            });
+
+            // Сортируем по числовому значению (0DTE, 1DTE, 2DTE)
+            dteList = available.sort((a, b) => {
+                const aNum = parseInt(a.key.match(/\d+/)?.[0] || 999);
+                const bNum = parseInt(b.key.match(/\d+/)?.[0] || 999);
+                return aNum - bNum;
+            });
+
+            console.log('📋 Список DTE:', dteList.map(d => d.key));
+
+            renderDynamicExpiryButtons();
+
+            if (dteList.length > 0) {
+                currentDTEIndex = 0;
+                loadDTE(0);
+                startAutoRotate();
+            } else {
+                document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="color:red;">❌ Нет данных в Firebase</td></tr>';
             }
-        });
-
-        // Сортируем по числовому значению (0DTE, 1DTE, 2DTE)
-        dteList = available.sort((a, b) => {
-            const aNum = parseInt(a.key.match(/\d+/)?.[0] || 999);
-            const bNum = parseInt(b.key.match(/\d+/)?.[0] || 999);
-            return aNum - bNum;
-        });
-
-        console.log('📋 Список DTE:', dteList.map(d => d.key));
-
-        renderDynamicExpiryButtons();
-
-        if (dteList.length > 0) {
-            currentDTEIndex = 0;
-            loadDTE(0);
-            startAutoRotate();
-        } else {
-            document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="color:red;">❌ Нет данных в Firebase</td></tr>';
+        } catch (error) {
+            console.error('❌ Ошибка при загрузке DTE:', error);
+            document.getElementById('option-body').innerHTML = '<tr><td colspan="11" style="color:red;">❌ Ошибка подключения</td></tr>';
         }
     }
 
@@ -1405,6 +1404,8 @@
     // ============================================================================
     function renderDynamicExpiryButtons() {
         const container = document.getElementById('dynamicExpiryButtons');
+        if (!container) return;
+        
         container.innerHTML = '';
 
         dteList.forEach((item, index) => {
@@ -1461,19 +1462,19 @@
             }
             loadDTE(currentDTEIndex);
             updateRotateTimer();
-        }, rotateInterval);
+        }, 60000); // 60 секунд
     }
 
     function updateRotateTimer() {
-        rotateCountdown = rotateInterval / 1000;
+        rotateCountdown = 60;
         const timerEl = document.getElementById('rotate-timer');
         
         const countdown = setInterval(() => {
-            rotateCountdown--;
             if (timerEl) {
                 timerEl.innerText = rotateCountdown + 's';
             }
-            if (rotateCountdown <= 0) {
+            rotateCountdown--;
+            if (rotateCountdown < 0) {
                 clearInterval(countdown);
             }
         }, 1000);
@@ -1637,76 +1638,101 @@
         document.getElementById('delta-skew-value').innerText = (sumCallDelta + sumPutDelta).toFixed(0);
 
         const atmRow = data.reduce((prev, curr) => 
-            Math.abs(parseFloat(curr.s) - currentFuturesPrice) < Math.abs(parseFloat(prev.s) - currentFuturesPrice) ? curr : prev
+            Math.abs(parseFloat(curr.s) - currentFuturesPrice) < Math.abs(parseThis response paused because Claude reached its max length for a message. Hit continue to nudge Claude along.ContinueFloat(prev.s) - currentFuturesPrice) ? curr : prev
 );
-const avgIV = ((atmRow.c?.iv || 0) + (atmRow.p?.iv || 0)) / 2;
-const expMove = currentFuturesPrice * (avgIV / 100) * Math.sqrt(1/365);
-        document.getElementById('exp-move-value').innerText = `±${expMove.toFixed(1)}`;
-        document.getElementById('exp-move-range').innerText = 
-            `${(currentFuturesPrice - expMove).toFixed(1)} - ${(currentFuturesPrice + expMove).toFixed(1)}`;
-        
-        document.getElementById('avg-iv').innerText = avgIV.toFixed(1) + '%';
-        
-        const callProb = Math.abs(atmRow.c?.d || 0.5) * 100;
-        const putProb = Math.abs(atmRow.p?.d || 0.5) * 100;
-        document.getElementById('prob-call').innerText = callProb.toFixed(0) + '%';
-        document.getElementById('prob-put').innerText = putProb.toFixed(0) + '%';
+    const avgIV = ((atmRow.c?.iv || 0) + (atmRow.p?.iv || 0)) / 2;
+    const expMove = currentFuturesPrice * (avgIV / 100) * Math.sqrt(1/365);
+    
+    document.getElementById('exp-move-value').innerText = `±${expMove.toFixed(1)}`;
+    document.getElementById('exp-move-range').innerText = 
+        `${(currentFuturesPrice - expMove).toFixed(1)} - ${(currentFuturesPrice + expMove).toFixed(1)}`;
+    
+    document.getElementById('avg-iv').innerText = avgIV.toFixed(1) + '%';
+    
+    const callProb = Math.abs(atmRow.c?.d || 0.5) * 100;
+    const putProb = Math.abs(atmRow.p?.d || 0.5) * 100;
+    document.getElementById('prob-call').innerText = callProb.toFixed(0) + '%';
+    document.getElementById('prob-put').innerText = putProb.toFixed(0) + '%';
+
+    // Дополнительные метрики (Color, Charm, Zero Gamma, Vanna)
+    document.getElementById('metric-color').innerText = (sumGamma * 0.001).toFixed(3);
+    document.getElementById('metric-charm').innerText = (sumTheta * 0.001).toFixed(3);
+
+    // Zero Gamma (середина между положительной и отрицательной гаммой)
+    let callGamma = 0, putGamma = 0;
+    data.forEach(row => {
+        callGamma += row.c?.g || 0;
+        putGamma += row.p?.g || 0;
+    });
+    const zeroGamma = currentFuturesPrice + ((callGamma - putGamma) / (callGamma + putGamma || 1)) * 10;
+    document.getElementById('zero-gamma-value').innerText = zeroGamma.toFixed(1);
+    document.getElementById('zero-gamma-label').innerText = 'Уровень';
+
+    // Vanna (Vega-Gamma interaction)
+    let vannaNet = 0;
+    data.forEach(row => {
+        vannaNet += (row.c?.v || 0) * (row.c?.g || 0) - (row.p?.v || 0) * (row.p?.g || 0);
+    });
+    document.getElementById('vanna-net').innerText = vannaNet.toFixed(2);
+    document.getElementById('vanna-label').innerText = 'Net Vanna';
+}
+
+// ============================================================================
+// 🔥 ТОП-5
+// ============================================================================
+function updateTop5(data) {
+    const sortedByCallOI = [...data].sort((a, b) => (b.c?.oi || 0) - (a.c?.oi || 0)).slice(0, 5);
+    const sortedByPutOI = [...data].sort((a, b) => (b.p?.oi || 0) - (a.p?.oi || 0)).slice(0, 5);
+    const sortedByCallVol = [...data].sort((a, b) => (b.c?.vol || 0) - (a.c?.vol || 0)).slice(0, 5);
+    const sortedByPutVol = [...data].sort((a, b) => (b.p?.vol || 0) - (a.p?.vol || 0)).slice(0, 5);
+
+    function renderList(items, type, metric) {
+        return items.map(item => `
+            <div class="top5-item ${type === 'call' ? 'call-item' : 'put-item'}">
+                <span class="top5-strike">${parseFloat(item.s).toFixed(1)}</span>
+                <span class="top5-value">${Math.round(type === 'call' ? item.c[metric] : item.p[metric])}</span>
+            </div>
+        `).join('');
     }
 
-    // ============================================================================
-    // 🔥 ТОП-5
-    // ============================================================================
-    function updateTop5(data) {
-        const sortedByCallOI = [...data].sort((a, b) => (b.c?.oi || 0) - (a.c?.oi || 0)).slice(0, 5);
-        const sortedByPutOI = [...data].sort((a, b) => (b.p?.oi || 0) - (a.p?.oi || 0)).slice(0, 5);
-        const sortedByCallVol = [...data].sort((a, b) => (b.c?.vol || 0) - (a.c?.vol || 0)).slice(0, 5);
-        const sortedByPutVol = [...data].sort((a, b) => (b.p?.vol || 0) - (a.p?.vol || 0)).slice(0, 5);
+    document.getElementById('top5-call-oi').innerHTML = renderList(sortedByCallOI, 'call', 'oi');
+    document.getElementById('top5-put-oi').innerHTML = renderList(sortedByPutOI, 'put', 'oi');
+    document.getElementById('top5-call-vol').innerHTML = renderList(sortedByCallVol, 'call', 'vol');
+    document.getElementById('top5-put-vol').innerHTML = renderList(sortedByPutVol, 'put', 'vol');
+}
 
-        function renderList(items, type, metric) {
-            return items.map(item => `
-                <div class="top5-item ${type === 'call' ? 'call-item' : 'put-item'}">
-                    <span class="top5-strike">${parseFloat(item.s).toFixed(1)}</span>
-                    <span class="top5-value">${Math.round(type === 'call' ? item.c[metric] : item.p[metric])}</span>
-                </div>
-            `).join('');
-        }
+// ============================================================================
+// 🔥 ГРАФИКИ
+// ============================================================================
+function createCharts(data) {
+    const centerPrice = currentFuturesPrice > 0 ? currentFuturesPrice : 2600;
+    const range = 100;
+    const filteredData = data.filter(r => Math.abs(parseFloat(r.s) - centerPrice) < range);
 
-        document.getElementById('top5-call-oi').innerHTML = renderList(sortedByCallOI, 'call', 'oi');
-        document.getElementById('top5-put-oi').innerHTML = renderList(sortedByPutOI, 'put', 'oi');
-        document.getElementById('top5-call-vol').innerHTML = renderList(sortedByCallVol, 'call', 'vol');
-        document.getElementById('top5-put-vol').innerHTML = renderList(sortedByPutVol, 'put', 'vol');
-    }
+    if (filteredData.length === 0) return;
 
-    // ============================================================================
-    // 🔥 ГРАФИКИ
-    // ============================================================================
-    function createCharts(data) {
-        const centerPrice = currentFuturesPrice > 0 ? currentFuturesPrice : 2600;
-        const range = 100;
-        const filteredData = data.filter(r => Math.abs(parseFloat(r.s) - centerPrice) < range);
+    const labels = filteredData.map(r => parseFloat(r.s).toFixed(1));
+    
+    const callOI = filteredData.map(r => r.c?.oi || 0);
+    const putOI = filteredData.map(r => r.p?.oi || 0);
+    const callVol = filteredData.map(r => r.c?.vol || 0);
+    const putVol = filteredData.map(r => r.p?.vol || 0);
+    const callIV = filteredData.map(r => r.c?.iv || 0);
+    const putIV = filteredData.map(r => r.p?.iv || 0);
+    const callDelta = filteredData.map(r => r.c?.d || 0);
+    const putDelta = filteredData.map(r => r.p?.d || 0);
+    const netGamma = filteredData.map(r => ((r.c?.g || 0) - (r.p?.g || 0)) * 1000);
+    const callTheta = filteredData.map(r => r.c?.t || 0);
+    const putTheta = filteredData.map(r => r.p?.t || 0);
 
-        if (filteredData.length === 0) return;
+    // Уничтожаем старые графики
+    [oiChart, volumeChart, gammaChart, maxPainChart, ivChart, deltaChart, gexChart, thetaChart]
+        .forEach(chart => { if (chart) chart.destroy(); });
 
-        const labels = filteredData.map(r => parseFloat(r.s).toFixed(1));
-        
-        const callOI = filteredData.map(r => r.c?.oi || 0);
-        const putOI = filteredData.map(r => r.p?.oi || 0);
-        const callVol = filteredData.map(r => r.c?.vol || 0);
-        const putVol = filteredData.map(r => r.p?.vol || 0);
-        const callIV = filteredData.map(r => r.c?.iv || 0);
-        const putIV = filteredData.map(r => r.p?.iv || 0);
-        const callDelta = filteredData.map(r => r.c?.d || 0);
-        const putDelta = filteredData.map(r => r.p?.d || 0);
-        const netGamma = filteredData.map(r => ((r.c?.g || 0) - (r.p?.g || 0)) * 1000);
-        const callTheta = filteredData.map(r => r.c?.t || 0);
-        const putTheta = filteredData.map(r => r.p?.t || 0);
-
-        [oiChart, volumeChart, gammaChart, maxPainChart, ivChart, deltaChart, gexChart, thetaChart]
-            .forEach(chart => { if (chart) chart.destroy(); });
-
-        // 1. OI Chart
-        {
-            const ctx = document.getElementById('oiChart').getContext('2d');
+    // 1. OI Chart
+    {
+        const ctx = document.getElementById('oiChart')?.getContext('2d');
+        if (ctx) {
             oiChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1727,10 +1753,12 @@ const expMove = currentFuturesPrice * (avgIV / 100) * Math.sqrt(1/365);
                 }
             });
         }
+    }
 
-        // 2. Volume Chart
-        {
-            const ctx = document.getElementById('volumeChart').getContext('2d');
+    // 2. Volume Chart
+    {
+        const ctx = document.getElementById('volumeChart')?.getContext('2d');
+        if (ctx) {
             volumeChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1751,10 +1779,12 @@ const expMove = currentFuturesPrice * (avgIV / 100) * Math.sqrt(1/365);
                 }
             });
         }
+    }
 
-        // 3. Gamma Chart
-        {
-            const ctx = document.getElementById('gammaChart').getContext('2d');
+    // 3. Gamma Chart
+    {
+        const ctx = document.getElementById('gammaChart')?.getContext('2d');
+        if (ctx) {
             gammaChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1776,10 +1806,12 @@ const expMove = currentFuturesPrice * (avgIV / 100) * Math.sqrt(1/365);
                 }
             });
         }
+    }
 
-        // 4. Max Pain
-        {
-            const ctx = document.getElementById('maxPainChart').getContext('2d');
+    // 4. Max Pain
+    {
+        const ctx = document.getElementById('maxPainChart')?.getContext('2d');
+        if (ctx) {
             const strikes = labels.map(l => parseFloat(l));
             const losses = strikes.map(strike => {
                 let loss = 0;
@@ -1815,10 +1847,12 @@ const expMove = currentFuturesPrice * (avgIV / 100) * Math.sqrt(1/365);
                 }
             });
         }
+    }
 
-        // 5. IV Smile
-        {
-            const ctx = document.getElementById('ivChart').getContext('2d');
+    // 5. IV Smile
+    {
+        const ctx = document.getElementById('ivChart')?.getContext('2d');
+        if (ctx) {
             ivChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1839,10 +1873,12 @@ const expMove = currentFuturesPrice * (avgIV / 100) * Math.sqrt(1/365);
                 }
             });
         }
+    }
 
-        // 6. Delta
-        {
-            const ctx = document.getElementById('deltaChart').getContext('2d');
+    // 6. Delta
+    {
+        const ctx = document.getElementById('deltaChart')?.getContext('2d');
+        if (ctx) {
             deltaChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1863,10 +1899,12 @@ const expMove = currentFuturesPrice * (avgIV / 100) * Math.sqrt(1/365);
                 }
             });
         }
+    }
 
-        // 7. GEX
-        {
-            const ctx = document.getElementById('gexChart').getContext('2d');
+    // 7. GEX
+    {
+        const ctx = document.getElementById('gexChart')?.getContext('2d');
+        if (ctx) {
             gexChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1888,10 +1926,12 @@ const expMove = currentFuturesPrice * (avgIV / 100) * Math.sqrt(1/365);
                 }
             });
         }
+    }
 
-        // 8. Theta
-        {
-            const ctx = document.getElementById('thetaChart').getContext('2d');
+    // 8. Theta
+    {
+        const ctx = document.getElementById('thetaChart')?.getContext('2d');
+        if (ctx) {
             thetaChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1913,46 +1953,50 @@ const expMove = currentFuturesPrice * (avgIV / 100) * Math.sqrt(1/365);
             });
         }
     }
+}
 
-    // ============================================================================
-    // 🎛️ EVENT LISTENERS
-    // ============================================================================
+// ============================================================================
+// 🎛️ EVENT LISTENERS
+// ============================================================================
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        displayStrikeCount = parseInt(e.target.dataset.count);
+        if (cachedTableData.length > 0) renderTable(cachedTableData);
+    });
+});
+
+document.getElementById('forward-input')?.addEventListener('change', (e) => {
+    forwardCorrection = parseFloat(e.target.value) || 0;
+    if (cachedTableData.length > 0) renderTable(cachedTableData);
+});
+
+document.getElementById('premium-toggle')?.addEventListener('click', (e) => {
+    premiumEnabled = !premiumEnabled;
+    e.target.classList.toggle('active');
+    e.target.innerText = premiumEnabled ? 'Откл.' : 'Вкл.';
+    if (cachedTableData.length > 0) renderTable(cachedTableData);
+});
+
+// ============================================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================================================
+window.addEventListener('load', () => {
+    console.log('🚀 Инициализация приложения...');
+    loadAvailableDTEs();
+    connectWebSocket();
     
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            displayStrikeCount = parseInt(e.target.dataset.count);
-            if (cachedTableData.length > 0) renderTable(cachedTableData);
-        });
-    });
-
-    document.getElementById('forward-input').addEventListener('change', (e) => {
-        forwardCorrection = parseFloat(e.target.value) || 0;
-        if (cachedTableData.length > 0) renderTable(cachedTableData);
-    });
-
-    document.getElementById('premium-toggle').addEventListener('click', (e) => {
-        premiumEnabled = !premiumEnabled;
-        e.target.classList.toggle('active');
-        e.target.innerText = premiumEnabled ? 'Откл.' : 'Вкл.';
-        if (cachedTableData.length > 0) renderTable(cachedTableData);
-    });
-
-    // ============================================================================
-    // ИНИЦИАЛИЗАЦИЯ
-    // ============================================================================
-    window.addEventListener('load', () => {
-        loadAvailableDTEs();
-        connectWebSocket();
-        
-        document.getElementById('calendar-list').innerHTML = `
+    const calendarEl = document.getElementById('calendar-list');
+    if (calendarEl) {
+        calendarEl.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:3px; font-size:0.7em;">
                 <span>🇺🇸 GDP</span> <span style="color:var(--accent-gold)">15:30</span>
             </div>
         `;
-    });
-
+    }
+});
 </script>
 </body>
 </html>
