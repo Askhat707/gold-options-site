@@ -56,8 +56,6 @@
             border-color: var(--accent-gold) transparent transparent transparent;
         }
         
-        .chart-annotation strong, .analytics-annotation strong { color: var(--accent-gold); font-weight: bold; }
-
         .chart-help:hover .chart-annotation, 
         .analytics-help:hover .analytics-annotation {
             visibility: visible; opacity: 1; bottom: 125%;
@@ -156,6 +154,11 @@
         .val-7 { background: #b71c1c; color: #fff; font-weight: bold; padding: 4px; border-radius: 4px; }
 
         footer { background: #111; padding: 20px; text-align: center; color: #666; font-size: 0.8em; }
+
+        .expiry-buttons { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .expiry-button { background: #333; color: #aaa; border: 1px solid #555; padding: 10px 20px; border-radius: 5px; transition: all 0.3s; }
+        .expiry-button:hover { background: #444; }
+        .expiry-button.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); font-weight: bold; }
 
         @media (max-width: 768px) {
             .menu { display: none; }
@@ -401,7 +404,7 @@
 
             <div class="chart-box">
                 <div class="chart-title">
-                    🌈 IV Smile
+                    ⌈ IV Smile
                     <span class="chart-help">❓
                         <span class="chart-annotation">
                             <strong>Как читать:</strong> "Улыбка" = рынок ждет сильное движение.
@@ -433,67 +436,68 @@
                     <span class="chart-help">❓
                         <span class="chart-annotation">
                             <strong>Как читать:</strong> Зеленые столбцы = сопротивление. Красные = поддержка.
-</span>
-</span>
-</div>
-<div class="chart-wrapper">
-<canvas id="gexChart"></canvas>
-</div>
-</div>
-        <div class="chart-box">
-            <div class="chart-title">
-                ⏱️ Theta Decay
-                <span class="chart-help">❓
-                    <span class="chart-annotation">
-                        <strong>Как читать:</strong> Theta = временной распад опционов.
+                        </span>
                     </span>
-                </span>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="gexChart"></canvas>
+                </div>
             </div>
-            <div class="chart-wrapper">
-                <canvas id="thetaChart"></canvas>
+
+            <div class="chart-box">
+                <div class="chart-title">
+                    ⏱️ Theta Decay
+                    <span class="chart-help">❓
+                        <span class="chart-annotation">
+                            <strong>Как читать:</strong> Theta = временной распад опционов.
+                        </span>
+                    </span>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="thetaChart"></canvas>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="greeks" style="max-width: 1200px; margin: 0 auto 30px auto;">
-        <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px;">🎓 Greeks Analytics</h2>
+        <div id="greeks" style="max-width: 1200px; margin: 0 auto 30px auto;">
+            <h2 style="text-align: center; color: var(--accent-gold); margin-bottom: 20px;">🎓 Greeks Analytics</h2>
         
-        <div class="analytics-grid">
-            <div class="analytics-card">
-                <div class="analytics-title">⚖️ Delta Skew</div>
-                <div class="analytics-value" id="delta-skew-value">-</div>
-                <div class="analytics-label">Call Delta - Put Delta</div>
-            </div>
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="analytics-title">⚖️ Delta Skew</div>
+                    <div class="analytics-value" id="delta-skew-value">-</div>
+                    <div class="analytics-label">Call Delta - Put Delta</div>
+                </div>
             
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Δ Total Call Delta
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Delta Коллов — это совокупное сопротивление.
+                <div class="analytics-card">
+                    <div class="analytics-title">
+                        Δ Total Call Delta
+                        <span class="analytics-help">❓
+                            <span class="analytics-annotation">
+                                Delta Коллов — это совокупное сопротивление.
+                            </span>
                         </span>
-                    </span>
+                    </div>
+                    <div class="analytics-value" id="total-call-delta">-</div>
                 </div>
-                <div class="analytics-value" id="total-call-delta">-</div>
-            </div>
 
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Δ Total Put Delta
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
-                            Delta Путов — это совокупная поддержка.
+                <div class="analytics-card">
+                    <div class="analytics-title">
+                        Δ Total Put Delta
+                        <span class="analytics-help">❓
+                            <span class="analytics-annotation">
+                                Delta Путов — это совокупная поддержка.
+                            </span>
                         </span>
-                    </span>
+                    </div>
+                    <div class="analytics-value" id="total-put-delta">-</div>
                 </div>
-                <div class="analytics-value" id="total-put-delta">-</div>
-            </div>
 
-            <div class="analytics-card">
-                <div class="analytics-title">
-                    Γ Total Gamma
-                    <span class="analytics-help">❓
-                        <span class="analytics-annotation">
+                <div class="analytics-card">
+                    <div class="analytics-title">
+                        Γ Total Gamma
+                        <span class="analytics-help
+                                                <span class="analytics-annotation">
                             Gamma = ускорение Delta. Высокая Gamma = резкие движения цены.
                         </span>
                     </span>
@@ -625,1026 +629,1062 @@
             </table>
         </div>
     </div>
-</section>
 
-<footer>
-    <p>&copy; 2025 Gold Options Pro Analytics. Все данные предоставляются "как есть" без гарантий.</p>
-</footer>
+    <div class="expiry-buttons">
+        <button class="expiry-button" data-expiry="0dte" onclick="switchExpiry('0dte')">INTRADAY</button>
+        <button class="expiry-button" data-expiry="1dte" onclick="switchExpiry('1dte')">1D</button>
+        <button class="expiry-button" data-expiry="2dte" onclick="switchExpiry('2dte')">2D</button>
+        <button class="expiry-button" data-expiry="3dte" onclick="switchExpiry('3dte')">3D</button>
+        <button class="expiry-button" data-expiry="4dte" onclick="switchExpiry('4dte')">4D</button>
+        <button class="expiry-button" data-expiry="5dte" onclick="switchExpiry('5dte')">5D</button>
+        <button class="expiry-button" data-expiry="6dte" onclick="switchExpiry('6dte')">6D</button>
+        <button class="expiry-button" data-expiry="7dte" onclick="switchExpiry('7dte')">7D</button>
+        <button class="expiry-button" data-expiry="8dte" onclick="switchExpiry('8dte')">8D</button>
+        <button class="expiry-button" data-expiry="9dte" onclick="switchExpiry('9dte')">9D</button>
+        <button class="expiry-button" data-expiry="10dte" onclick="switchExpiry('10dte')">10D</button>
+        <button class="expiry-button" data-expiry="11dte" onclick="switchExpiry('11dte')">11D</button>
+        <button class="expiry-button" data-expiry="12dte" onclick="switchExpiry('12dte')">12D</button>
+        <button class="expiry-button" data-expiry="13dte" onclick="switchExpiry('13dte')">13D</button>
+        <button class="expiry-button" data-expiry="14dte" onclick="switchExpiry('14dte')">14D</button>
+        <button class="expiry-button" data-expiry="15dte" onclick="switchExpiry('15dte')">15D</button>
+        <button class="expiry-button" data-expiry="16dte" onclick="switchExpiry('16dte')">16D</button>
+        <button class="expiry-button" data-expiry="17dte" onclick="switchExpiry('17dte')">17D</button>
+        <button class="expiry-button" data-expiry="18dte" onclick="switchExpiry('18dte')">18D</button>
+        <button class="expiry-button" data-expiry="19dte" onclick="switchExpiry('19dte')">19D</button>
+        <button class="expiry-button" data-expiry="20dte" onclick="switchExpiry('20dte')">20D</button>
+        <button class="expiry-button" data-expiry="21dte" onclick="switchExpiry('21dte')">21D</button>
+        <button class="expiry-button" data-expiry="22dte" onclick="switchExpiry('22dte')">22D</button>
+        <button class="expiry-button" data-expiry="23dte" onclick="switchExpiry('23dte')">23D</button>
+        <button class="expiry-button" data-expiry="24dte" onclick="switchExpiry('24dte')">24D</button>
+        <button class="expiry-button" data-expiry="25dte" onclick="switchExpiry('25dte')">25D</button>
+        <button class="expiry-button" data-expiry="26dte" onclick="switchExpiry('26dte')">26D</button>
+        <button class="expiry-button" data-expiry="27dte" onclick="switchExpiry('27dte')">27D</button>
+        <button class="expiry-button" data-expiry="28dte" onclick="switchExpiry('28dte')">28D</button>
+        <button class="expiry-button" data-expiry="29dte" onclick="switchExpiry('29dte')">29D</button>
+        <button class="expiry-button" data-expiry="30dte" onclick="switchExpiry('30dte')">30D</button>
+    </div>
 
-<script>
-    const DB_ROOT = "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app";
-    
-    let currentFuturesPrice = 0;
-    let cachedTableData = []; 
-    let forwardCorrection = 0;
-    let displayStrikeCount = 75;
-    let currentExpiry = '0dte';
-    let premiumEnabled = false;
+    <footer>
+        <p>&copy; 2025 Gold Options Pro Analytics. Все данные предоставляются "как есть" без гарантий.</p>
+    </footer>
 
-    let oiChart, volumeChart, gammaChart, maxPainChart;
-    let ivChart, deltaChart, gexChart, thetaChart;
-    
-    // ==========================================================================
-    // 🔥 WEBSOCKET
-    // ==========================================================================
-    let ws;
-    let reconnectInterval = 3000;
-    
-    function connectWebSocket() {
-    const wsUrl = "wss://askhat777-gold-relay.hf.space/ws";
-    console.log(`🔌 Подключение к: ${wsUrl}`);
-    
-    ws = new WebSocket(wsUrl);
-    
-    ws.onopen = () => {
-        console.log('✅ WebSocket подключен!');
+    <script>
+        const DB_ROOT = "https://cmeparser-default-rtdb.europe-west1.firebasedatabase.app";
         
-        // 🔥 НЕ НУЖНО ОТПРАВЛЯТЬ AUTH ДЛЯ КЛИЕНТА (САЙТА)
-        // Парсер отправляет auth, сайт просто слушает
+        let currentFuturesPrice = 0;
+        let cachedTableData = []; 
+        let forwardCorrection = 0;
+        let displayStrikeCount = 75;
+        let currentExpiry = '0dte';
+        let premiumEnabled = false;
+
+        let oiChart, volumeChart, gammaChart, maxPainChart;
+        let ivChart, deltaChart, gexChart, thetaChart;
         
-        const updateEl = document.getElementById('updated-time');
-        if(updateEl) {
-            updateEl.innerHTML = '<span style="color:#4caf50">● ONLINE</span>';
-        }
+        // ==========================================================================
+        // 🔥 WEBSOCKET
+        // ==========================================================================
+        let ws;
+        let reconnectInterval = 3000;
         
-        const warnEl = document.querySelector('.warning-block .warning-text');
-        warnEl.innerHTML = '<span style="color:#4caf50; font-weight:bold;">🟢 LIVE CONNECTION</span>';
-    };
-        
-        ws.onmessage = (event) => {
-    try {
-        const msg = JSON.parse(event.data);
-        console.log('📩 WS получено:', msg.type); // 🔥 ДЕБАГ
-        
-        // 🔥 ЦЕНА
-        if (msg.type === 'price') {
-            currentFuturesPrice = parseFloat(msg.data.price);
+        function connectWebSocket() {
+            const wsUrl = "wss://askhat777-gold-relay.hf.space/ws";
+            console.log(`🔌 Подключение к: ${wsUrl}`);
             
-            const priceEl = document.getElementById('futures-price');
-            if (priceEl) {
-                priceEl.innerText = '$' + msg.data.price.toFixed(1);
-                priceEl.style.color = '#fff';
-                setTimeout(() => priceEl.style.color = 'var(--accent-gold)', 200);
-            }
+            ws = new WebSocket(wsUrl);
             
-            console.log('✅ Цена обновлена:', currentFuturesPrice); // 🔥 ДЕБАГ
+            ws.onopen = () => {
+                console.log('✅ WebSocket подключен!');
+                
+                const updateEl = document.getElementById('updated-time');
+                if(updateEl) {
+                    updateEl.innerHTML = '<span style="color:#4caf50">● ONLINE</span>';
+                }
+                
+                const warnEl = document.querySelector('.warning-block .warning-text');
+                warnEl.innerHTML = '<span style="color:#4caf50; font-weight:bold;">🟢 LIVE CONNECTION</span>';
+            };
+            
+            ws.onmessage = (event) => {
+                try {
+                    const msg = JSON.parse(event.data);
+                    console.log('📩 WS получено:', msg.type); // 🔥 ДЕБАГ
+                    
+                    // 🔥 ЦЕНА
+                    if (msg.type === 'price') {
+                        currentFuturesPrice = parseFloat(msg.data.price);
+                        
+                        const priceEl = document.getElementById('futures-price');
+                        if (priceEl) {
+                            priceEl.innerText = '$' + msg.data.price.toFixed(1);
+                            priceEl.style.color = '#fff';
+                            setTimeout(() => priceEl.style.color = 'var(--accent-gold)', 200);
+                        }
+                        
+                        console.log('✅ Цена обновлена:', currentFuturesPrice); // 🔥 ДЕБАГ
 
-            // Перерисовка таблицы
-            if (cachedTableData && cachedTableData.length > 0) {
-                renderTable(cachedTableData);
-            }
-        }
-        
-        // 🔥 АНАЛИТИКА
-        if (msg.type === 'analytics') {
-            console.log('📊 Analytics данные:', msg.data); // 🔥 ДЕБАГ
-            updateAnalytics(msg.data);
-        }
-
-    } catch (e) {
-        console.error("❌ Ошибка парсинга WS:", e, event.data);
-    }
-};
-        
-        ws.onerror = (error) => {
-            console.error('❌ WS ошибка:', error);
-            const updateEl = document.getElementById('updated-time');
-            if(updateEl) updateEl.innerHTML = '<span style="color:#f44336">● ERROR</span>';
-        };
-        
-        ws.onclose = () => {
-            console.warn('🔌 WS закрыт. Реконнект...');
-            const updateEl = document.getElementById('updated-time');
-            if(updateEl) updateEl.innerHTML = '<span style="color:#ff9800">● RECONNECTING...</span>';
-            setTimeout(connectWebSocket, reconnectInterval);
-        };
-    }
-
-    // ==========================================================================
-    // HELPERS
-    // ==========================================================================
-    function getValueClass(value) {
-        if (value === 0) return 'val-0';
-        if (value < 50) return 'val-1';
-        if (value < 100) return 'val-2';
-        if (value < 500) return 'val-3';
-        if (value < 1000) return 'val-4';
-        if (value < 2000) return 'val-5';
-        if (value < 5000) return 'val-6';
-        return 'val-7';
-    }
-
-    // ==========================================================================
-    // 🔥 ГРАФИКИ С ЦЕНТРАЛЬНОЙ НУЛЕВОЙ ЛИНИЕЙ
-    // ==========================================================================
-    function createCharts(data) {
-    const strikes = data.map(r => r.strike);
-    const callOI = data.map(r => r.call?.oi || 0);
-    const putOI = data.map(r => r.put?.oi || 0);
-    const callVol = data.map(r => r.call?.vol || 0);
-    const putVol = data.map(r => r.put?.vol || 0);
-
-    // 🔥 НАХОДИМ МАКСИМУМ ДЛЯ СИММЕТРИЧНОЙ ШКАЛЫ
-    const maxOI = Math.max(...callOI, ...putOI);
-    const maxVol = Math.max(...callVol, ...putVol);
-
-    // 1. OI Distribution - ПУТЫ ВНИЗ, КОЛЛЫ ВВЕРХ
-    if (oiChart) oiChart.destroy();
-    const ctxOI = document.getElementById('oiChart').getContext('2d');
-    oiChart = new Chart(ctxOI, {
-        type: 'bar',
-        data: {
-            labels: strikes,
-            datasets: [{
-                label: 'Call OI',
-                data: callOI,
-                backgroundColor: 'rgba(33, 150, 243, 0.8)',
-                borderWidth: 0
-            }, {
-                label: 'Put OI',
-                data: putOI.map(v => -v), // 🔥 ПУТЫ ВНИЗ
-                backgroundColor: 'rgba(255, 152, 0, 0.8)',
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: { 
-                legend: { labels: { color: '#fff' } },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const rawIndex = context.dataIndex;
-                            const rawValue = context.datasetIndex === 0 ? callOI[rawIndex] : putOI[rawIndex];
-                            return `${context.dataset.label}: ${Math.round(rawValue)}`;
+                        // Перерисовка таблицы
+                        if (cachedTableData && cachedTableData.length > 0) {
+                            renderTable(cachedTableData);
                         }
                     }
+                    
+                    // 🔥 АНАЛИТИКА
+                    if (msg.type === 'analytics') {
+                        console.log('📊 Analytics данные:', msg.data); // 🔥 ДЕБАГ
+                        updateAnalytics(msg.data);
+                    }
+
+                } catch (e) {
+                    console.error("❌ Ошибка парсинга WS:", e, event.data);
                 }
-            },
-            scales: {
-                x: { 
-                    ticks: { color: '#888', maxRotation: 45, autoSkip: true, maxTicksLimit: 15 }, 
-                    grid: { color: '#333', drawBorder: false }
+            };
+            
+            ws.onerror = (error) => {
+                console.error('❌ WS ошибка:', error);
+                const updateEl = document.getElementById('updated-time');
+                if(updateEl) updateEl.innerHTML = '<span style="color:#f44336">● ERROR</span>';
+            };
+            
+            ws.onclose = () => {
+                console.warn('🔌 WS закрыт. Реконнект...');
+                const updateEl = document.getElementById('updated-time');
+                if(updateEl) updateEl.innerHTML = '<span style="color:#ff9800">● RECONNECTING...</span>';
+                setTimeout(connectWebSocket, reconnectInterval);
+            };
+        }
+
+        // ==========================================================================
+        // HELPERS
+        // ==========================================================================
+        function getValueClass(value) {
+            if (value === 0) return 'val-0';
+            if (value < 50) return 'val-1';
+            if (value < 100) return 'val-2';
+            if (value < 500) return 'val-3';
+            if (value < 1000) return 'val-4';
+            if (value < 2000) return 'val-5';
+            if (value < 5000) return 'val-6';
+            return 'val-7';
+        }
+
+        // ==========================================================================
+        // 🔥 ГРАФИКИ С ЦЕНТРАЛЬНОЙ НУЛЕВОЙ ЛИНИЕЙ
+        // ==========================================================================
+        function createCharts(data) {
+            const strikes = data.map(r => r.strike);
+            const callOI = data.map(r => r.call?.oi || 0);
+            const putOI = data.map(r => r.put?.oi || 0);
+            const callVol = data.map(r => r.call?.vol || 0);
+            const putVol = data.map(r => r.put?.vol || 0);
+
+            // 🔥 НАХОДИМ МАКСИМУМ ДЛЯ СИММЕТРИЧНОЙ ШКАЛЫ
+            const maxOI = Math.max(...callOI, ...putOI);
+            const maxVol = Math.max(...callVol, ...putVol);
+
+            // 1. OI Distribution - ПУТЫ ВНИЗ, КОЛЛЫ ВВЕРХ
+            if (oiChart) oiChart.destroy();
+            const ctxOI = document.getElementById('oiChart').getContext('2d');
+            oiChart = new Chart(ctxOI, {
+                type: 'bar',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call OI',
+                        data: callOI,
+                        backgroundColor: 'rgba(33, 150, 243, 0.8)',
+                        borderWidth: 0
+                    }, {
+                        label: 'Put OI',
+                        data: putOI.map(v => -v), // 🔥 ПУТЫ ВНИЗ
+                        backgroundColor: 'rgba(255, 152, 0, 0.8)',
+                        borderWidth: 0
+                    }]
                 },
-                y: { 
-                    min: -maxOI,  // 🔥 СИММЕТРИЧНАЯ ШКАЛА
-                    max: maxOI,
-                    ticks: { 
-                        color: '#888',
-                        callback: function(value) {
-                            return Math.abs(value); // Показываем положительные числа
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { 
+                        legend: { labels: { color: '#fff' } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const rawIndex = context.dataIndex;
+                                    const rawValue = context.datasetIndex === 0 ? callOI[rawIndex] : putOI[rawIndex];
+                                    return `${context.dataset.label}: ${Math.round(rawValue)}`;
+                                }
+                            }
                         }
-                    }, 
-                    grid: { 
-                        color: function(context) {
-                            return context.tick.value === 0 ? '#FFD700' : '#333'; // 🔥 ЗОЛОТАЯ ЛИНИЯ ПО ЦЕНТРУ
+                    },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#888', maxRotation: 45, autoSkip: true, maxTicksLimit: 15 }, 
+                            grid: { color: '#333', drawBorder: false }
                         },
-                        lineWidth: function(context) {
-                            return context.tick.value === 0 ? 3 : 1;
-                        },
-                        drawBorder: false
-                    }
-                }
-            }
-        }
-    });
-
-    // 2. Volume Heatmap - ПУТЫ ВНИЗ, КОЛЛЫ ВВЕРХ
-    if (volumeChart) volumeChart.destroy();
-    const ctxVol = document.getElementById('volumeChart').getContext('2d');
-    volumeChart = new Chart(ctxVol, {
-        type: 'bar',
-        data: {
-            labels: strikes,
-            datasets: [{
-                label: 'Call Vol',
-                data: callVol,
-                backgroundColor: 'rgba(76, 175, 80, 0.7)',
-                borderWidth: 0
-            }, {
-                label: 'Put Vol',
-                data: putVol.map(v => -v), // 🔥 ПУТЫ ВНИЗ
-                backgroundColor: 'rgba(244, 67, 54, 0.7)',
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: { 
-                legend: { labels: { color: '#fff' } },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const rawIndex = context.dataIndex;
-                            const rawValue = context.datasetIndex === 0 ? callVol[rawIndex] : putVol[rawIndex];
-                            return `${context.dataset.label}: ${Math.round(rawValue)}`;
+                        y: { 
+                            min: -maxOI,  // 🔥 СИММЕТРИЧНАЯ ШКАЛА
+                            max: maxOI,
+                            ticks: { 
+                                color: '#888',
+                                callback: function(value) {
+                                    return Math.abs(value); // Показываем положительные числа
+                                }
+                            }, 
+                            grid: { 
+                                color: function(context) {
+                                    return context.tick.value === 0 ? '#FFD700' : '#333'; // 🔥 ЗОЛОТАЯ ЛИНИЯ ПО ЦЕНТРУ
+                                },
+                                lineWidth: function(context) {
+                                    return context.tick.value === 0 ? 3 : 1;
+                                },
+                                drawBorder: false
+                            }
                         }
                     }
-                }
-            },
-            scales: {
-                x: { 
-                    ticks: { color: '#888', maxRotation: 45, autoSkip: true, maxTicksLimit: 15 }, 
-                    grid: { color: '#333', drawBorder: false }
-                },
-                y: { 
-                    min: -maxVol,  // 🔥 СИММЕТРИЧНАЯ ШКАЛА
-                    max: maxVol,
-                    ticks: { 
-                        color: '#888',
-                        callback: function(value) {
-                            return Math.abs(value);
-                        }
-                    }, 
-                    grid: { 
-                        color: function(context) {
-                            return context.tick.value === 0 ? '#FFD700' : '#333'; // 🔥 ЗОЛОТАЯ ЛИНИЯ
-                        },
-                        lineWidth: function(context) {
-                            return context.tick.value === 0 ? 3 : 1;
-                        },
-                        drawBorder: false
-                    }
-                }
-            }
-        }
-    });
-
-    // 3. Gamma Exposure (остается БЕЗ ИЗМЕНЕНИЙ)
-    const gammaData = data.map(r => {
-        const strike = parseFloat(r.strike);
-        const callGamma = r.call?.gamma || 0;
-        const putGamma = r.put?.gamma || 0;
-        const callOI = r.call?.oi || 0;
-        const putOI = r.put?.oi || 0;
-        return ((callOI * callGamma) - (putOI * putGamma)) * strike * 100 / 1000000;
-    });
-
-    if (gammaChart) gammaChart.destroy();
-    const ctxGamma = document.getElementById('gammaChart').getContext('2d');
-    gammaChart = new Chart(ctxGamma, {
-        type: 'line',
-        data: {
-            labels: strikes,
-            datasets: [{
-                label: 'Gamma Exposure (M)',
-                data: gammaData,
-                backgroundColor: 'rgba(255, 215, 0, 0.2)',
-                borderColor: 'rgba(255, 215, 0, 1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { 
-                legend: { labels: { color: '#fff' } }
-            },
-            scales: {
-                x: { ticks: { color: '#888' }, grid: { color: '#333' } },
-                y: { 
-                    ticks: { color: '#888' }, 
-                    grid: { 
-                        color: function(context) {
-                            return context.tick.value === 0 ? '#FFD700' : '#333';
-                        },
-                        lineWidth: function(context) {
-                            return context.tick.value === 0 ? 3 : 1;
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-        // 4. Max Pain
-        const maxPainData = strikes.map(testStrike => {
-            let totalLoss = 0;
-            data.forEach(s => {
-                const strike = parseFloat(s.strike);
-                const callOI = s.call?.oi || 0;
-                const putOI = s.put?.oi || 0;
-                if (testStrike > strike) {
-                    totalLoss += (testStrike - strike) * callOI * 100;
-                }
-                if (testStrike < strike) {
-                    totalLoss += (strike - testStrike) * putOI * 100;
                 }
             });
-            return totalLoss / 1000000;
-        });
 
-        if (maxPainChart) maxPainChart.destroy();
-        const ctxMaxPain = document.getElementById('maxPainChart').getContext('2d');
-        maxPainChart = new Chart(ctxMaxPain, {
-            type: 'line',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Total Loss (M)',
-                    data: maxPainData,
-                    backgroundColor: 'rgba(183, 28, 28, 0.2)',
-                    borderColor: 'rgba(183, 28, 28, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888' }, grid: { color: '#333' } },
-                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
-                }
-            }
-        });
-
-        // 5. IV Smile
-        const callIV = data.map(r => r.call?.iv || 0);
-        const putIV = data.map(r => r.put?.iv || 0);
-
-        if (ivChart) ivChart.destroy();
-        const ctxIV = document.getElementById('ivChart').getContext('2d');
-        ivChart = new Chart(ctxIV, {
-            type: 'line',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Call IV',
-                    data: callIV,
-                    borderColor: '#2196F3',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.4,
-                    pointRadius: 0
-                }, {
-                    label: 'Put IV',
-                    data: putIV,
-                    borderColor: '#f44336',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888' }, grid: { color: '#333' } },
-                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
-                }
-            }
-        });
-
-        // 6. Delta Profile - ПУТЫ ВНИЗ
-        const callDelta = data.map(r => (r.call?.delta || 0) * (r.call?.oi || 0) / 1000);
-        const putDelta = data.map(r => Math.abs(r.put?.delta || 0) * (r.put?.oi || 0) / 1000);
-
-        if (deltaChart) deltaChart.destroy();
-        const ctxDelta = document.getElementById('deltaChart').getContext('2d');
-        deltaChart = new Chart(ctxDelta, {
-            type: 'bar',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Call Delta',
-                    data: callDelta,
-                    backgroundColor: 'rgba(76, 175, 80, 0.7)',
-                    borderWidth: 0
-                }, {
-                    label: 'Put Delta',
-                    data: putDelta.map(v => -v),
-                    backgroundColor: 'rgba(244, 67, 54, 0.7)',
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888' }, grid: { color: '#333' } },
-                    y: { 
-                        ticks: { 
-                            color: '#888',
-                            callback: function(value) {
-                                return Math.abs(value) + 'K';
+            // 2. Volume Heatmap - ПУТЫ ВНИЗ, КОЛЛЫ ВВЕРХ
+            if (volumeChart) volumeChart.destroy();
+            const ctxVol = document.getElementById('volumeChart').getContext('2d');
+            volumeChart = new Chart(ctxVol, {
+                type: 'bar',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call Vol',
+                        data: callVol,
+                        backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                        borderWidth: 0
+                    }, {
+                        label: 'Put Vol',
+                        data: putVol.map(v => -v), // 🔥 ПУТЫ ВНИЗ
+                        backgroundColor: 'rgba(244, 67, 54, 0.7)',
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { 
+                        legend: { labels: { color: '#fff' } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const rawIndex = context.dataIndex;
+                                    const rawValue = context.datasetIndex === 0 ? callVol[rawIndex] : putVol[rawIndex];
+                                    return `${context.dataset.label}: ${Math.round(rawValue)}`;
+                                }
                             }
-                        }, 
-                        grid: { 
-                            color: function(context) {
-                                return context.tick.value === 0 ? '#FFD700' : '#333';
-                            },
-                            lineWidth: function(context) {
-                                return context.tick.value === 0 ? 2 : 1;
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#888', maxRotation: 45, autoSkip: true, maxTicksLimit: 15 }, 
+                            grid: { color: '#333', drawBorder: false }
+                        },
+                        y: { 
+                            min: -maxVol,  // 🔥 СИММЕТРИЧНАЯ ШКАЛА
+                            max: maxVol,
+                            ticks: { 
+                                color: '#888',
+                                callback: function(value) {
+                                    return Math.abs(value);
+                                }
+                            }, 
+                            grid: { 
+                                color: function(context) {
+                                    return context.tick.value === 0 ? '#FFD700' : '#333'; // 🔥 ЗОЛОТАЯ ЛИНИЯ
+                                },
+                                lineWidth: function(context) {
+                                    return context.tick.value === 0 ? 3 : 1;
+                                },
+                                drawBorder: false
                             }
                         }
                     }
                 }
-            }
-        });
+            });
 
-        // 7. GEX Profile
-        if (gexChart) gexChart.destroy();
-        const ctxGex = document.getElementById('gexChart').getContext('2d');
-        gexChart = new Chart(ctxGex, {
-            type: 'bar',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Net GEX',
-                    data: gammaData,
-                    backgroundColor: gammaData.map(v => 
-                        v > 0 ? 'rgba(76, 175, 80, 0.8)' : 'rgba(244, 67, 54, 0.8)'
-                    ),
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888' }, grid: { color: '#333' } },
-                    y: { 
-                        ticks: { color: '#888' }, 
-                        grid: { 
-                            color: function(context) {
-                                return context.tick.value === 0 ? '#FFD700' : '#333';
-                            },
-                            lineWidth: function(context) {
-                                return context.tick.value === 0 ? 2 : 1;
+            // 3. Gamma Exposure (остается БЕЗ ИЗМЕНЕНИЙ)
+            const gammaData = data.map(r => {
+                const strike = parseFloat(r.strike);
+                const callGamma = r.call?.gamma || 0;
+                const putGamma = r.put?.gamma || 0;
+                const callOI = r.call?.oi || 0;
+                const putOI = r.put?.oi || 0;
+                return ((callOI * callGamma) - (putOI * putGamma)) * strike * 100 / 1000000;
+            });
+
+            if (gammaChart) gammaChart.destroy();
+            const ctxGamma = document.getElementById('gammaChart').getContext('2d');
+            gammaChart = new Chart(ctxGamma, {
+                type: 'line',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Gamma Exposure (M)',
+                        data: gammaData,
+                        backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                        borderColor: 'rgba(255, 215, 0, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { labels: { color: '#fff' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#888' }, grid: { color: '#333' } },
+                        y: { 
+                            ticks: { color: '#888' }, 
+                            grid: { 
+                                color: function(context) {
+                                    return context.tick.value === 0 ? '#FFD700' : '#333';
+                                },
+                                lineWidth: function(context) {
+                                    return context.tick.value === 0 ? 3 : 1;
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
+            });
 
-        // 8. Theta Decay
-        const callTheta = data.map(r => (r.call?.theta || 0) * (r.call?.oi || 0) / 1000);
-        const putTheta = data.map(r => (r.put?.theta || 0) * (r.put?.oi || 0) / 1000);
+            // 4. Max Pain
+            const maxPainData = strikes.map(testStrike => {
+                let totalLoss = 0;
+                data.forEach(s => {
+                    const strike = parseFloat(s.strike);
+                    const callOI = s.call?.oi || 0;
+                    const putOI = s.put?.oi || 0;
+                    if (testStrike > strike) {
+                        totalLoss += (testStrike - strike) * callOI * 100;
+                    }
+                    if (testStrike < strike) {
+                        totalLoss += (strike - testStrike) * putOI * 100;
+                    }
+                });
+                return totalLoss / 1000000;
+            });
 
-        if (thetaChart) thetaChart.destroy();
-        const ctxTheta = document.getElementById('thetaChart').getContext('2d');
-        thetaChart = new Chart(ctxTheta, {
-            type: 'line',
-            data: {
-                labels: strikes,
-                datasets: [{
-                    label: 'Call Theta',
-                    data: callTheta,
-                    borderColor: '#4caf50',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.4,
-                    pointRadius: 0
-                }, {
-                    label: 'Put Theta',
-                    data: putTheta,
-                    borderColor: '#f44336',
-                    borderWidth: 2,
-                    fill: false,
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#888' }, grid: { color: '#333' } },
-                    y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+            if (maxPainChart) maxPainChart.destroy();
+            const ctxMaxPain = document.getElementById('maxPainChart').getContext('2d');
+            maxPainChart = new Chart(ctxMaxPain, {
+                type: 'line',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Total Loss (M)',
+                        data: maxPainData,
+                        backgroundColor: 'rgba(183, 28, 28, 0.2)',
+                        borderColor: 'rgba(183, 28, 28, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } },
+                    scales: {
+                        x: { ticks: { color: '#888' }, grid: { color: '#333' } },
+                        y: { ticks: { color: '#888' }, grid: { color: '#333' } }
                 }
-            }
-        });
-    }
+            });
 
-    // ==========================================================================
-    // РАСЧЕТЫ
-    // ==========================================================================
-    function calculateMaxPain(data) {
-        if (!data || data.length === 0) return;
-        
-        const maxPainValues = {};
-        
-        data.forEach(strikeData => {
-            const testStrike = parseFloat(strikeData.strike);
-            let totalLoss = 0;
+            // 5. IV Smile
+            const callIV = data.map(r => r.call?.iv || 0);
+            const putIV = data.map(r => r.put?.iv || 0);
+
+            if (ivChart) ivChart.destroy();
+            const ctxIV = document.getElementById('ivChart').getContext('2d');
+            ivChart = new Chart(ctxIV, {
+                type: 'line',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call IV',
+                        data: callIV,
+                        borderColor: '#2196F3',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }, {
+                        label: 'Put IV',
+                        data: putIV,
+                        borderColor: '#f44336',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } },
+                    scales: {
+                        x: { ticks: { color: '#888' }, grid: { color: '#333' } },
+                        y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            });
+
+            // 6. Delta Profile - ПУТЫ ВНИЗ
+            const callDelta = data.map(r => (r.call?.delta || 0) * (r.call?.oi || 0) / 1000);
+            const putDelta = data.map(r => Math.abs(r.put?.delta || 0) * (r.put?.oi || 0) / 1000);
+
+            if (deltaChart) deltaChart.destroy();
+            const ctxDelta = document.getElementById('deltaChart').getContext('2d');
+            deltaChart = new Chart(ctxDelta, {
+                type: 'bar',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call Delta',
+                        data: callDelta,
+                        backgroundColor: 'rgba(76, 175, 80, 0.7)',
+                        borderWidth: 0
+                    }, {
+                        label: 'Put Delta',
+                        data: putDelta.map(v => -v),
+                        backgroundColor: 'rgba(244, 67, 54, 0.7)',
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { labels: { color: '#fff' } },
+                    scales: {
+                        x: { ticks: { color: '#888' }, grid: { color: '#333' } },
+                        y: { 
+                            ticks: { 
+                                color: '#888',
+                                callback: function(value) {
+                                    return Math.abs(value) + 'K';
+                                }
+                            }, 
+                            grid: { 
+                                color: function(context) {
+                                    return context.tick.value === 0 ? '#FFD700' : '#333';
+                                },
+                                lineWidth: function(context) {
+                                    return context.tick.value === 0 ? 2 : 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 7. GEX Profile
+            if (gexChart) gexChart.destroy();
+            const ctxGex = document.getElementById('gexChart').getContext('2d');
+            gexChart = new Chart(ctxGex, {
+                type: 'bar',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Net GEX',
+                        data: gammaData,
+                        backgroundColor: gammaData.map(v => 
+                            v > 0 ? 'rgba(76, 175, 80, 0.8)' : 'rgba(244, 67, 54, 0.8)'
+                        ),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } },
+                    scales: {
+                        x: { ticks: { color: '#888' }, grid: { color: '#333' } },
+                        y: { 
+                            ticks: { color: '#888' }, 
+                            grid: { 
+                                color: function(context) {
+                                    return context.tick.value === 0 ? '#FFD700' : '#333';
+                                },
+                                lineWidth: function(context) {
+                                    return context.tick.value === 0 ? 2 : 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 8. Theta Decay
+            const callTheta = data.map(r => (r.call?.theta || 0) * (r.call?.oi || 0) / 1000);
+            const putTheta = data.map(r => (r.put?.theta || 0) * (r.put?.oi || 0) / 1000);
+
+            if (thetaChart) thetaChart.destroy();
+            const ctxTheta = document.getElementById('thetaChart').getContext('2d');
+            thetaChart = new Chart(ctxTheta, {
+                type: 'line',
+                data: {
+                    labels: strikes,
+                    datasets: [{
+                        label: 'Call Theta',
+                        data: callTheta,
+                        borderColor: '#4caf50',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }, {
+                        label: 'Put Theta',
+                        data: putTheta,
+                        borderColor: '#f44336',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#fff' } },
+                    scales: {
+                        x: { ticks: { color: '#888' }, grid: { color: '#333' } },
+                        y: { ticks: { color: '#888' }, grid: { color: '#333' } }
+                }
+            });
+        }
+
+        // ==========================================================================
+        // РАСЧЕТЫ
+        // ==========================================================================
+        function calculateMaxPain(data) {
+            if (!data || data.length === 0) return;
             
-            data.forEach(s => {
-                const strike = parseFloat(s.strike);
-                const callOI = s.call?.oi || 0;
-                const putOI = s.put?.oi || 0;
+            const maxPainValues = {};
+            
+            data.forEach(strikeData => {
+                const testStrike = parseFloat(strikeData.strike);
+                let totalLoss = 0;
                 
-                if (testStrike > strike) {
-                    totalLoss += (testStrike - strike) * callOI * 100;
+                data.forEach(s => {
+                    const strike = parseFloat(s.strike);
+                    const callOI = s.call?.oi || 0;
+                    const putOI = s.put?.oi || 0;
+                    
+                    if (testStrike > strike) {
+                        totalLoss += (testStrike - strike) * callOI * 100;
+                    }
+                    if (testStrike < strike) {
+                        totalLoss += (strike - testStrike) * putOI * 100;
+                    }
+                });
+                
+                maxPainValues[testStrike] = totalLoss;
+            });
+            
+            const maxPain = Object.keys(maxPainValues).reduce((a, b) => 
+                maxPainValues[a] < maxPainValues[b] ? a : b
+            );
+            
+            document.getElementById('max-pain-value').innerText = '$' + maxPain;
+        }
+
+        function calculatePCR(rows) {
+            if (!rows || rows.length === 0) return;
+            
+            let totalPutOI = 0, totalCallOI = 0;
+            let totalPutVol = 0, totalCallVol = 0;
+
+            rows.forEach(r => {
+                if(r.put) {
+                    totalPutOI += (r.put.oi || 0);
+                    totalPutVol += (r.put.vol || 0);
                 }
-                if (testStrike < strike) {
-                    totalLoss += (strike - testStrike) * putOI * 100;
+                if(r.call) {
+                    totalCallOI += (r.call.oi || 0);
+                    totalCallVol += (r.call.vol || 0);
                 }
             });
             
-            maxPainValues[testStrike] = totalLoss;
-        });
-        
-        const maxPain = Object.keys(maxPainValues).reduce((a, b) => 
-            maxPainValues[a] < maxPainValues[b] ? a : b
-        );
-        
-        document.getElementById('max-pain-value').innerText = '$' + maxPain;
-    }
-
-    function calculatePCR(rows) {
-        if (!rows || rows.length === 0) return;
-        
-        let totalPutOI = 0, totalCallOI = 0;
-        let totalPutVol = 0, totalCallVol = 0;
-
-        rows.forEach(r => {
-            if(r.put) {
-                totalPutOI += (r.put.oi || 0);
-                totalPutVol += (r.put.vol || 0);
-            }
-            if(r.call) {
-                totalCallOI += (r.call.oi || 0);
-                totalCallVol += (r.call.vol || 0);
-            }
-        });
-        
-        let pcrOI = totalCallOI > 0 ? (totalPutOI / totalCallOI).toFixed(2) : "0.00";
-let pcrVol = totalCallVol > 0 ? (totalPutVol / totalCallVol).toFixed(2) : "0.00";
-        document.getElementById('pcr-oi').innerText = pcrOI;
-        document.getElementById('pcr-vol').innerText = pcrVol;
-        
-        colorPCR('pcr-oi', parseFloat(pcrOI));
-        colorPCR('pcr-vol', parseFloat(pcrVol));
-    }
-
-    function colorPCR(elementId, value) {
-        const el = document.getElementById(elementId);
-        if(value > 1.0) el.style.color = "#f44336";
-        else if(value < 0.7) el.style.color = "#4caf50";
-        else el.style.color = "#fff";
-    }
-
-    function calculateGreeks(data) {
-        if (!data || data.length === 0) return;
-        
-        let totalCallDelta = 0, totalPutDelta = 0;
-        let totalGamma = 0, totalVega = 0, totalTheta = 0;
-        let totalCallIV = 0, totalOI = 0;
-
-        data.forEach(r => {
-            const cOI = r.call?.oi || 0;
-            const pOI = r.put?.oi || 0;
-            totalCallDelta += (r.call?.delta || 0) * cOI;
-            totalPutDelta += Math.abs(r.put?.delta || 0) * pOI;
-            totalGamma += ((r.call?.gamma || 0) * cOI) + ((r.put?.gamma || 0) * pOI);
-            totalVega += ((r.call?.vega || 0) * cOI) + ((r.put?.vega || 0) * pOI);
-            totalTheta += ((r.call?.theta || 0) * cOI) + ((r.put?.theta || 0) * pOI);
-            if(r.call?.iv > 0) { totalCallIV += r.call.iv * cOI; totalOI += cOI; }
-        });
-
-        document.getElementById('total-call-delta').innerText = (totalCallDelta / 1000).toFixed(0) + 'K';
-        document.getElementById('total-put-delta').innerText = (totalPutDelta / 1000).toFixed(0) + 'K';
-        document.getElementById('total-gamma').innerText = (totalGamma / 1000).toFixed(1) + 'K';
-        document.getElementById('total-vega').innerText = (totalVega / 1000).toFixed(0) + 'K';
-        document.getElementById('total-theta').innerText = (totalTheta / 1000).toFixed(0) + 'K';
-        document.getElementById('avg-iv').innerText = totalOI > 0 ? (totalCallIV / totalOI).toFixed(1) + '%' : '0%';
-        
-        const skew = totalCallDelta - totalPutDelta;
-        document.getElementById('delta-skew-value').innerText = (skew / 1000).toFixed(0) + 'K';
-    }
-
-    // ==========================================================================
-    // 🔥 АНАЛИТИКА ИЗ WEBSOCKET (ИСПРАВЛЕНО ITM)
-    // ==========================================================================
-    function updateAnalytics(analytics) {
-        if (!analytics) return;
-        
-        console.log('📊 Обновление аналитики:', analytics);
-        
-        // Expected Move
-        if (analytics.expected_move) {
-            const move = parseFloat(analytics.expected_move);
-            document.getElementById('exp-move-value').innerText = `±$${move.toFixed(2)}`;
+            let pcrOI = totalCallOI > 0 ? (totalPutOI / totalCallOI).toFixed(2) : "0.00";
+            let pcrVol = totalCallVol > 0 ? (totalPutVol / totalCallVol).toFixed(2) : "0.00";
+            document.getElementById('pcr-oi').innerText = pcrOI;
+            document.getElementById('pcr-vol').innerText = pcrVol;
             
-            if (currentFuturesPrice > 0) {
-                const up = (currentFuturesPrice + move).toFixed(1);
-                const down = (currentFuturesPrice - move).toFixed(1);
-                document.getElementById('exp-move-range').innerText = `${down} — ${up}`;
-            }
+            colorPCR('pcr-oi', parseFloat(pcrOI));
+            colorPCR('pcr-vol', parseFloat(pcrVol));
         }
-        
-        // 🔥 ITM Probabilities - ИСПРАВЛЕНО
-if (analytics.probabilities) {
-    let callProb = parseFloat(analytics.probabilities.call_itm) || 50;
-    let putProb = parseFloat(analytics.probabilities.put_itm) || 50;
-    
-    // 🔥 КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Если больше 1, значит это НЕ проценты, а доли
-    if (callProb > 1) callProb = callProb / 100;
-    if (putProb > 1) putProb = putProb / 100;
-    
-    // Ограничиваем 0-1 (или 0-100%)
-    callProb = Math.max(0, Math.min(1, callProb)) * 100;
-    putProb = Math.max(0, Math.min(1, putProb)) * 100;
-    
-    document.getElementById('prob-call').innerText = callProb.toFixed(1) + '%';
-    document.getElementById('prob-put').innerText = putProb.toFixed(1) + '%';
-    
-    console.log('✅ ITM обновлено:', callProb, putProb); // 🔥 ДЕБАГ
-} else {
-    document.getElementById('prob-call').innerText = '50.0%';
-    document.getElementById('prob-put').innerText = '50.0%';
-}
-        
-        // Advanced Greeks
-        if (analytics.adv_metrics) {
-            const color = analytics.adv_metrics.color || 0;
-            const charm = analytics.adv_metrics.charm || 0;
-            
-            document.getElementById('metric-color').innerText = 
-                Math.abs(color) > 1000 ? (color / 1000).toFixed(2) + 'K' : color.toFixed(2);
-            document.getElementById('metric-charm').innerText = 
-                Math.abs(charm) > 1000 ? (charm / 1000).toFixed(2) + 'K' : charm.toFixed(2);
+
+        function colorPCR(elementId, value) {
+            const el = document.getElementById(elementId);
+            if(value > 1.0) el.style.color = "#f44336";
+            else if(value < 0.7) el.style.color = "#4caf50";
+            else el.style.color = "#fff";
         }
-        
-        // Economic Calendar
-        if (analytics.calendar && Array.isArray(analytics.calendar)) {
-            const calContainer = document.getElementById('calendar-list');
-            const today = new Date().toLocaleDateString('ru-RU');
+
+        function calculateGreeks(data) {
+            if (!data || data.length === 0) return;
             
-            calContainer.innerHTML = analytics.calendar.map(item => {
-                const eventDate = item.date || today;
-                const isToday = eventDate === today;
+            let totalCallDelta = 0, totalPutDelta = 0;
+            let totalGamma = 0, totalVega = 0, totalTheta = 0;
+            let totalCallIV = 0, totalOI = 0;
+
+            data.forEach(r => {
+                const cOI = r.call?.oi || 0;
+                const pOI = r.put?.oi || 0;
+                totalCallDelta += (r.call?.delta || 0) * cOI;
+                totalPutDelta += Math.abs(r.put?.delta || 0) * pOI;
+                totalGamma += ((r.call?.gamma || 0) * cOI) + ((r.put?.gamma || 0) * pOI);
+                totalVega += ((r.call?.vega || 0) * cOI) + ((r.put?.vega || 0) * pOI);
+                totalTheta += ((r.call?.theta || 0) * cOI) + ((r.put?.theta || 0) * pOI);
+                if(r.call?.iv > 0) { totalCallIV += r.call.iv * cOI; totalOI += cOI; }
+            });
+
+            document.getElementById('total-call-delta').innerText = (totalCallDelta / 1000).toFixed(0) + 'K';
+            document.getElementById('total-put-delta').innerText = (totalPutDelta / 1000).toFixed(0) + 'K';
+            document.getElementById('total-gamma').innerText = (totalGamma / 1000).toFixed(1) + 'K';
+            document.getElementById('total-vega').innerText = (totalVega / 1000).toFixed(0) + 'K';
+            document.getElementById('total-theta').innerText = (totalTheta / 1000).toFixed(0) + 'K';
+            document.getElementById('avg-iv').innerText = totalOI > 0 ? (totalCallIV / totalOI).toFixed(1) + '%' : '0%';
+            
+            const skew = totalCallDelta - totalPutDelta;
+            document.getElementById('delta-skew-value').innerText = (skew / 1000).toFixed(0) + 'K';
+        }
+
+        // ==========================================================================
+        // 🔥 АНАЛИТИКА ИЗ WEBSOCKET (ИСПРАВЛЕНО ITM)
+        // ==========================================================================
+        function updateAnalytics(analytics) {
+            if (!analytics) return;
+            
+            console.log('📊 Обновление аналитики:', analytics);
+            
+            // Expected Move
+            if (analytics.expected_move) {
+                const move = parseFloat(analytics.expected_move);
+                document.getElementById('exp-move-value').innerText = `±$${move.toFixed(2)}`;
                 
-                return `
-                    <div style="padding: 5px 0; border-bottom: 1px solid #333;">
-                        <span style="color: ${isToday ? 'var(--accent-gold)' : '#888'}; font-weight: bold;">${item.time}</span>
-                        <span style="color: #ccc; margin-left: 10px;">${item.event}</span>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Zero Gamma
-        if (analytics.zero_gamma && analytics.zero_gamma.strike !== undefined) {
-            document.getElementById('zero-gamma-value').innerText = '$' + analytics.zero_gamma.strike;
-            const pos = analytics.zero_gamma.position === 'above' ? '🟢 Выше' : '🔴 Ниже';
-            document.getElementById('zero-gamma-label').innerText = `Цена ${pos} Zero Gamma`;
-        }
-
-        // Vanna
-        if (analytics.vanna_exposure) {
-            const vanna = analytics.vanna_exposure;
-            document.getElementById('vanna-net').innerText = vanna.net_vanna.toFixed(0);
-            document.getElementById('vanna-label').innerText = `Call: ${vanna.call_vanna.toFixed(0)} | Put: ${vanna.put_vanna.toFixed(0)}`;
-        }
-
-        // GEX Walls
-        if (analytics.gex_profile) {
-            let html = '';
-            
-            if (analytics.gex_profile.top_resistance && analytics.gex_profile.top_resistance.length > 0) {
-                html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance:</div>';
-                analytics.gex_profile.top_resistance.forEach(s => {
-                    html += `<div class="level-item resistance">
-                        <span>$${s.strike}</span>
-                        <span style="color:#888;">${(s.net_gex/1000000).toFixed(1)}M</span>
-                    </div>`;
-                });
-            }
-
-            if (analytics.gex_profile.top_support && analytics.gex_profile.top_support.length > 0) {
-                html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support:</div>';
-                analytics.gex_profile.top_support.forEach(s => {
-                    html += `<div class="level-item support">
-                        <span>$${s.strike}</span>
-                        <span style="color:#888;">${(s.net_gex/1000000).toFixed(1)}M</span>
-                    </div>`;
-                });
+                if (currentFuturesPrice > 0) {
+                    const up = (currentFuturesPrice + move).toFixed(1);
+                    const down = (currentFuturesPrice - move).toFixed(1);
+                    document.getElementById('exp-move-range').innerText = `${down} — ${up}`;
+                }
             }
             
-            if (html === '') {
-                html = '<div class="analytics-label">Нет значимых GEX уровней</div>';
+            // 🔥 ITM Probabilities - ИСПРАВЛЕНО
+            if (analytics.probabilities) {
+                let callProb = parseFloat(analytics.probabilities.call_itm) || 50;
+                let putProb = parseFloat(analytics.probabilities.put_itm) || 50;
+                
+                // 🔥 КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Если больше 1, значит это НЕ проценты, а доли
+                if (callProb > 1) callProb = callProb /100;
+                
+                if (putProb > 1) putProb = putProb / 100;
+                
+                // Ограничиваем 0-1 (или 0-100%)
+                callProb = Math.max(0, Math.min(1, callProb)) * 100;
+                putProb = Math.max(0, Math.min(1, putProb)) * 100;
+                
+                document.getElementById('prob-call').innerText = callProb.toFixed(1) + '%';
+                document.getElementById('prob-put').innerText = putProb.toFixed(1) + '%';
+                
+                console.log('✅ ITM обновлено:', callProb, putProb); // 🔥 ДЕБАГ
+            } else {
+                document.getElementById('prob-call').innerText = '50.0%';
+                document.getElementById('prob-put').innerText = '50.0%';
             }
             
-            document.getElementById('key-levels-display').innerHTML = html;
-        }
+            // Advanced Greeks
+            if (analytics.adv_metrics) {
+                const color = analytics.adv_metrics.color || 0;
+                const charm = analytics.adv_metrics.charm || 0;
+                
+                document.getElementById('metric-color').innerText = 
+                    Math.abs(color) > 1000 ? (color / 1000).toFixed(2) + 'K' : color.toFixed(2);
+                document.getElementById('metric-charm').innerText = 
+                    Math.abs(charm) > 1000 ? (charm / 1000).toFixed(2) + 'K' : charm.toFixed(2);
+            }
+            
+            // Economic Calendar
+            if (analytics.calendar && Array.isArray(analytics.calendar)) {
+                const calContainer = document.getElementById('calendar-list');
+                const today = new Date().toLocaleDateString('ru-RU');
+                
+                calContainer.innerHTML = analytics.calendar.map(item => {
+                    const eventDate = item.date || today;
+                    const isToday = eventDate === today;
+                    
+                    return `
+                        <div style="padding: 5px 0; border-bottom: 1px solid #333;">
+                            <span style="color: ${isToday ? 'var(--accent-gold)' : '#888'}; font-weight: bold;">${item.time}</span>
+                            <span style="color: #ccc; margin-left: 10px;">${item.event}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
 
-        // Обновление времени
-        if (analytics.updated_at_utc) {
-            document.getElementById('updated-time').innerText = analytics.updated_at_utc;
-        }
+            // Zero Gamma
+            if (analytics.zero_gamma && analytics.zero_gamma.strike !== undefined) {
+                document.getElementById('zero-gamma-value').innerText = '$' + analytics.zero_gamma.strike;
+                const pos = analytics.zero_gamma.position === 'above' ? '🟢 Выше' : '🔴 Ниже';
+                document.getElementById('zero-gamma-label').innerText = `Цена ${pos} Zero Gamma`;
+            }
 
-        // Balance Price
-        if (analytics.balance) {
-            document.getElementById('balance-price').innerText = '$' + analytics.balance;
-        }
+            // Vanna
+            if (analytics.vanna_exposure) {
+                const vanna = analytics.vanna_exposure;
+                document.getElementById('vanna-net').innerText = vanna.net_vanna.toFixed(0);
+                document.getElementById('vanna-label').innerText = `Call: ${vanna.call_vanna.toFixed(0)} | Put: ${vanna.put_vanna.toFixed(0)}`;
+            }
 
-        // Alerts
-        generateAlerts(analytics);
-    }
-
-    function generateAlerts(analytics) {
-        const container = document.getElementById('alerts-container');
-        let alerts = [];
-
-        // 1. Проверка уровней GEX Walls (Сопротивления и Поддержки)
-        if (analytics.gex_profile && currentFuturesPrice > 0) {
-            // Собираем все уровни в один массив для проверки
-            const walls = [
-                ...(analytics.gex_profile.top_resistance || []).map(w => ({...w, type: 'RES'})),
-                ...(analytics.gex_profile.top_support || []).map(w => ({...w, type: 'SUP'}))
-            ];
-
-            walls.forEach(wall => {
-                const strike = parseFloat(wall.strike);
-                const distance = Math.abs(currentFuturesPrice - strike);
-
-                // Если до уровня 10 пунктов или меньше
-                if (distance <= 10) {
-                    const typeText = wall.type === 'RES' ? '🧱 Сопротивление (Call Wall)' : '🧱 Поддержка (Put Wall)';
-                    alerts.push({
-                        type: wall.type === 'RES' ? 'warning' : 'danger',
-                        text: `${typeText}: $${strike} | Осталось: <span style="font-weight:bold; color:#fff;">${distance.toFixed(1)} пт.</span>`
+            // GEX Walls
+            if (analytics.gex_profile) {
+                let html = '';
+                
+                if (analytics.gex_profile.top_resistance && analytics.gex_profile.top_resistance.length > 0) {
+                    html += '<div style="color: var(--call-color); font-weight: bold; margin-bottom: 5px;">🟢 Resistance:</div>';
+                    analytics.gex_profile.top_resistance.forEach(s => {
+                        html += `<div class="level-item resistance">
+                            <span>$${s.strike}</span>
+                            <span style="color:#888;">${(s.net_gex/1000000).toFixed(1)}M</span>
+                        </div>`;
                     });
                 }
+
+                if (analytics.gex_profile.top_support && analytics.gex_profile.top_support.length > 0) {
+                    html += '<div style="color: var(--put-color); font-weight: bold; margin: 10px 0 5px 0;">🔴 Support:</div>';
+                    analytics.gex_profile.top_support.forEach(s => {
+                        html += `<div class="level-item support">
+                            <span>$${s.strike}</span>
+                            <span style="color:#888;">${(s.net_gex/1000000).toFixed(1)}M</span>
+                        </div>`;
+                    });
+                }
+                
+                if (html === '') {
+                    html = '<div class="analytics-label">Нет значимых GEX уровней</div>';
+                }
+                
+                document.getElementById('key-levels-display').innerHTML = html;
+            }
+
+            // Обновление времени
+            if (analytics.updated_at_utc) {
+                document.getElementById('updated-time').innerText = analytics.updated_at_utc;
+            }
+
+            // Balance Price
+            if (analytics.balance) {
+                document.getElementById('balance-price').innerText = '$' + analytics.balance;
+            }
+
+            // Alerts
+            generateAlerts(analytics);
+        }
+
+        function generateAlerts(analytics) {
+            const container = document.getElementById('alerts-container');
+            let alerts = [];
+
+            // 1. Проверка уровней GEX Walls (Сопротивления и Поддержки)
+            if (analytics.gex_profile && currentFuturesPrice > 0) {
+                // Собираем все уровни в один массив для проверки
+                const walls = [
+                    ...(analytics.gex_profile.top_resistance || []).map(w => ({...w, type: 'RES'})),
+                    ...(analytics.gex_profile.top_support || []).map(w => ({...w, type: 'SUP'}))
+                ];
+
+                walls.forEach(wall => {
+                    const strike = parseFloat(wall.strike);
+                    const distance = Math.abs(currentFuturesPrice - strike);
+
+                    // Если до уровня 10 пунктов или меньше
+                    if (distance <= 10) {
+                        const typeText = wall.type === 'RES' ? '🧱 Сопротивление (Call Wall)' : '🧱 Поддержка (Put Wall)';
+                        alerts.push({
+                            type: wall.type === 'RES' ? 'warning' : 'danger',
+                            text: `${typeText}: $${strike} | Осталось: <span style="font-weight:bold; color:#fff;">${distance.toFixed(1)} пт.</span>`
+                        });
+                    }
+                });
+            }
+
+            // 2. Проверка Zero Gamma (если очень близко)
+            if (analytics.zero_gamma && analytics.zero_gamma.strike && currentFuturesPrice > 0) {
+                const zgStrike = parseFloat(analytics.zero_gamma.strike);
+                const zgDistance = Math.abs(currentFuturesPrice - zgStrike);
+                if (zgDistance < 5) {
+                    alerts.push({
+                        type: 'info',
+                        text: `⚡ В зоне Zero Gamma ($${zgStrike})! Дистанция: ${zgDistance.toFixed(1)} пт.`
+                    });
+                }
+            }
+
+            // 3. Вывод алертов
+            if (alerts.length === 0) {
+                // Если ничего критичного нет, показываем спокойный статус
+                container.innerHTML = '<div class="alert alert-success" style="opacity: 0.8;">✅ Ценовых угроз в радиусе 10пт не обнаружено</div>';
+            } else {
+                // Сортируем алерты, чтобы самый близкий был сверху
+                // (это не обязательно, но удобно)
+                container.innerHTML = alerts.map(a => 
+                    `<div class="alert alert-${a.type}">${a.text}</div>`
+                ).join('');
+            }
+        }
+
+        // ==========================================================================
+        // FORWARD & PREMIUM
+        // ==========================================================================
+        document.getElementById('forward-input').addEventListener('input', function(e) {
+            const val = parseFloat(e.target.value);
+            forwardCorrection = isNaN(val) ? 0 : val;
+            if (cachedTableData.length > 0) {
+                renderTable(cachedTableData);
+                updateTop5(cachedTableData);
+            }
+        });
+
+        document.getElementById('premium-toggle').addEventListener('click', function() {
+            premiumEnabled = !premiumEnabled;
+            this.textContent = premiumEnabled ? 'Откл. премии' : 'Вкл. премии';
+            this.classList.toggle('active');
+            if (cachedTableData.length > 0) {
+                renderTable(cachedTableData);
+                updateTop5(cachedTableData);
+            }
+        });
+
+        // EXPIRY TOGGLE
+        document.querySelectorAll('.expiry-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentExpiry = this.dataset.expiry;
+                
+                const label = document.getElementById('table-expiry-label');
+                label.innerText = currentExpiry === '0dte' ? 'INTRADAY' : 'FRIDAY';
+                
+                fetchHeavyData();
+            });
+        });
+
+        // STRIKE FILTER
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                displayStrikeCount = parseInt(this.dataset.count);
+                if (cachedTableData.length > 0) renderTable(cachedTableData);
+            });
+        });
+
+        // EXPIRY BUTTONS
+        document.querySelectorAll('.expiry-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.expiry-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentExpiry = this.dataset.expiry;
+                
+                const label = document.getElementById('table-expiry-label');
+                label.innerText = currentExpiry === '0dte' ? 'INTRADAY' : currentExpiry.toUpperCase();
+                
+                fetchHeavyData();
+            });
+        });
+
+        // ==========================================================================
+        // 🔥 FETCH DATA
+        // ==========================================================================
+        async function fetchHeavyData() {
+            try {
+                const endpoint = currentExpiry === '0dte' ? 'gold_heavy2.json' : `gold_${currentExpiry}.json`;
+                const url = `${DB_ROOT}/${endpoint}?t=${Date.now()}`;
+                
+                console.log(`📡 Загрузка: ${url}`);
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (!data || !data.data) return;
+
+                document.getElementById('updated-time').innerText = data.updated_at_utc || "Обновление...";
+                if (data.balance_price) {
+                    document.getElementById('balance-price').innerText = '$' + data.balance_price;
+                    if (currentFuturesPrice === 0) currentFuturesPrice = parseFloat(data.balance_price);
+                }
+
+                cachedTableData = Array.isArray(data.data) ? data.data : Object.values(data.data);
+                cachedTableData.sort((a, b) => parseFloat(a.strike) - parseFloat(b.strike));
+
+                calculatePCR(cachedTableData);
+                calculateMaxPain(cachedTableData);
+                calculateGreeks(cachedTableData);
+                
+                // Локальный расчет ITM
+                let atmStrike = cachedTableData.reduce((prev, curr) => 
+                    Math.abs(parseFloat(curr.strike) - currentFuturesPrice) < Math.abs(parseFloat(prev.strike) - currentFuturesPrice) ? curr : prev
+                );
+                if (atmStrike) {
+                    document.getElementById('prob-call').innerText = (Math.abs(atmStrike.call?.delta || 0.5) * 100).toFixed(1) + '%';
+                    document.getElementById('prob-put').innerText = (Math.abs(atmStrike.put?.delta || 0.5) * 100).toFixed(1) + '%';
+                }
+
+                updateTop5(cachedTableData);
+                renderTable(cachedTableData);
+                setTimeout(() => createCharts(cachedTableData), 100);
+
+            } catch (e) {
+                console.error("Ошибка Firebase:", e);
+                document.getElementById('option-body').innerHTML = `<tr><td colspan="11" style="color:red">Ошибка базы данных</td></tr>`;
+            }
+        }
+
+        // ==========================================================================
+        // TOP-5
+        // ==========================================================================
+        function updateTop5(rows) {
+            if (!rows || rows.length === 0) return;
+            
+            const getTop = (arr, type, metric) => {
+                return [...arr].sort((a, b) => (b[type]?.[metric] || 0) - (a[type]?.[metric] || 0)).slice(0, 5);
+            };
+
+            const render = (items, type, metric) => {
+                return items.map(r => {
+                    const rawStrike = parseFloat(r.strike) + forwardCorrection;
+                    const prem = r[type]?.premium || 0;
+                    
+                    // ЛОГИКА ИЗМЕНЕНИЯ ЗНАЧЕНИЯ:
+                    // Если включены премии: для коллов Strike + Prem, для путов Strike - Prem
+                    let displayValue;
+                    if (premiumEnabled) {
+                        displayValue = type === 'call' ? (rawStrike + prem) : (rawStrike - prem);
+                    } else {
+                        displayValue = rawStrike;
+                    }
+
+                    const val = r[type]?.[metric] || 0;
+                    return `
+                        <div class="top5-item ${type === 'call' ? 'call-item' : 'put-item'}">
+                            <span class="top5-strike">${displayValue.toFixed(1)}</span>
+                            <span class="top5-value">${Math.round(val)}</span>
+                        </div>`;
+                }).join('');
+            };
+
+            document.getElementById('top5-call-vol').innerHTML = render(getTop(rows, 'call', 'vol'), 'call', 'vol');
+            document.getElementById('top5-call-oi').innerHTML = render(getTop(rows, 'call', 'oi'), 'call', 'oi');
+            document.getElementById('top5-put-vol').innerHTML = render(getTop(rows, 'put', 'vol'), 'put', 'vol');
+            document.getElementById('top5-put-oi').innerHTML = render(getTop(rows, 'put', 'oi'), 'put', 'oi');
+        }
+
+        // ==========================================================================
+        // 🔥 RENDER TABLE
+        // ==========================================================================
+        function renderTable(rows) {
+            const tbody = document.getElementById('option-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            if (!rows || rows.length === 0) return;
+
+            let closestIndex = 0;
+            let minDiff = Infinity;
+            
+            const targetPrice = currentFuturesPrice > 0 ? currentFuturesPrice : 2600; 
+
+            rows.forEach((row, idx) => {
+                const strikeVal = parseFloat(row.strike) + forwardCorrection;
+                const diff = Math.abs(strikeVal - targetPrice);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestIndex = idx;
+                }
+            });
+
+            const halfRange = Math.floor(displayStrikeCount / 2);
+            let startIdx = Math.max(0, closestIndex - halfRange);
+            let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
+
+            if (endIdx - startIdx < displayStrikeCount) {
+                startIdx = Math.max(0, endIdx - displayStrikeCount);
+            }
+
+            const displayRows = rows.slice(startIdx, endIdx);
+
+            displayRows.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                const rawStrike = parseFloat(row.strike) + forwardCorrection;
+                const isATM = (startIdx + idx) === closestIndex;
+
+                const c_oi = row.call?.oi || 0;
+                const c_vol = row.call?.vol || 0;
+                const c_prem = row.call?.premium || 0;
+                const c_delta = (row.call?.delta || 0).toFixed(3);
+                const c_gamma = (row.call?.gamma || 0).toFixed(4);
+                
+                const p_oi = row.put?.oi || 0;
+                const p_vol = row.put?.vol || 0;
+                const p_prem = row.put?.premium || 0;
+                const p_delta = (row.put?.delta || 0).toFixed(3);
+                const p_gamma = (row.put?.gamma || 0).toFixed(4);
+
+                let strikeHtml = '';
+                if (premiumEnabled) {
+                    strikeHtml = `
+                        <div style="line-height:1.1;">
+                            <span style="color:var(--call-color)">${(rawStrike + c_prem).toFixed(1)}</span><br>
+                            <span style="color:var(--put-color); font-size:0.75em;">${(rawStrike - p_prem).toFixed(1)}</span>
+                        </div>
+                    `;
+                } else {
+                    strikeHtml = rawStrike.toFixed(1);
+                }
+
+                const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
+
+                tr.innerHTML = `
+                    <td class="${getValueClass(c_oi)}">${Math.round(c_oi)}</td>
+                    <td class="${getValueClass(c_vol)}">${Math.round(c_vol)}</td>
+                    <td style="color:#aaa;">${c_prem.toFixed(1)}</td>
+                    <td style="color:var(--call-color);">${c_delta}</td>
+                    <td style="color:#FFD700;">${c_gamma}</td>
+                    
+                    <td class="${strikeClass}">${strikeHtml}</td>
+                    
+                    <td style="color:#FFD700;">${p_gamma}</td>
+                    <td style="color:var(--put-color);">${p_delta}</td>
+                    <td style="color:#aaa;">${p_prem.toFixed(1)}</td>
+                    <td class="${getValueClass(p_vol)}">${Math.round(p_vol)}</td>
+                    <td class="${getValueClass(p_oi)}">${Math.round(p_oi)}</td>
+                `;
+
+                if (isATM) tr.classList.add('row-atm');
+                tbody.appendChild(tr);
             });
         }
 
-        // 2. Проверка Zero Gamma (если очень близко)
-        if (analytics.zero_gamma && analytics.zero_gamma.strike && currentFuturesPrice > 0) {
-            const zgStrike = parseFloat(analytics.zero_gamma.strike);
-            const zgDistance = Math.abs(currentFuturesPrice - zgStrike);
-            if (zgDistance < 5) {
-                alerts.push({
-                    type: 'info',
-                    text: `⚡ В зоне Zero Gamma ($${zgStrike})! Дистанция: ${zgDistance.toFixed(1)} пт.`
-                });
-            }
-        }
-
-        // 3. Вывод алертов
-        if (alerts.length === 0) {
-            // Если ничего критичного нет, показываем спокойный статус
-            container.innerHTML = '<div class="alert alert-success" style="opacity: 0.8;">✅ Ценовых угроз в радиусе 10пт не обнаружено</div>';
-        } else {
-            // Сортируем алерты, чтобы самый близкий был сверху
-            // (это не обязательно, но удобно)
-            container.innerHTML = alerts.map(a => 
-                `<div class="alert alert-${a.type}">${a.text}</div>`
-            ).join('');
-        }
-    }
-
-    // ==========================================================================
-    // FORWARD & PREMIUM
-    // ==========================================================================
-    document.getElementById('forward-input').addEventListener('input', function(e) {
-        const val = parseFloat(e.target.value);
-        forwardCorrection = isNaN(val) ? 0 : val;
-        if (cachedTableData.length > 0) {
-            renderTable(cachedTableData);
-            updateTop5(cachedTableData);
-        }
-    });
-
-    document.getElementById('premium-toggle').addEventListener('click', function() {
-        premiumEnabled = !premiumEnabled;
-        this.textContent = premiumEnabled ? 'Откл. премии' : 'Вкл. премии';
-        this.classList.toggle('active');
-        if (cachedTableData.length > 0) {
-            renderTable(cachedTableData);
-            updateTop5(cachedTableData);
-        }
-    });
-
-    // EXPIRY TOGGLE
-    document.querySelectorAll('.expiry-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.expiry-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentExpiry = this.dataset.expiry;
-            
-            const label = document.getElementById('table-expiry-label');
-            label.innerText = currentExpiry === '0dte' ? 'INTRADAY' : 'FRIDAY';
-            
-            fetchHeavyData();
-        });
-    });
-
-    // STRIKE FILTER
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            displayStrikeCount = parseInt(this.dataset.count);
-            if (cachedTableData.length > 0) renderTable(cachedTableData);
-        });
-    });
-
-    // ==========================================================================
-    // 🔥 FETCH DATA
-    // ==========================================================================
-    async function fetchHeavyData() {
-        try {
-            const endpoint = currentExpiry === '0dte' ? 'gold_heavy2.json' : 'gold_friday.json';
-            const url = `${DB_ROOT}/${endpoint}?t=${Date.now()}`;
-            
-            console.log(`📡 Загрузка: ${url}`);
-            const res = await fetch(url);
-            const data = await res.json();
-            
-            if (!data || !data.data) return;
-
-            document.getElementById('updated-time').innerText = data.updated_at_utc || "Обновление...";
-            if (data.balance_price) {
-                document.getElementById('balance-price').innerText = '$' + data.balance_price;
-                if (currentFuturesPrice === 0) currentFuturesPrice = parseFloat(data.balance_price);
-            }
-
-            cachedTableData = Array.isArray(data.data) ? data.data : Object.values(data.data);
-            cachedTableData.sort((a, b) => parseFloat(a.strike) - parseFloat(b.strike));
-
-            calculatePCR(cachedTableData);
-            calculateMaxPain(cachedTableData);
-            calculateGreeks(cachedTableData);
-            
-            // Локальный расчет ITM
-            let atmStrike = cachedTableData.reduce((prev, curr) => 
-                Math.abs(parseFloat(curr.strike) - currentFuturesPrice) < Math.abs(parseFloat(prev.strike) - currentFuturesPrice) ? curr : prev
-            );
-            if (atmStrike) {
-                document.getElementById('prob-call').innerText = (Math.abs(atmStrike.call?.delta || 0.5) * 100).toFixed(1) + '%';
-                document.getElementById('prob-put').innerText = (Math.abs(atmStrike.put?.delta || 0.5) * 100).toFixed(1) + '%';
-            }
-
-            updateTop5(cachedTableData);
-            renderTable(cachedTableData);
-            setTimeout(() => createCharts(cachedTableData), 100);
-
-        } catch (e) {
-            console.error("Ошибка Firebase:", e);
-            document.getElementById('option-body').innerHTML = `<tr><td colspan="11" style="color:red">Ошибка базы данных</td></tr>`;
-        }
-    }
-
-    // ==========================================================================
-    // TOP-5
-    // ==========================================================================
-    // ==========================================================================
-    // TOP-5 (ИСПРАВЛЕННЫЙ С УЧЕТОМ ПРЕМИЙ)
-    // ==========================================================================
-    function updateTop5(rows) {
-        if (!rows || rows.length === 0) return;
+        // ==========================================================================
+        // 🔥 ИНИЦИАЛИЗАЦИЯ
+        // ==========================================================================
         
-        const getTop = (arr, type, metric) => {
-            return [...arr].sort((a, b) => (b[type]?.[metric] || 0) - (a[type]?.[metric] || 0)).slice(0, 5);
-        };
+        connectWebSocket();
+        fetchHeavyData();
+        setInterval(fetchHeavyData, 300000);
 
-        const render = (items, type, metric) => {
-            return items.map(r => {
-                const rawStrike = parseFloat(r.strike) + forwardCorrection;
-                const prem = r[type]?.premium || 0;
-                
-                // ЛОГИКА ИЗМЕНЕНИЯ ЗНАЧЕНИЯ:
-                // Если включены премии: для коллов Strike + Prem, для путов Strike - Prem
-                let displayValue;
-                if (premiumEnabled) {
-                    displayValue = type === 'call' ? (rawStrike + prem) : (rawStrike - prem);
-                } else {
-                    displayValue = rawStrike;
-                }
-
-                const val = r[type]?.[metric] || 0;
-                return `
-                    <div class="top5-item ${type === 'call' ? 'call-item' : 'put-item'}">
-                        <span class="top5-strike">${displayValue.toFixed(1)}</span>
-                        <span class="top5-value">${Math.round(val)}</span>
-                    </div>`;
-            }).join('');
-        };
-
-        document.getElementById('top5-call-vol').innerHTML = render(getTop(rows, 'call', 'vol'), 'call', 'vol');
-        document.getElementById('top5-call-oi').innerHTML = render(getTop(rows, 'call', 'oi'), 'call', 'oi');
-        document.getElementById('top5-put-vol').innerHTML = render(getTop(rows, 'put', 'vol'), 'put', 'vol');
-        document.getElementById('top5-put-oi').innerHTML = render(getTop(rows, 'put', 'oi'), 'put', 'oi');
-    }
-
-    // ==========================================================================
-    // 🔥 RENDER TABLE
-    // ==========================================================================
-    function renderTable(rows) {
-        const tbody = document.getElementById('option-body');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        
-        if (!rows || rows.length === 0) return;
-
-        let closestIndex = 0;
-        let minDiff = Infinity;
-        
-        const targetPrice = currentFuturesPrice > 0 ? currentFuturesPrice : 2600; 
-
-        rows.forEach((row, idx) => {
-            const strikeVal = parseFloat(row.strike) + forwardCorrection;
-            const diff = Math.abs(strikeVal - targetPrice);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closestIndex = idx;
-            }
-        });
-
-        const halfRange = Math.floor(displayStrikeCount / 2);
-        let startIdx = Math.max(0, closestIndex - halfRange);
-        let endIdx = Math.min(rows.length, startIdx + displayStrikeCount);
-
-        if (endIdx - startIdx < displayStrikeCount) {
-            startIdx = Math.max(0, endIdx - displayStrikeCount);
-        }
-
-        const displayRows = rows.slice(startIdx, endIdx);
-
-        displayRows.forEach((row, idx) => {
-            const tr = document.createElement('tr');
-            const rawStrike = parseFloat(row.strike) + forwardCorrection;
-            const isATM = (startIdx + idx) === closestIndex;
-
-            const c_oi = row.call?.oi || 0;
-            const c_vol = row.call?.vol || 0;
-            const c_prem = row.call?.premium || 0;
-            const c_delta = (row.call?.delta || 0).toFixed(3);
-            const c_gamma = (row.call?.gamma || 0).toFixed(4);
-            
-            const p_oi = row.put?.oi || 0;
-            const p_vol = row.put?.vol || 0;
-            const p_prem = row.put?.premium || 0;
-            const p_delta = (row.put?.delta || 0).toFixed(3);
-            const p_gamma = (row.put?.gamma || 0).toFixed(4);
-
-            let strikeHtml = '';
-            if (premiumEnabled) {
-                strikeHtml = `
-                    <div style="line-height:1.1;">
-                        <span style="color:var(--call-color)">${(rawStrike + c_prem).toFixed(1)}</span><br>
-                        <span style="color:var(--put-color); font-size:0.75em;">${(rawStrike - p_prem).toFixed(1)}</span>
-                    </div>
-                `;
-            } else {
-                strikeHtml = rawStrike.toFixed(1);
-            }
-
-            const strikeClass = forwardCorrection !== 0 ? 'col-strike forward-active' : 'col-strike';
-
-            tr.innerHTML = `
-                <td class="${getValueClass(c_oi)}">${Math.round(c_oi)}</td>
-                <td class="${getValueClass(c_vol)}">${Math.round(c_vol)}</td>
-                <td style="color:#aaa;">${c_prem.toFixed(1)}</td>
-                <td style="color:var(--call-color);">${c_delta}</td>
-                <td style="color:#FFD700;">${c_gamma}</td>
-                
-                <td class="${strikeClass}">${strikeHtml}</td>
-                
-                <td style="color:#FFD700;">${p_gamma}</td>
-                <td style="color:var(--put-color);">${p_delta}</td>
-                <td style="color:#aaa;">${p_prem.toFixed(1)}</td>
-                <td class="${getValueClass(p_vol)}">${Math.round(p_vol)}</td>
-                <td class="${getValueClass(p_oi)}">${Math.round(p_oi)}</td>
-            `;
-
-            if (isATM) tr.classList.add('row-atm');
-            tbody.appendChild(tr);
-        });
-    }
-
-    // ==========================================================================
-    // 🔥 ИНИЦИАЛИЗАЦИЯ
-    // ==========================================================================
-    
-    connectWebSocket();
-    fetchHeavyData();
-    setInterval(fetchHeavyData, 300000);
-
-</script>
+    </script>
 </body>
 </html>
-
-
-
 
